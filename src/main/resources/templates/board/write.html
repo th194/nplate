@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="board/layout/basic">
+	<th:block layout:fragment="title">
+		<title>게시글 등록</title>
+	</th:block>
+
+	<th:block layout:fragment="content">
+		<div class="card-content">
+			<form class="form-horizontal form-grade" th:action="@{/board/register.do}" th:object="${board}" method="post" onsubmit="registerBoard(this)">
+				<!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
+				<input type="hidden" th:if="*{bbscttNo != null and bbscttNo > 0}" th:field="*{bbscttNo}" />
+				<input type="hidden" th:field="*{bbscttWrter}" />
+
+				<div class="form-group">
+					<label for="bbscttSj" class="col-sm-2 control-label">제목</label>
+					<div class="col-sm-10">
+						<input type="text" th:field="*{bbscttSj}" class="form-control" placeholder="제목을 입력해 주세요." />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="btnMap" class="col-sm-2 control-label">장소등록</label>
+					<div class="col-sm-10">
+						<button id="btnMap" type="button" class="btn btn-primary waves-effect waves-light">장소등록</button>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>
+					<div class="col-sm-10">
+						<input type="text" th:field="*{bbscttWrter}" class="form-control" placeholder="이름을 입력해 주세요." />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="bbscttCn" class="col-sm-2 control-label">내용</label>
+					<div class="col-sm-10">
+						<textarea th:field="*{bbscttCn}" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="bbscttGrade" class="col-sm-2 control-label">평점</label>
+						<fieldset>
+							<input type="radio" name="bbscttGrade" value="5" id="rate1"><label for="rate1" class="grade">⭐</label>
+							<input type="radio" name="bbscttGrade" value="4" id="rate2"><label for="rate2" class="grade">⭐</label>
+							<input type="radio" name="bbscttGrade" value="3" id="rate3"><label for="rate3" class="grade">⭐</label>
+							<input type="radio" name="bbscttGrade" value="2" id="rate4"><label for="rate4" class="grade">⭐</label>
+							<input type="radio" name="bbscttGrade" value="1" id="rate5"><label for="rate5" class="grade">⭐</label>
+						</fieldset>
+				</div>
+
+<!--				<form action="#" method="post" id="tag-form">-->
+					<div class="form-group hash-tag">
+						<label for="rdTag" class="col-sm-2 control-label"></label>
+						<ul id="tag-list"></ul>
+						<div class="col-sm-10">
+							<input type="hidden" id="rdTag" name="bbscttHashtag" value="" />
+
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="bbscttHashtag" class="col-sm-2 control-label">해시태그</label>
+						<div class="col-sm-10">
+							<input type="text" id="tag" th:field="*{bbscttHashtag}" class="form-control" placeholder="엔터로 해시태그를 등록해주세요." />
+						</div>
+					</div>
+
+<!--				</form>-->
+
+				<div class="btn_wrap text-center">
+					<a th:href="@{/board/list.do}" class="btn btn-default waves-effect waves-light">뒤로가기</a>
+					<button type="submit" class="btn btn-primary waves-effect waves-light">저장하기</button>
+				</div>
+			</form>
+		</div>
+		<!-- /.card-content -->
+	</th:block>
+
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+
+			/* summernote 에디터 불러오기 시작 */
+			$('#bbscttCn').summernote({
+				// 에디터 높이
+				height: 300,
+				// 에디터 한글 설정
+				lang: "ko-KR",
+				// 에디터에 커서 이동 (input창의 autofocus라고 생각)
+				focus : true,
+				toolbar: [
+					// 글꼴 설정
+					['fontname', ['fontname']],
+					// 글자 크기 설정
+					['fontsize', ['fontsize']],
+					// 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
+					['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
+					// 글자색
+					['color', ['forecolor','color']],
+					// 표만들기
+					['table', ['table']],
+					// 글머리 기호, 번호매기기, 문단정렬
+					['para', ['ul', 'ol', 'paragraph']],
+					// 줄간격
+					['height', ['height']],
+					// 그림첨부, 링크만들기, 동영상첨부
+					['insert',['picture','link','video']],
+					// 코드보기, 확대해서보기, 도움말
+					['view', ['codeview','fullscreen', 'help']]
+				],
+				// 추가한 글꼴
+				fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
+				// 추가한 폰트사이즈
+				fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72']
+			});
+			/* summernote 에디터 불러오기 끝 */
+
+			/* 해시태그 시작 */
+			var tag = {};
+			var counter = 0;
+
+			// 입력한 값을 태그로 생성한다.
+			function addTag (value) {
+				tag[counter] = value;
+				counter++; // del-btn 의 고유 id 가 된다.
+			}
+
+			// tag 안에 있는 값을 array type 으로 만들어서 넘긴다.
+			function marginTag () {
+				return Object.values(tag).filter(function (word) {
+					return word !== "";
+				});
+			}
+
+			// 서버에 제공
+			$("#tag-form").on("submit", function (e) {
+				var value = marginTag(); // return array
+				$("#rdTag").val(value);
+
+				$(this).submit();
+			});
+
+			$("#tag").on("keypress", function (e) {
+				var self = $(this);
+
+				//엔터나 스페이스바 눌렀을때 실행
+				if (e.key === "Enter" || e.keyCode == 32) {
+
+					var tagValue = self.val(); // 값 가져오기
+
+					// 해시태그 값 없으면 실행X
+					if (tagValue !== "") {
+
+						// 같은 태그가 있는지 검사한다. 있다면 해당값이 array 로 return 된다.
+						var result = Object.values(tag).filter(function (word) {
+							return word === tagValue;
+						})
+
+						// 해시태그가 중복되었는지 확인
+						if (result.length == 0) {
+							$("#tag-list").append("<li class='tag-item'>"+tagValue+"<span class='del-btn' idx='"+counter+"'>x</span></li>");
+							addTag(tagValue);
+							self.val("");
+						} else {
+							alert("태그값이 중복됩니다.");
+						}
+					}
+					e.preventDefault(); // SpaceBar 시 빈공간이 생기지 않도록 방지
+				}
+			});
+
+			// 삭제 버튼
+			// 인덱스 검사 후 삭제
+			$(document).on("click", ".del-btn", function (e) {
+				var index = $(this).attr("idx");
+				tag[index] = "";
+				$(this).parent().remove();
+			});
+			/* 해시태그 끝 */
+
+			/* 게시글 등록/수정 validation */
+			function registerBoard(form) {
+				var result = (
+						   isValid(form.title, "제목", null, null)
+						&& isValid(form.writer, "이름", null, null)
+						&& isValid(form.content, "내용", null, null)
+				);
+				
+				if ( result == false ) {
+					return false;
+				}
+			}
+			/* 게시글 등록/수정 validation */
+
+			/*[- end of function -]*/
+
+			/*]]>*/
+		</script>
+	</th:block>
+</html>
