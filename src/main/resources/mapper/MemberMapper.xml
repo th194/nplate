@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netive.nplate.mapper.MemberMapper">
+    <resultMap id="memResult" type="MemberDTO">
+        <result property="id" column="MBER_ID"/>
+        <result property="name" column="MBER_NM"/>
+        <result property="sexCd" column="MBER_SEXDSTN"/>
+        <result property="birthday" column="MBER_BRTHDY"/>
+        <result property="tel" column="MBER_CTTPC"/>
+        <result property="pwd" column="MBER_PASSWORD"/>
+        <result property="email" column="MBER_EMAIL"/>
+        <result property="area" column="MBER_AREA"/>
+        <result property="srbde" column="MBER_SRBDE"/>
+        <result property="nickName" column="MBER_NCNM"/>
+        <result property="profileImg" column="MBER_PROFL_PHOTO"/>
+    </resultMap>
+
+    <select id="listMembers" resultMap="memResult">
+        <![CDATA[
+            select * from NETIVE_PROJECT01_MEMBER
+        ]]>
+    </select>
+
+</mapper>
