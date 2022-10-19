@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="member/layout/basic">
+<th:block layout:fragment="title">
+    <title>회원가입</title>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div class="card-content">
+        <form class="form-horizontal" th:action="@{/member/submit}" method="post">
+
+            <div class="form-group">
+                <label for="id" class="col-sm-2 control-label">ID</label>
+                <div class="col-sm-10">
+                    <input type="text" id="id" name="id" class="form-control" placeholder="아이디를 입력해 주세요." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">이름</label>
+                <div class="col-sm-10">
+                    <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력해 주세요." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="female" class="col-sm-2 control-label">성별</label>
+                <div class="col-sm-10">
+                    <input type="radio" id="female" name="sexCd" value="F" class="form-control" />
+                    <label for="female">여성</label>
+                    <input type="radio" id="male" name="sexCd" value="M" class="form-control"  />
+                    <label for="male">남성</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="birthday" class="col-sm-2 control-label">생일</label>
+                <div class="col-sm-10">
+                    <input type="text" id="birthday" name="birthday" class="form-control" placeholder="생일을 입력해 주세요." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tel" class="col-sm-2 control-label">휴대폰번호</label>
+                <div class="col-sm-10">
+                    <input type="text" id="tel" name="tel" class="form-control" placeholder="휴대폰번호를 입력해 주세요." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pwd" class="col-sm-2 control-label">비밀번호</label>
+                <div class="col-sm-10">
+                    <input type="password" id="pwd" name="pwd" class="form-control" placeholder="비밀번호를 입력해 주세요." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">이메일</label>
+                <div class="col-sm-10">
+                    <input type="text" id="email" name="email" class="form-control" placeholder="이메일 주소를 입력해 주세요." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="area" class="col-sm-2 control-label">지역</label>
+                <div class="col-sm-10">
+                    <select name="area" id="area">
+                        <option value="00">전국</option>
+                        <option value="11">서울</option>
+                        <option value="21">부산</option>
+                        <option value="22">대구</option>
+                        <option value="23">인천</option>
+                        <option value="24">광주</option>
+                        <option value="25">대전</option>
+                        <option value="26">울산</option>
+                        <option value="29">세종</option>
+                        <option value="31">경기도</option>
+                        <option value="32">강원도</option>
+                        <option value="33">충청북도</option>
+                        <option value="34">충청남도</option>
+                        <option value="35">전라북도</option>
+                        <option value="36">전라남도</option>
+                        <option value="37">경상북도</option>
+                        <option value="38">경상남도</option>
+                        <option value="39">제주특별자치시</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="nickName" class="col-sm-2 control-label">닉네임</label>
+                <div class="col-sm-10">
+                    <input type="text" id="nickName" name="nickName" class="form-control" placeholder="닉네임을 입력해 주세요." />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="profileImg" class="col-sm-2 control-label">프로필사진</label>
+                <div class="col-sm-10">
+                    <input type="text" id="profileImg" name="profileImg" class="form-control" placeholder="프로필사진을 입력해 주세요." />
+                </div>
+            </div>
+
+
+            <div class="btn_wrap text-center">
+                <button type="submit" class="btn btn-primary waves-effect waves-light">저장하기</button>
+            </div>
+        </form>
+    </div>
+</th:block>
+
+</html>

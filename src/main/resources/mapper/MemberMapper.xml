@@ -21,4 +21,12 @@
         ]]>
     </select>
 
+    <insert id="registerMember" parameterType="MemberDTO">
+        <![CDATA[
+        INSERT INTO NETIVE_PROJECT01_MEMBER
+        (MBER_ID, MBER_NM, MBER_SEXDSTN, MBER_BRTHDY, MBER_CTTPC, MBER_PASSWORD, MBER_EMAIL, MBER_AREA, MBER_SRBDE, MBER_NCNM, MBER_PROFL_PHOTO)
+        VALUES ( #{id}, #{name}, #{sexCd}, #{birthday}, #{tel}, #{pwd}, #{email}, #{area}, DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, #{profileImg})
+        ]]>
+    </insert>
+
 </mapper>

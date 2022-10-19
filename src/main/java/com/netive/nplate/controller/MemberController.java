@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -15,6 +16,11 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    // 첫페이지
+    @GetMapping("/")
+    public String index() {
+        return "member/index";
+    }
     // 회원목록
     @GetMapping("/list")
     public String list(Model model) {
@@ -23,9 +29,16 @@ public class MemberController {
         return "member/list";
     }
 
-    // 첫페이지
-    @GetMapping("/")
-    public String index() {
+    // 회원가입 페이지
+    @GetMapping("/join")
+    public String join(Model model) {
+        return "member/join";
+    }
+
+    // 회원 등록
+    @PostMapping("/member/submit")
+    public String submit(MemberDTO memberDTO) {
+        memberService.registerMember(memberDTO);
         return "member/index";
     }
 

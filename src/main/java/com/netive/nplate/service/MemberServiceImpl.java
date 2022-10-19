@@ -24,4 +24,11 @@ public class MemberServiceImpl implements MemberService {
         }
         return memberList;
     }
+
+    @Override
+    public boolean registerMember(MemberDTO dto) {
+        int result = 0;
+        result = memberMapper.registerMember(dto);
+        return result == 1;
+    }
 }

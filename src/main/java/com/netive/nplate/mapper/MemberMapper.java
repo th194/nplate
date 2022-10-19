@@ -8,5 +8,9 @@ import java.util.List;
 @Mapper
 public interface MemberMapper {
 
+    // 회원 목록
     List<MemberDTO> listMembers();
+
+    // 회원 등록
+    int registerMember(MemberDTO dto);
 }
