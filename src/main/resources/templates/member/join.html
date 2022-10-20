@@ -6,7 +6,7 @@
 
 <th:block layout:fragment="content">
     <div class="card-content">
-        <form class="form-horizontal" th:action="@{/member/submit}" method="post">
+        <form class="form-horizontal" th:action="@{/member/submit}" method="post" enctype="multipart/form-data">
 
             <div class="form-group">
                 <label for="id" class="col-sm-2 control-label">ID</label>
@@ -94,9 +94,9 @@
             </div>
 
             <div class="form-group">
-                <label for="profileImg" class="col-sm-2 control-label">프로필사진</label>
+                <label for="file" class="col-sm-2 control-label">프로필사진</label>
                 <div class="col-sm-10">
-                    <input type="text" id="profileImg" name="profileImg" class="form-control" placeholder="프로필사진을 입력해 주세요." />
+                    <input type="file" id="file" name="file" class="form-control" />
                 </div>
             </div>
 
