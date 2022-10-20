@@ -97,11 +97,9 @@
             <div class="form-group">
                 <label for="" class="col-sm-2 control-label">프로필사진</label>
                 <div class="col-sm-10" id="uploadResult">
-<!--                    <img th:src="${memberInfo.profileImg}" />-->
-                    <img th:src=" '/member/info/profile?id=' + ${memberInfo.id} " />
+                    <img th:src=" '/member/info/profile?id=' + ${memberInfo.profileImg} " />
                 </div>
             </div>
-
 
             <div class="btn_wrap text-center">
                 <a th:href="@{/list}">목록으로 돌아가기</a>
