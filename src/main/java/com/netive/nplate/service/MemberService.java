@@ -11,4 +11,7 @@ public interface MemberService {
 
     // 회원 등록
     boolean registerMember(MemberDTO memberDTO);
+
+    // 회원 정보 보기
+    MemberDTO getMemberInfo(String id);
 }

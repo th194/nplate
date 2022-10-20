@@ -17,7 +17,7 @@
 
     <select id="listMembers" resultMap="memResult">
         <![CDATA[
-            select * from NETIVE_PROJECT01_MEMBER
+            select * from NETIVE_PROJECT01_MEMBER order by MBER_SRBDE
         ]]>
     </select>
 
@@ -28,5 +28,11 @@
         VALUES ( #{id}, #{name}, #{sexCd}, #{birthday}, #{tel}, #{pwd}, #{email}, #{area}, DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, #{id})
         ]]>
     </insert>
+
+    <select id="selectMemberById" parameterType="String" resultMap="memResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
+        ]]>
+    </select>
 
 </mapper>

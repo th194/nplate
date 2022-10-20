@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.netive.nplate.mapper.FileMapper">
+    <resultMap id="fileResult" type="FileDTO">
+        <result property="fileId" column="FILE_NO"/>
+        <result property="fileCode" column="FILE_IMAGE_CODE"/>
+        <result property="orgNm" column="FILE_NM"/>
+        <result property="savedNm" column="FILE_NM_TEMP"/>
+        <result property="savedPath" column="FILE_COURS"/>
+    </resultMap>
+
     <insert id="registerFile" parameterType="FileDTO">
         <![CDATA[
         INSERT INTO NETIVE_PROJECT01_FILE_IMAGE (FILE_IMAGE_CODE, FILE_NM, FILE_NM_TEMP, FILE_COURS)
         VALUES ( #{fileCode}, #{orgNm}, #{savedNm}, #{savedPath})
         ]]>
     </insert>
+
+    <select id="selectFileByCd" parameterType="String" resultMap="fileResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_FILE_IMAGE where FILE_IMAGE_CODE = #{cd}
+        ]]>
+    </select>
 
 </mapper>

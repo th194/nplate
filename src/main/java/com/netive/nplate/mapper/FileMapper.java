@@ -7,4 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface FileMapper {
 
     int registerFile(FileDTO dto);
+
+    FileDTO selectFileByCd(String cd);
 }

@@ -49,4 +49,9 @@ public class FileServiceImpl implements FileService {
         // 데이터베이스에 파일 이름 저장
         return fileMapper.registerFile(dto);
     }
+
+    @Override
+    public FileDTO getFileInfo(String id) {
+        return fileMapper.selectFileByCd(id);
+    }
 }
