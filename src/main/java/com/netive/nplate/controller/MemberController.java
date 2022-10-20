@@ -87,4 +87,11 @@ public class MemberController {
         return IOUtils.toByteArray(inputStream);
     }
 
+    // 로그인(세션 작업 추가해야함)
+    @PostMapping("/member/login")
+    public String login(MemberDTO dto, Model model) {
+        MemberDTO memberDTO = memberService.login(dto.getId(), dto.getPwd());
+        model.addAttribute("memberInfo", memberDTO);
+        return "member/login";
+    }
 }

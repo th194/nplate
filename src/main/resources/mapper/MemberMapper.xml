@@ -35,4 +35,9 @@
         ]]>
     </select>
 
+    <select id="login" parameterType="MemberDTO" resultMap="memResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id} and MBER_PASSWORD = #{pwd}
+        ]]>
+    </select>
 </mapper>

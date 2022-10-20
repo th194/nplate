@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="member/layout/basic">
+<th:block layout:fragment="title">
+    <title>로그인완료(임시페이지)</title>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div class="card-content">
+            안녕하세요 <p th:text="${memberInfo.nickName}"></p> 님 로그인 되었습니다.
+    </div>
+</th:block>
+
+</html>

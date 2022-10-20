@@ -36,4 +36,9 @@ public class MemberServiceImpl implements MemberService {
     public MemberDTO getMemberInfo(String id) {
         return memberMapper.selectMemberById(id);
     }
+
+    @Override
+    public MemberDTO login(String id, String pwd) {
+        return memberMapper.login(id, pwd);
+    }
 }

@@ -17,4 +17,7 @@ public interface MemberMapper {
     // 회원 아이디로 조회
     MemberDTO selectMemberById(String id);
 
+    // 로그인
+    MemberDTO login(String id, String pwd);
+
 }
