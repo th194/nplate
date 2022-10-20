@@ -35,7 +35,7 @@
 				<div class="form-group">
 					<label for="bbscttCn" class="col-sm-2 control-label">내용</label>
 					<div class="col-sm-10">
-						<textarea th:field="*{bbscttCn}" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
+						<textarea id="bbscttCn" th:field="*{bbscttCn}" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
 					</div>
 					<input type="hidden" th:field="*{bbscttImage}" />
 				</div>
@@ -72,7 +72,7 @@
 
 				<div class="btn_wrap text-center">
 					<a th:href="@{/board/list.do}" class="btn btn-default waves-effect waves-light">뒤로가기</a>
-					<button type="submit" class="btn btn-primary waves-effect waves-light">저장하기</button>
+					<button type="button" onclick="javascript:submitPost()" class="btn btn-primary waves-effect waves-light">저장하기</button>
 				</div>
 			</form>
 		</div>
@@ -84,19 +84,52 @@
 			/*<![CDATA[*/
 
 			/* smartEditor */
-			var oEditor = [];
+			var oEditors = [];
 
 			smartEditor = function() {
 				console.log("naver SamrtEditor");
 				nhn.husky.EZCreator.createInIFrame({
-					oAppRef : oEditor,
-					elPlaceHolder : 'editorTxt',
+					oAppRef : oEditors,
+					elPlaceHolder : 'bbscttCn',
 					sSkinURI: '/smarteditor/SmartEditor2Skin.html',
 					fCreator: 'createSEditor2'
 				});
 			}
 			smartEditor();
 			/* smartEditor */
+
+			function submitPost() {
+				oEditors.getById['bbscttCn'].exec('UPDATE_CONTENTS_FIELD', []);
+				var content = document.getElementById('bbscttCn').value;
+				console.log(content);
+
+				if(content == '') {
+					alert('내용을 입력해주세요');
+					oEditors.getById['bbscttCn'].exec('FOCUS');
+					return;
+				} else {
+					var post = {
+						bbscttSj : $('#bbscttSj')[0].value,
+						bbscttCn : content
+					}
+
+					$.ajax({
+						url : '/board/register.do',
+						data : post,
+						success : function(data) {
+							console.log('success data > ', JSON.stringify(data));
+							alert('저장');
+						},
+						error : function(err) {
+							console.log('err data > ', JSON.stringify(err));
+						}
+					})
+				}
+			}
+
+
+
+
 
 			/* 해시태그 시작 */
 			var tag = {};
