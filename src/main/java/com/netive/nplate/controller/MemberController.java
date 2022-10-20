@@ -1,5 +1,6 @@
 package com.netive.nplate.controller;
 
+import com.netive.nplate.domain.Area;
 import com.netive.nplate.domain.FileDTO;
 import com.netive.nplate.domain.MemberDTO;
 import com.netive.nplate.service.FileService;
@@ -76,6 +77,7 @@ public class MemberController {
 
         memberDTO.setProfileImg(fileDTO.getSavedPath());
         model.addAttribute("memberInfo", memberDTO);
+        model.addAttribute("area", Area.values());
         return "member/info";
     }
 
