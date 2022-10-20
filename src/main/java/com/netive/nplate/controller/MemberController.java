@@ -82,8 +82,10 @@ public class MemberController {
 
     // 이미지 처리(컨트롤러 분리해야함)
     @GetMapping(value="/member/info/profile",  produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody byte[] getProfileImage(String url) throws IOException {
-        InputStream inputStream = Files.newInputStream(Paths.get(url));
+    public @ResponseBody byte[] getProfileImage(String id) throws IOException {
+        FileDTO fileDTO = fileService.getFileInfo(id);
+        String res = fileDTO.getSavedPath();
+        InputStream inputStream = Files.newInputStream(Paths.get(res));
         return IOUtils.toByteArray(inputStream);
     }
 
