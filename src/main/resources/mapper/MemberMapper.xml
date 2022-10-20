@@ -40,4 +40,11 @@
         select * from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id} and MBER_PASSWORD = #{pwd}
         ]]>
     </select>
+
+    <delete id="deleteMember" parameterType="String">
+        <![CDATA[
+        delete from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
+        ]]>
+    </delete>
+
 </mapper>

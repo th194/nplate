@@ -20,4 +20,7 @@ public interface MemberMapper {
     // 로그인
     MemberDTO login(String id, String pwd);
 
+    // 회원탈퇴
+    int deleteMember(String id);
+
 }

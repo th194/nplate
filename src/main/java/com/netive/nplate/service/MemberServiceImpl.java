@@ -41,4 +41,9 @@ public class MemberServiceImpl implements MemberService {
     public MemberDTO login(String id, String pwd) {
         return memberMapper.login(id, pwd);
     }
+
+    @Override
+    public boolean deleteMember(String id) {
+        return memberMapper.deleteMember(id) == 1;
+    }
 }

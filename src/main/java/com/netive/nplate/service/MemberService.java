@@ -17,4 +17,7 @@ public interface MemberService {
 
     // 로그인
     MemberDTO login(String id, String pwd);
+
+    // 회원 탈퇴
+    boolean deleteMember(String id);
 }

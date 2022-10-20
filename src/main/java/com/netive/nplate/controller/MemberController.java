@@ -94,4 +94,11 @@ public class MemberController {
         model.addAttribute("memberInfo", memberDTO);
         return "member/login";
     }
+
+    // 회원삭제
+    @GetMapping("/member/delete")
+    public String delete(String id, Model model) {
+        memberService.deleteMember(id);
+        return "redirect:/list";
+    }
 }

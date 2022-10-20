@@ -15,6 +15,7 @@
                 <th>이메일</th>
                 <th>닉네임</th>
                 <th>회원정보보기</th>
+                <th>삭제</th>
             </tr>
             </thead>
             <tbody>
@@ -25,6 +26,7 @@
                 <td th:text="${list.email}"></td>
                 <td th:text="${list.nickName}"></td>
                 <td><a th:href=" '/member/info?id=' + ${list.id}">보기</a></td>
+                <td><a th:href=" '/member/delete?id=' + ${list.id}">삭제</a></td>
             </tr>
             <tr th:unless="${not #lists.isEmpty( memberList )}">
                 <td colspan="5">조회된 결과가 없습니다.</td>
