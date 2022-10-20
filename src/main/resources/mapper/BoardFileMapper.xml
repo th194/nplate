@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netive.nplate.mapper.BoardFileMapper">
+	<sql id="boardFileColumns">
+		FILE_NO,
+		FILE_IMAGE_CODE,
+		FILE_NM,
+		FILE_NM_TEMP,
+		FILE_COURS
+	</sql>
+
+	<insert id="insertFile">
+		INSERT INTO NETIVE_PROJECT01_IMAGE_FILE
+			<include refid="boardFileColumns"/>
+		VALUES (
+		#{fileNo},
+		#{fileImageCode},
+		#{fileNm},
+		#{fileNmTemp},
+		#{fileCours}
+		)
+	</insert>
+
+	<delete id="deleteFile">
+		DELETE FROM NETIVE_PROJECT01_IMAGE_FILE WHERE FILE_NO = #{fileNo}
+	</delete>
+
+	<select id="findByBno" resultType="BoardFileDTO">
+		SELECT * FROM NETIVE_PROJECT01_IMAGE_FILE WHERE FILE_IMAGE_CODE = #{fileImageCode}
+	</select>
+
+</mapper>

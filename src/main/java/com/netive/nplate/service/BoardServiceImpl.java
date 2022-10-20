@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.mapper.BoardMapper;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -61,6 +62,12 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public boolean cntPlus(Long idx) {
 		return boardMapper.cntPlus(idx);
+	}
+
+	// summernote Img 불러오기
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/summernoteImage/**").addResourceLocations("file:///C:/sumernote_img_temp");
 	}
 
 }

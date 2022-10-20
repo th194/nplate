@@ -20,25 +20,26 @@
 
 	<insert id="insertBoard" parameterType="BoardDTO">
 		INSERT INTO NETIVE_PROJECT01_BOARD(
-		<include refid="boardColumns" />
+			BBSCTT_SJ,
+			BBSCTT_CN,
+			BBSCTT_WRTER,
+			BBSCTT_IMAGE,
+			BBSCTT_GRADE,
+			BBSCTT_STORE,
+			BBSCTT_CCH_LA,
+			BBSCTT_CCH_LO
 		) VALUES (
-		 #{bbscttNo}
-		,#{bbscttSj}
-		,#{bbscttCn}
-		,#{bbscttWrter}
-		,NOW()
-		,NULL
-		,0
-		,0
-		,NULL
-		,5
-		,#{bbscttStore}
-		,?
-		,33.450701
-		,126.570667
+		#{bbscttSj},
+		#{bbscttCn},
+		"netive",
+		#{bbscttImage},
+		5,
+		"맛집",
+		33.450701,
+		126.570667
 		)
 	</insert>
-	
+
 <!--	<select id="selectBoardDetail" parameterType="long" resultType="BoardDTO">-->
 <!--		SELECT -->
 <!--			<include refid="boardColumns"/>-->

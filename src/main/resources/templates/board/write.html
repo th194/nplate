@@ -6,10 +6,10 @@
 
 	<th:block layout:fragment="content">
 		<div class="card-content">
-			<form class="form-horizontal form-grade" th:action="@{/board/register.do}" th:object="${board}" method="post" onsubmit="registerBoard(this)">
+			<form class="form-horizontal form-grade" th:action="@{/board/register.do}" th:object="${board}" method="post">
 				<!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
-				<input type="hidden" th:if="*{bbscttNo != null and bbscttNo > 0}" th:field="*{bbscttNo}" />
-				<input type="hidden" th:field="*{bbscttWrter}" />
+<!--				<input type="hidden" th:if="*{bbscttNo != null and bbscttNo > 0}" th:field="*{bbscttNo}" />-->
+<!--				<input type="hidden" th:field="*{bbscttWrter}" />-->
 
 				<div class="form-group">
 					<label for="bbscttSj" class="col-sm-2 control-label">제목</label>
@@ -25,18 +25,19 @@
 					</div>
 				</div>
 
-				<div class="form-group">
-					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>
-					<div class="col-sm-10">
-						<input type="text" th:field="*{bbscttWrter}" class="form-control" placeholder="이름을 입력해 주세요." />
-					</div>
-				</div>
+<!--				<div class="form-group">-->
+<!--					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>-->
+<!--					<div class="col-sm-10">-->
+<!--						<input type="text" th:field="*{bbscttWrter}" class="form-control" placeholder="이름을 입력해 주세요." />-->
+<!--					</div>-->
+<!--				</div>-->
 
 				<div class="form-group">
 					<label for="bbscttCn" class="col-sm-2 control-label">내용</label>
 					<div class="col-sm-10">
 						<textarea th:field="*{bbscttCn}" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
 					</div>
+					<input type="hidden" th:field="*{bbscttImage}" />
 				</div>
 
 				<div class="form-group">
@@ -52,18 +53,18 @@
 
 <!--				<form action="#" method="post" id="tag-form">-->
 					<div class="form-group hash-tag">
-						<label for="rdTag" class="col-sm-2 control-label"></label>
+						<label for="bbscttHashtag" class="col-sm-2 control-label"></label>
 						<ul id="tag-list"></ul>
 						<div class="col-sm-10">
-							<input type="hidden" id="rdTag" name="bbscttHashtag" value="" />
+							<input type="hidden" id="bbscttHashtag" name="bbscttHashtag" value="" />
 
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="bbscttHashtag" class="col-sm-2 control-label">해시태그</label>
+						<label for="tag" class="col-sm-2 control-label">해시태그</label>
 						<div class="col-sm-10">
-							<input type="text" id="tag" th:field="*{bbscttHashtag}" class="form-control" placeholder="엔터로 해시태그를 등록해주세요." />
+							<input type="text" id="tag" class="form-control" placeholder="엔터로 해시태그를 등록해주세요." />
 						</div>
 					</div>
 
@@ -82,40 +83,20 @@
 		<script th:inline="javascript">
 			/*<![CDATA[*/
 
-			/* summernote 에디터 불러오기 시작 */
-			$('#bbscttCn').summernote({
-				// 에디터 높이
-				height: 300,
-				// 에디터 한글 설정
-				lang: "ko-KR",
-				// 에디터에 커서 이동 (input창의 autofocus라고 생각)
-				focus : true,
-				toolbar: [
-					// 글꼴 설정
-					['fontname', ['fontname']],
-					// 글자 크기 설정
-					['fontsize', ['fontsize']],
-					// 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
-					['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
-					// 글자색
-					['color', ['forecolor','color']],
-					// 표만들기
-					['table', ['table']],
-					// 글머리 기호, 번호매기기, 문단정렬
-					['para', ['ul', 'ol', 'paragraph']],
-					// 줄간격
-					['height', ['height']],
-					// 그림첨부, 링크만들기, 동영상첨부
-					['insert',['picture','link','video']],
-					// 코드보기, 확대해서보기, 도움말
-					['view', ['codeview','fullscreen', 'help']]
-				],
-				// 추가한 글꼴
-				fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
-				// 추가한 폰트사이즈
-				fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72']
-			});
-			/* summernote 에디터 불러오기 끝 */
+			/* smartEditor */
+			var oEditor = [];
+
+			smartEditor = function() {
+				console.log("naver SamrtEditor");
+				nhn.husky.EZCreator.createInIFrame({
+					oAppRef : oEditor,
+					elPlaceHolder : 'editorTxt',
+					sSkinURI: '/smarteditor/SmartEditor2Skin.html',
+					fCreator: 'createSEditor2'
+				});
+			}
+			smartEditor();
+			/* smartEditor */
 
 			/* 해시태그 시작 */
 			var tag = {};
@@ -137,7 +118,7 @@
 			// 서버에 제공
 			$("#tag-form").on("submit", function (e) {
 				var value = marginTag(); // return array
-				$("#rdTag").val(value);
+				$("#bbscttHashtag").val(value);
 
 				$(this).submit();
 			});
@@ -180,17 +161,10 @@
 			});
 			/* 해시태그 끝 */
 
+
+
 			/* 게시글 등록/수정 validation */
 			function registerBoard(form) {
-				var result = (
-						   isValid(form.title, "제목", null, null)
-						&& isValid(form.writer, "이름", null, null)
-						&& isValid(form.content, "내용", null, null)
-				);
-				
-				if ( result == false ) {
-					return false;
-				}
 			}
 			/* 게시글 등록/수정 validation */
 
