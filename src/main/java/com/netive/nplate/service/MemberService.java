@@ -10,7 +10,7 @@ public interface MemberService {
     List<MemberDTO> getMemberList();
 
     // 회원 등록
-    boolean registerMember(MemberDTO memberDTO);
+    int registerMember(MemberDTO memberDTO);
 
     // 회원 정보 보기
     MemberDTO getMemberInfo(String id);
@@ -19,7 +19,7 @@ public interface MemberService {
     MemberDTO login(String id, String pwd);
 
     // 회원 탈퇴
-    boolean deleteMember(String id);
+    int deleteMember(String id);
 
     // 회원 정보 수정
     int updateInfo(MemberDTO memberDTO);

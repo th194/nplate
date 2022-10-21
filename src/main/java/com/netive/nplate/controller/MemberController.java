@@ -55,14 +55,22 @@ public class MemberController {
     // 회원 등록
     @PostMapping("/member/submit")
     public String submit(MemberDTO memberDTO, @RequestParam MultipartFile file) throws IOException {
-        fileService.saveFile(file, memberDTO.getId());
-        
-        // 생일 문자열 형식 변경
-        String formatDate = memberDTO.getBirthday().replaceAll("-", "");
-        memberDTO.setBirthday(formatDate);
+        try {
+            // 생일 문자열 형식 변경
+            String formatDate = memberDTO.getBirthday().replaceAll("-", "");
+            memberDTO.setBirthday(formatDate);
 
-        memberService.registerMember(memberDTO);
-        return "member/index";
+            int result = memberService.registerMember(memberDTO);
+            if (result > 0) {
+                fileService.saveFile(file, memberDTO.getId());
+                return "member/index";
+            } else {
+                return "member/error";
+            }
+        } catch (Exception e) {
+            return "member/error";
+        }
+
     }
 
     // 회원 정보

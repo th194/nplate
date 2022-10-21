@@ -16,20 +16,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<MemberDTO> getMemberList() {
-        List<MemberDTO> memberList = Collections.emptyList();
-        // todo count 수정하기
-        int count = 1;
-        if (count > 0) {
-            memberList = memberMapper.listMembers();
-        }
+        List<MemberDTO> memberList;
+        memberList = memberMapper.listMembers();
         return memberList;
     }
 
     @Override
-    public boolean registerMember(MemberDTO dto) {
-        int result = 0;
-        result = memberMapper.registerMember(dto);
-        return result == 1;
+    public int registerMember(MemberDTO dto) {
+        return memberMapper.registerMember(dto);
     }
 
     @Override
@@ -43,8 +37,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean deleteMember(String id) {
-        return memberMapper.deleteMember(id) == 1;
+    public int deleteMember(String id) {
+        return memberMapper.deleteMember(id);
     }
 
     @Override
