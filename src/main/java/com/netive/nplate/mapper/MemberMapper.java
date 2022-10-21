@@ -23,4 +23,7 @@ public interface MemberMapper {
     // 회원탈퇴
     int deleteMember(String id);
 
+    // 회원정보 수정
+    int updateInfo(MemberDTO dto);
+
 }

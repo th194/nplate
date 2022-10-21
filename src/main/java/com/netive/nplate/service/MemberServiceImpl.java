@@ -46,4 +46,9 @@ public class MemberServiceImpl implements MemberService {
     public boolean deleteMember(String id) {
         return memberMapper.deleteMember(id) == 1;
     }
+
+    @Override
+    public int updateInfo(MemberDTO memberDTO) {
+        return memberMapper.updateInfo(memberDTO);
+    }
 }

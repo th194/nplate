@@ -125,4 +125,21 @@ public class MemberController {
         return "member/updateForm";
     }
 
+    // 회원 정보 수정
+    @PostMapping("/member/update")
+    public String update(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
+
+        // 프로필 사진 수정
+//        fileService.saveFile(file, memberDTO.getId());
+
+        // 그 외 정보 수정
+        memberService.updateInfo(memberDTO);
+        /*
+        // info 띄우기 위한 처리
+        model.addAttribute("memberInfo", memberDTO);
+        model.addAttribute("area", Area.values());
+        */
+        return "redirect:/list";
+    }
+
 }

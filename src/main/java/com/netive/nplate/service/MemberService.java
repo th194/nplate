@@ -20,4 +20,7 @@ public interface MemberService {
 
     // 회원 탈퇴
     boolean deleteMember(String id);
+
+    // 회원 정보 수정
+    int updateInfo(MemberDTO memberDTO);
 }
