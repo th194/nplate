@@ -11,4 +11,6 @@ public interface FileMapper {
     FileDTO selectFileByCd(String cd);
 
     int updateFile(FileDTO dto);
+
+    int deleteFile(String cd);
 }

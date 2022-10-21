@@ -30,4 +30,10 @@
         ]]>
     </update>
 
+    <delete id="deleteFile" parameterType="String">
+        <![CDATA[
+        delete from NETIVE_PROJECT01_FILE_IMAGE where FILE_IMAGE_CODE = #{cd}
+        ]]>
+    </delete>
+
 </mapper>

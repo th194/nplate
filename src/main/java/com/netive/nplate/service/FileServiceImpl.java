@@ -83,4 +83,13 @@ public class FileServiceImpl implements FileService {
         // 데이터베이스에 파일 정보 수정
         return fileMapper.updateFile(dto);
     }
+
+    @Override
+    public int deleteFile(String id) throws IOException {
+        // 파일 폴더에서 삭제
+        FileDTO savedFile = fileMapper.selectFileByCd(id);
+        Path savedFilePath = Paths.get(savedFile.getSavedPath());
+        Files.delete(savedFilePath);
+        return fileMapper.deleteFile(id);
+    }
 }

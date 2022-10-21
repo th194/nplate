@@ -14,4 +14,7 @@ public interface FileService {
 
     // 프로필 이미지 수정
     int updateFile(MultipartFile file, String id) throws IOException;
+
+    // 프로필 이미지 삭제
+    int deleteFile(String id) throws IOException;
 }

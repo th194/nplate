@@ -102,8 +102,13 @@ public class MemberController {
 
     // 회원삭제
     @GetMapping("/member/delete")
-    public String delete(String id, Model model) {
+    public String delete(String id, Model model) throws IOException {
+        // 회원 DB 삭제처리
         memberService.deleteMember(id);
+
+        // 프로필 사진 파일 및 DB 삭제
+        fileService.deleteFile(id);
+
         return "redirect:/list";
     }
 
