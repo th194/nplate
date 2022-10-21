@@ -51,7 +51,6 @@
 						</fieldset>
 				</div>
 
-<!--				<form action="#" method="post" id="tag-form">-->
 					<div class="form-group hash-tag">
 						<label for="bbscttHashtag" class="col-sm-2 control-label"></label>
 						<ul id="tag-list"></ul>
@@ -68,11 +67,9 @@
 						</div>
 					</div>
 
-<!--				</form>-->
-
 				<div class="btn_wrap text-center">
 					<a th:href="@{/board/list.do}" class="btn btn-default waves-effect waves-light">뒤로가기</a>
-					<button type="button" onclick="javascript:submitPost()" class="btn btn-primary waves-effect waves-light">저장하기</button>
+					<button type="button" th:onclick="submitPost()" class="btn btn-primary waves-effect waves-light">저장하기</button>
 				</div>
 			</form>
 		</div>
@@ -108,20 +105,38 @@
 					oEditors.getById['bbscttCn'].exec('FOCUS');
 					return;
 				} else {
+
+
+					var file = document.getElementsByTagName('img');
+					for(var i=0; i < file.length; i++) {
+						var imgs = file.item(i);
+						console.log('imgs '+i+' 명 = '+imgs);
+					}
+
+					var bbscttHashTag = marginTag();
+					$('#bbscttHashtag').val(bbscttHashTag);
+
+
 					var post = {
 						bbscttSj : $('#bbscttSj')[0].value,
-						bbscttCn : content
+						bbscttCn : content,
+						bbscttImage : 'sendFile',
+						bbscttGrade : $('input[name=bbscttGrade]').val(),
+						bbscttHashtag : $('#bbscttHashtag').val()
 					}
 
 					$.ajax({
 						url : '/board/register.do',
 						data : post,
+						method : 'POST',
 						success : function(data) {
 							console.log('success data > ', JSON.stringify(data));
 							alert('저장');
+							// location.href = '/board/list.do';
 						},
 						error : function(err) {
 							console.log('err data > ', JSON.stringify(err));
+							alert('실패');
 						}
 					})
 				}
@@ -147,14 +162,6 @@
 					return word !== "";
 				});
 			}
-
-			// 서버에 제공
-			$("#tag-form").on("submit", function (e) {
-				var value = marginTag(); // return array
-				$("#bbscttHashtag").val(value);
-
-				$(this).submit();
-			});
 
 			$("#tag").on("keypress", function (e) {
 				var self = $(this);

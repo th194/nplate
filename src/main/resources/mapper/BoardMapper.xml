@@ -26,6 +26,7 @@
 			BBSCTT_IMAGE,
 			BBSCTT_GRADE,
 			BBSCTT_STORE,
+			BBSCTT_HASHTAG,
 			BBSCTT_CCH_LA,
 			BBSCTT_CCH_LO
 		) VALUES (
@@ -33,23 +34,22 @@
 		#{bbscttCn},
 		"netive",
 		#{bbscttImage},
-		5,
+		#{bbscttGrade},
 		"맛집",
+		IFNULL(#{bbscttHashtag}, ''),
 		33.450701,
 		126.570667
 		)
 	</insert>
 
-<!--	<select id="selectBoardDetail" parameterType="long" resultType="BoardDTO">-->
-<!--		SELECT -->
-<!--			<include refid="boardColumns"/>-->
-<!--		FROM-->
-<!--			tb_board-->
-<!--		WHERE-->
-<!--			delete_yn = 'N'-->
-<!--		AND-->
-<!--			idx = #{idx}		-->
-<!--	</select>-->
+	<select id="selectBoardDetail" parameterType="long" resultType="BoardDTO">
+		SELECT
+			<include refid="boardColumns"/>
+		FROM
+			NETIVE_PROJECT01_BOARD
+		WHERE
+		BBSCTT_NO = #{bbscttNo}
+	</select>
 	
 <!--	<update id="updateBoard" parameterType="BoardDTO">-->
 <!--		UPDATE tb_board-->
@@ -80,8 +80,8 @@
 			NETIVE_PROJECT01_BOARD
 -- 		WHERE
 -- 			BBSCTT_WRTER ='netive'
--- 		ORDER BY
--- 			BBSCTT_NO DESC
+		ORDER BY
+			BBSCTT_NO DESC
 	</select>
 	
 	<select id ="selectBoardTotalCount" parameterType="BoardDTO" resultType="int">

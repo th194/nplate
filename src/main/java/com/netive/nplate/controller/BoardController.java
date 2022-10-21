@@ -1,28 +1,18 @@
 package com.netive.nplate.controller;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
-import com.google.gson.JsonObject;
-import com.netive.nplate.service.MemberService;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.service.BoardService;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,19 +61,6 @@ public class BoardController {
 		return "board/list";
 	}
 
-//	@PostMapping("/board/register.do")
-//	public Map<String, Object> openBoardRegisterAll(MultipartHttpServletRequest multipartRequest,
-//													HttpServletResponse response,
-//													@RequestParam Map<String, String> boardDTO,
-//													@RequestParam(value = "file[]") List<String> summerfile) throws Exception{
-//
-//		System.out.println(boardDTO);
-////		boardSerive.registerBoard(boardDTO);
-//		List<BoardDTO> boardList = boardSerive.getBordList();
-////		model.addAttribute("boardList", boardList);
-//
-////		return "board/list";
-//	}
 
 	/**
 	 * 게시글 목록
@@ -146,71 +123,132 @@ public class BoardController {
 	}
 
 
+
 	/**
-	 * 파일업로드
-	 * @param multipartFile
+	 * 스마트 에디터 싱글 파일 업로드
+	 * @param request
+	 * @param smarteditorDTO
 	 * @return
+	 * @throws UnsupportedEncodingException
 	 */
-	@RequestMapping(value="/board/uploadSummernoteImageFile", produces = "application/json; charset=utf8")
-	@ResponseBody
-	public JsonObject uploadSummernoteImageFile(@RequestParam( value = "file") MultipartFile multipartFile) throws IOException{
+//	@PostMapping("/singleImageUploade.do")
+//	public String smarteditorSingleImageUpload(HttpServletRequest request, SmarteditorDTO smarteditorDTO) throws UnsupportedEncodingException {
+//
+//
+//		System.out.println("request >>>>>>>>>>>>>>>>>>>>>>>>>>> " + request);
+//		System.out.println("smarteditorDTO >>>>>>>>>>>>>>>>>>>>>>>>> " + smarteditorDTO);
+//
+//		String callback = smarteditorDTO.getCallback();
+//		String callback_func = smarteditorDTO.getCallback_func();
+//		String file_result = "";
+//		String result = "";
+//		MultipartFile multiFile = smarteditorDTO.getFiledata();
+//
+//		try {
+//			if(multiFile != null && multiFile.getSize() > 0 && StringUtils.isNotBlank(multiFile.getName())) {
+//				if(multiFile.getContentType().toLowerCase().startsWith("image/")) {
+//					String oriName = multiFile.getName();
+//					String uploadPath = request.getServletContext().getRealPath("/img");
+//					String path = uploadPath + "/smarteditor/";
+//					File file = new File(path);
+//
+//					if (!file.exists()) {
+//						file.mkdir();
+//					}
+//					String fileName = UUID.randomUUID().toString();
+//					smarteditorDTO.getFiledata().transferTo(new File(path + fileName));
+//					file_result += "&&bNewLine=true&sFileName=" + oriName + "&sFileURL=/img/smarteditor/" + fileName;
+//				} else {
+//					file_result += "&errstr=error";
+//				}
+//			} else {
+//				file_result += "&errstr=error";
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		result = "redirect:" + callback + "?callback_func=" + URLEncoder.encode(callback_func, "UTF-8") + file_result;
+//
+//		System.out.println("result>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + result);
+//		return result;
+//	}
 
-		System.out.println("=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>파일 업로드 시작");
-		JsonObject jsonObject = new JsonObject();
-
-		String fileRoot = "C:/kth/summernote_img_temp/";											// 외부파일 경로
-		String originalFileName = multipartFile.getOriginalFilename();								// 원본 파일명
-		String extension = originalFileName.substring(originalFileName.lastIndexOf("."));		// 파일 확장자
-
-		String savedFileName = UUID.randomUUID() + extension;
-
-		File targetFile = new File(fileRoot + savedFileName);
-
+	/**
+	 * 스마트 에디터 멀티 파일 업로드
+	 * @param request
+	 * @param response
+	 */
+	@PostMapping("/smarteditorMultiImageUpload.do")
+	public void smarteditorMultiImageUpload(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			InputStream fileStream = multipartFile.getInputStream();
-			FileUtils.copyInputStreamToFile(fileStream, targetFile);	// 파일 저장
-			jsonObject.addProperty("url", "summernoteImage/savedFileName="+savedFileName);
-			jsonObject.addProperty("responseCode", "success");
-		} catch (IOException e) {
-			FileUtils.deleteQuietly(targetFile);		// 저장된 파일 삭제
-			jsonObject.addProperty("responseCode", "error");
+			String sFileInfo = "";																		// 파일정보
+			String sFileName = request.getHeader("file-name");									// 파일명 - 일반 원본 파일명
+			String sFileNameExt = sFileName.substring(sFileName.lastIndexOf(".") + 1);		// 파일 확장자
+			sFileNameExt = sFileNameExt.toLowerCase();													// 확장자를 소문자로 변경
+
+			String[] allowFileArr = {"jpg", "png", "bmp", "gif"};										// 이미지 검증 배열 변수
+
+			int nCnt = 0;
+			for (int i = 0; i < allowFileArr.length; i ++) {
+				if(sFileNameExt.equals(allowFileArr[i])) {
+					nCnt ++;
+				}
+			}
+
+			if(nCnt == 0) {
+				PrintWriter print = response.getWriter();
+				print.print("NOTALLOW_"+sFileName);
+				print.flush();
+				print.close();
+			} else {
+				// 디렉토리 설정 및 업로드
+				// 파일경로
+				String filePath = "C:/kth/images/";
+				File file = new File(filePath);
+
+				if(!file.exists()) {
+					file.mkdir();
+				}
+
+				String sRealFileName = "";
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+				String today = formatter.format(new Date());
+				sRealFileName = today + UUID.randomUUID().toString() + sFileName.substring(sFileName.lastIndexOf("."));
+				String realFileName = filePath + sRealFileName;
+
+				// 서버에 파일 쓰기
+				InputStream inputStream = request.getInputStream();
+				OutputStream outputStream = new FileOutputStream(realFileName);
+				int numRead;
+				byte bytes[] = new byte[Integer.parseInt(request.getHeader("file-size"))];
+				while((numRead = inputStream.read(bytes, 0, bytes.length)) != -1) {
+					outputStream.write(bytes, 0, numRead);
+				}
+				if(inputStream != null) {
+					inputStream.close();
+				}
+				outputStream.flush();
+				outputStream.close();
+
+				///////////////////// 이미지 /////////////////////////
+				// 정보 출력
+				sFileInfo += "&bNewLine=true";
+				// img 태그의 title 속성을 원본파일명으로 적용시켜주기 위함
+				sFileInfo += "&sFileName=" + sFileName;
+				sFileInfo += "&sFileURL=" + filePath + sRealFileName;
+
+				System.out.println("sFileInfo = " + sFileInfo);
+
+				PrintWriter printWriter = response.getWriter();
+				printWriter.print(sFileInfo);
+				printWriter.flush();
+				printWriter.close();
+			}
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("===========>jsonObj = " + jsonObject);
-		return jsonObject;
 	}
-//	@RequestMapping(value="resources/summerimages", method=RequestMethod.POST)
-//	public ResponseEntity<?> summerimage(@RequestParam("file") MultipartFile img, HttpServletRequest request) throws IOException {
-//		String path = request.getServletContext().getRealPath("localhost:8080/");
-//		Random random = new Random();
-//
-//		long currentTime = System.currentTimeMillis();
-//		int	randomValue = random.nextInt(100);
-//		String fileName = Long.toString(currentTime) + "_"+randomValue+"_a_"+img.getOriginalFilename();
-//
-//		File file = new File(path , fileName);
-//		img.transferTo(file);
-//		return ResponseEntity.ok().body("localhost:8080/"+fileName);
-//
-//	}
 
-//	@RequestMapping(value="/summernoteImage/getImg.do", method = RequestMethod.GET)
-//	public Image getImg(@RequestParam(value="savedFileName") String savedFileName, HttpServletResponse response) throws Exception {
-//		String filePath;
-//		String DIR = "C:/kth/summernote_img_temp/";
-//		filePath = DIR + savedFileName;
-//		Image image = getImg(filePath, response);
-//		System.out.println("=>>>>>>>>>>>>>>>> getImg = " + image);
-//		return image;
-//	}
-//
-//	@RequestMapping(value="/summernoteImage/getImgCopy.do", method=RequestMethod.GET)
-//	public Image getImgCopy(@RequestParam(value="savedFileName") String savedFileName, HttpServletResponse response) throws Exception {
-//		String filePath;
-//		String DIR = "C:/kth/summernote_img/";
-//		filePath = DIR + savedFileName;
-//		Image image = getImg(filePath, response);
-//		System.out.println("=>>>>>>>>>>>>>>>> getImgCopy = " + image);
-//		return image;
-//	}
 }
