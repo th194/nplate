@@ -106,4 +106,23 @@ public class MemberController {
         memberService.deleteMember(id);
         return "redirect:/list";
     }
+
+    // 회원가입 페이지
+    @GetMapping("member/updateForm")
+    public String updateForm(String id, Model model) throws IOException {
+        MemberDTO memberDTO = memberService.getMemberInfo(id);
+        FileDTO fileDTO = fileService.getFileInfo(id);
+
+        // 생일 처리
+        String birthday = memberDTO.getBirthday();
+        String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
+        memberDTO.setBirthday(formatDay);
+
+        memberDTO.setProfileImg(fileDTO.getSavedPath());
+        model.addAttribute("memberInfo", memberDTO);
+        model.addAttribute("area", Area.values());
+
+        return "member/updateForm";
+    }
+
 }
