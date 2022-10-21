@@ -9,4 +9,6 @@ public interface FileMapper {
     int registerFile(FileDTO dto);
 
     FileDTO selectFileByCd(String cd);
+
+    int updateFile(FileDTO dto);
 }

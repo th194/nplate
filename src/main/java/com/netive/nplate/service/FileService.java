@@ -10,5 +10,8 @@ public interface FileService {
     int saveFile(MultipartFile file, String id) throws IOException;
 
     // 파일 찾기
-    FileDTO getFileInfo( String id);
+    FileDTO getFileInfo(String id);
+
+    // 프로필 이미지 수정
+    int updateFile(MultipartFile file, String id) throws IOException;
 }

@@ -130,7 +130,7 @@ public class MemberController {
     public String update(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
 
         // 프로필 사진 수정
-//        fileService.saveFile(file, memberDTO.getId());
+        fileService.updateFile(file, memberDTO.getId());
 
         // 그 외 정보 수정
         memberService.updateInfo(memberDTO);

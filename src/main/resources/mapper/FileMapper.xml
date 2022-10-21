@@ -22,4 +22,12 @@
         ]]>
     </select>
 
+    <update id="updateFile" parameterType="FileDTO">
+        <![CDATA[
+        update NETIVE_PROJECT01_FILE_IMAGE
+        set FILE_NM = #{orgNm}, FILE_NM_TEMP = #{savedNm}, FILE_COURS = #{savedPath}
+        where FILE_IMAGE_CODE = #{fileCode}
+        ]]>
+    </update>
+
 </mapper>

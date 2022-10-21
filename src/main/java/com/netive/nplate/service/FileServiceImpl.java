@@ -8,12 +8,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
 public class FileServiceImpl implements FileService {
 
-    private String fileDir = "E:/test/";
+    private final String fileDir = "E:/test/";
 
     @Autowired
     private FileMapper fileMapper;
@@ -53,5 +56,31 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileDTO getFileInfo(String id) {
         return fileMapper.selectFileByCd(id);
+    }
+
+    @Override
+    public int updateFile(MultipartFile file, String id) throws IOException {
+        if (file.isEmpty()) {
+            return 0;
+        }
+
+        String origName = file.getOriginalFilename();
+        String uuid = UUID.randomUUID().toString();
+        String extension = origName.substring(origName.lastIndexOf("."));
+        String savedName = uuid + extension;
+        String savedPath = fileDir + savedName;
+        FileDTO dto = new FileDTO(id, origName, savedName, savedPath);
+
+        // 로컬에 저장
+        File savedFile = new File(savedName);
+        file.transferTo(savedFile);
+        
+        // 기존 파일 폴더에서 삭제
+        FileDTO oldFile = fileMapper.selectFileByCd(id);
+        Path oldFilePath = Paths.get(oldFile.getSavedPath());
+        Files.delete(oldFilePath);
+
+        // 데이터베이스에 파일 정보 수정
+        return fileMapper.updateFile(dto);
     }
 }
