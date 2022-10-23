@@ -23,7 +23,7 @@
 
 				<div class="form-group">
 					<label for="inp-type-5" class="col-sm-2 control-label">위치</label>
-					<div class="map-size" id="map">내용이 왜 안뜨는 것이야</div>
+					<div class="map-size" id="map"></div>
 				</div>
 
 				<div class="form-group">
@@ -80,7 +80,7 @@
 			}
 
 			var $map = document.getElementById('map');
-			console.log('$map = ' +$map);
+			console.log('$map = ' + JSON.stringify($map));
 			var options = {
 				center : new kakao.maps.LatLng(33.450701, 126.570667),
 				level : 3
@@ -93,5 +93,4 @@
 			/*]]>*/
 		</script>
 	</th:block>
-
 </html>
