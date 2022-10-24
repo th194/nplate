@@ -16,7 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,8 +37,34 @@ public class MemberController {
 
     // 첫페이지
     @GetMapping("/")
-    public String index() {
-        return "member/index";
+    public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession();
+
+        try {
+            // 로그인 되어있으면 -> 피드(임시로 myInfo 지정)
+            // 로그인 되어있지 않으면 -> 로그인 페이지
+            if ((boolean) session.getAttribute("isLogOn")) { // 로그인 되어있으면
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
+
+                // 생일 처리
+                String birthday = memberDTO.getBirthday();
+                if (!birthday.contains("-")) {
+                    String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
+                    memberDTO.setBirthday(formatDay);
+                }
+
+                model.addAttribute("memberInfo", memberDTO);
+                model.addAttribute("area", Area.values());
+                return "member/myInfo";
+            } else {
+                return "member/index";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.invalidate();
+            return "member/index";
+        }
     }
 
     // 회원목록
@@ -84,7 +114,6 @@ public class MemberController {
         String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
         memberDTO.setBirthday(formatDay);
 
-        memberDTO.setProfileImg(fileDTO.getSavedPath());
         model.addAttribute("memberInfo", memberDTO);
         model.addAttribute("area", Area.values());
         return "member/info";
@@ -100,12 +129,23 @@ public class MemberController {
         return IOUtils.toByteArray(inputStream);
     }
 
-    // 로그인(세션 작업 추가해야함)
+    // 로그인
     @PostMapping("/member/login")
-    public String login(MemberDTO dto, Model model) {
+    public String login(MemberDTO dto, Model model, HttpServletRequest request, HttpServletResponse response, RedirectAttributes rAttr) {
         MemberDTO memberDTO = memberService.login(dto.getId(), dto.getPwd());
-        model.addAttribute("memberInfo", memberDTO);
-        return "member/login";
+
+        if(memberDTO != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("member", memberDTO);
+            session.setAttribute("isLogOn", true);
+
+            model.addAttribute("memberInfo", memberDTO);
+            return "member/login";
+
+        } else {
+            rAttr.addAttribute("result", "loginFailed");
+            return "member/error";
+        }
     }
 
     // 회원삭제
@@ -154,5 +194,55 @@ public class MemberController {
         */
         return "redirect:/list";
     }
+
+
+    // 내 정보 보기
+    @GetMapping("/member/myInfo")
+    public String myInfo(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        HttpSession session = request.getSession();
+
+        try {
+            System.out.println("로그인 여부");
+            System.out.println(session.getAttribute("isLogOn"));
+
+            if ((boolean) session.getAttribute("isLogOn")) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
+
+                // 생일 처리
+                String birthday = memberDTO.getBirthday();
+                if (!birthday.contains("-")) {
+                    String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
+                    memberDTO.setBirthday(formatDay);
+                }
+
+                model.addAttribute("memberInfo", memberDTO);
+                model.addAttribute("area", Area.values());
+                return "member/myInfo";
+            } else {
+                return "member/error";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.invalidate();
+            return "redirect:/";
+        }
+
+    }
+
+    // 로그아웃
+    @GetMapping("/member/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
+        /*
+        session.removeAttribute("member");
+        session.setAttribute("isLogOn", false);
+        */
+        session.invalidate();
+
+        return "redirect:/";
+    }
+
 
 }
