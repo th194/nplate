@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
+import com.netive.nplate.domain.BoardFileDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.service.BoardService;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,15 +54,22 @@ public class BoardController {
 	 * @return
 	 */
 	@PostMapping("/board/register.do")
-	public String openBoardRegister(BoardDTO boardDTO, Model model) {
-		System.out.println(boardDTO);
+	public String openBoardRegister(BoardDTO boardDTO, Model model, MultipartFile[] files, HttpServletRequest request) {
+
+		String imgSrc = boardDTO.getBbscttCn();
+		System.out.println(imgSrc);
+
+//		List<BoardFileDTO> fileList =
+
+		String path = request.getSession().getServletContext().getRealPath("/img");
+
+
 		boardSerive.registerBoard(boardDTO);
 		List<BoardDTO> boardList = boardSerive.getBordList();
 		model.addAttribute("boardList", boardList);
-		
+
 		return "board/list";
 	}
-
 
 	/**
 	 * 게시글 목록
@@ -204,18 +213,21 @@ public class BoardController {
 			} else {
 				// 디렉토리 설정 및 업로드
 				// 파일경로
-				String filePath = "C:/kth/images/";
-				File file = new File(filePath);
+				String defaultPath = request.getSession().getServletContext().getRealPath("/");
+				String path = defaultPath + "img" + File.separator;
+
+				File file = new File(path);
 
 				if(!file.exists()) {
 					file.mkdir();
 				}
+				System.out.println("path >>>>>>>>>>>>>>> " + path);
 
 				String sRealFileName = "";
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 				String today = formatter.format(new Date());
 				sRealFileName = today + UUID.randomUUID().toString() + sFileName.substring(sFileName.lastIndexOf("."));
-				String realFileName = filePath + sRealFileName;
+				String realFileName = path + sRealFileName;
 
 				// 서버에 파일 쓰기
 				InputStream inputStream = request.getInputStream();
@@ -236,7 +248,7 @@ public class BoardController {
 				sFileInfo += "&bNewLine=true";
 				// img 태그의 title 속성을 원본파일명으로 적용시켜주기 위함
 				sFileInfo += "&sFileName=" + sFileName;
-				sFileInfo += "&sFileURL=" + filePath + sRealFileName;
+				sFileInfo += "&sFileURL=/img/" + sRealFileName;
 
 				System.out.println("sFileInfo = " + sFileInfo);
 
