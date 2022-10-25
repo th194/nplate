@@ -37,8 +37,8 @@
 		#{bbscttGrade},
 		"맛집",
 		IFNULL(#{bbscttHashtag}, ''),
-		33.450701,
-		126.570667
+		#{bbscttCchLa},
+		#{bbscttCchLo}
 		)
 	</insert>
 

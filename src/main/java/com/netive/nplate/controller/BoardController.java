@@ -251,4 +251,11 @@ public class BoardController {
 		}
 	}
 
+	/**
+	 * 지도 팝업 추가
+	 */
+	@GetMapping("/board/mapPopup")
+	public String openmapPopup() {
+		return "board/mapPopup";
+	}
 }

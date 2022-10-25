@@ -21,7 +21,8 @@
 				<div class="form-group">
 					<label for="btnMap" class="col-sm-2 control-label">장소등록</label>
 					<div class="col-sm-10">
-						<button id="btnMap" type="button" class="btn btn-primary waves-effect waves-light">장소등록</button>
+						<button id="btnMap" type="button" class="btn btn-primary waves-effect waves-light" onclick="openPopup()">장소등록</button>
+						<div id="map" style="width:100%;height:350px;display: none"></div>
 					</div>
 				</div>
 
@@ -122,7 +123,9 @@
 						bbscttCn : content,
 						bbscttImage : 'sendFile',
 						bbscttGrade : $('input[name=bbscttGrade]').val(),
-						bbscttHashtag : $('#bbscttHashtag').val()
+						bbscttHashtag : $('#bbscttHashtag').val(),
+						bbscttCchLa: $('input[name=bbscttCchLa]').val(),
+						bbscttCchLo: $('input[name=bbscttCchLo]').val()
 					}
 
 					$.ajax({
@@ -207,6 +210,52 @@
 			function registerBoard(form) {
 			}
 			/* 게시글 등록/수정 validation */
+
+
+
+			/* 지도 관련 */
+			function openPopup() {
+				window.open('/board/mapPopup', 'pop', 'width=1000, height=1000, scrollbars=yes');
+			}
+
+			function getMapInfo(lat, lng) {
+				console.log('위도:' + lat + ' / 경도:' + lng);
+
+				var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+						mapOption = {
+							center: new kakao.maps.LatLng(lat, lng), // 지도의 중심좌표
+							level: 2 // 지도의 확대 레벨
+						};
+
+				mapContainer.style.display='block';
+
+				// 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+				var map = new kakao.maps.Map(mapContainer, mapOption);
+
+				// 지도를 클릭한 위치에 표출할 마커입니다
+				var marker = new kakao.maps.Marker({
+					// 지도 중심좌표에 마커를 생성합니다
+					position: map.getCenter()
+				});
+				 // 지도에 마커를 표시합니다
+				marker.setMap(map);
+
+				var latitude = document.createElement('input');
+				var longitude = document.createElement('input');
+
+				latitude.setAttribute('type', 'hidden');
+				latitude.setAttribute('name', 'bbscttCchLa');
+				latitude.setAttribute('value', lat);
+
+				longitude.setAttribute('type', 'hidden');
+				longitude.setAttribute('name', 'bbscttCchLo');
+				longitude.setAttribute('value', lng);
+
+				mapContainer.appendChild(latitude);
+				mapContainer.appendChild(longitude);
+			}
+			/* 지도 관련 */
+
 
 			/*[- end of function -]*/
 
