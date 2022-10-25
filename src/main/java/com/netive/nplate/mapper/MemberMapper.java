@@ -26,4 +26,7 @@ public interface MemberMapper {
     // 회원정보 수정
     int updateInfo(MemberDTO dto);
 
+    // 회원 아이디 중복 조회
+    int checkOverlappedId(String id);
+
 }

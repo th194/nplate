@@ -23,4 +23,7 @@ public interface MemberService {
 
     // 회원 정보 수정
     int updateInfo(MemberDTO memberDTO);
+
+    // 아이디 중복조회
+    int checkOverlappedId(String id);
 }

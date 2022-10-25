@@ -55,4 +55,10 @@
         ]]>
     </update>
 
+    <select id="checkOverlappedId" parameterType="String" resultType="int">
+        <![CDATA[
+        select count(*) from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
+        ]]>
+    </select>
+
 </mapper>

@@ -12,6 +12,7 @@
                 <label for="id" class="col-sm-2 control-label">ID</label>
                 <div class="col-sm-10">
                     <input type="text" id="id" name="id" class="form-control" placeholder="아이디를 입력해 주세요." />
+                    <button type="button" onclick="checkId()">아이디 중복 조회</button>
                 </div>
             </div>
 
@@ -94,6 +95,31 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
+
+        // 아이디 중복체크
+        function checkId() {
+            var _id = $("#id").val();
+
+            $.ajax({
+                type: "get",
+                dataType: "text",
+                async: false,
+                url: "/member/checkOverlappedID",
+                data: { id: _id },
+                success: function (data) {
+                    if (data === 'usable') {
+                        alert("사용할 수 있는 ID입니다.");
+                    } else {
+                        alert("사용할 수 없는 ID입니다.(중복)");
+                    }
+                },
+                error: function () {
+                    console.log("실패");
+                }
+            })
+        }
+
+
         function loadFile(input) {
             var file = input.files[0];	//선택된 파일 가져오기
 
