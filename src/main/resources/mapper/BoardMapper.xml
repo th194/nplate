@@ -32,7 +32,7 @@
 		) VALUES (
 		#{bbscttSj},
 		#{bbscttCn},
-		"netive",
+		#{bbscttWrter},
 		#{bbscttImage},
 		#{bbscttGrade},
 		"맛집",

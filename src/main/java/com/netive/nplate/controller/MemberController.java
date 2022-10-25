@@ -35,37 +35,6 @@ public class MemberController {
     @Autowired
     private FileService fileService;
 
-    // 첫페이지
-    @GetMapping("/")
-    public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
-
-        try {
-            // 로그인 되어있으면 -> 피드(임시로 myInfo 지정)
-            // 로그인 되어있지 않으면 -> 로그인 페이지
-            if ((boolean) session.getAttribute("isLogOn")) { // 로그인 되어있으면
-                MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
-
-                // 생일 처리
-                String birthday = memberDTO.getBirthday();
-                if (!birthday.contains("-")) {
-                    String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
-                    memberDTO.setBirthday(formatDay);
-                }
-
-                model.addAttribute("memberInfo", memberDTO);
-                model.addAttribute("area", Area.values());
-                return "member/myInfo";
-            } else {
-                return "member/index";
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            session.invalidate();
-            return "member/index";
-        }
-    }
 
     // 회원목록
     @GetMapping("/list")
@@ -100,8 +69,8 @@ public class MemberController {
         } catch (Exception e) {
             return "member/error";
         }
-
     }
+
 
     // 회원 정보
     @GetMapping("/member/info")
@@ -129,24 +98,6 @@ public class MemberController {
         return IOUtils.toByteArray(inputStream);
     }
 
-    // 로그인
-    @PostMapping("/member/login")
-    public String login(MemberDTO dto, Model model, HttpServletRequest request, HttpServletResponse response, RedirectAttributes rAttr) {
-        MemberDTO memberDTO = memberService.login(dto.getId(), dto.getPwd());
-
-        if(memberDTO != null) {
-            HttpSession session = request.getSession();
-            session.setAttribute("member", memberDTO);
-            session.setAttribute("isLogOn", true);
-
-            model.addAttribute("memberInfo", memberDTO);
-            return "member/login";
-
-        } else {
-            rAttr.addAttribute("result", "loginFailed");
-            return "member/error";
-        }
-    }
 
     // 회원삭제
     @GetMapping("/member/delete")
@@ -160,7 +111,7 @@ public class MemberController {
         return "redirect:/list";
     }
 
-    // 회원가입 페이지
+    // 회원정보 수정폼
     @GetMapping("member/updateForm")
     public String updateForm(String id, Model model) throws IOException {
         MemberDTO memberDTO = memberService.getMemberInfo(id);
@@ -187,62 +138,8 @@ public class MemberController {
 
         // 그 외 정보 수정
         memberService.updateInfo(memberDTO);
-        /*
-        // info 띄우기 위한 처리
-        model.addAttribute("memberInfo", memberDTO);
-        model.addAttribute("area", Area.values());
-        */
-        return "redirect:/list";
+
+        return "redirect:/list"; // 처리 수정해야함
     }
-
-
-    // 내 정보 보기
-    @GetMapping("/member/myInfo")
-    public String myInfo(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        HttpSession session = request.getSession();
-
-        try {
-            System.out.println("로그인 여부");
-            System.out.println(session.getAttribute("isLogOn"));
-
-            if ((boolean) session.getAttribute("isLogOn")) {
-                MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
-
-                // 생일 처리
-                String birthday = memberDTO.getBirthday();
-                if (!birthday.contains("-")) {
-                    String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
-                    memberDTO.setBirthday(formatDay);
-                }
-
-                model.addAttribute("memberInfo", memberDTO);
-                model.addAttribute("area", Area.values());
-                return "member/myInfo";
-            } else {
-                return "member/error";
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            session.invalidate();
-            return "redirect:/";
-        }
-
-    }
-
-    // 로그아웃
-    @GetMapping("/member/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession();
-        /*
-        session.removeAttribute("member");
-        session.setAttribute("isLogOn", false);
-        */
-        session.invalidate();
-
-        return "redirect:/";
-    }
-
 
 }

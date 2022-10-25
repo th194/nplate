@@ -9,7 +9,9 @@
 			<form class="form-horizontal form-grade" th:action="@{/board/register.do}" th:object="${board}" method="post">
 				<!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
 <!--				<input type="hidden" th:if="*{bbscttNo != null and bbscttNo > 0}" th:field="*{bbscttNo}" />-->
-<!--				<input type="hidden" th:field="*{bbscttWrter}" />-->
+
+				<!-- 작성자 -->
+				<input type="hidden" th:field="*{bbscttWrter}" />
 
 				<div class="form-group">
 					<label for="bbscttSj" class="col-sm-2 control-label">제목</label>
@@ -165,6 +167,7 @@
 
 					var post = {
 						bbscttSj : $('#bbscttSj').val(),
+						bbscttWrter: $('#bbscttWrter').val(),
 						bbscttCn : content,
 						bbscttImage : $('#bbscttImage').val(),
 						bbscttGrade : $('input[name=bbscttGrade]').val(),

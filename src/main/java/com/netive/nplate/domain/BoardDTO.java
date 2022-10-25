@@ -24,6 +24,13 @@ public class BoardDTO {
 	private Double bbscttCchLa;			// 지도 위도
 	private Double bbscttCchLo;			// 지도 경도
 	private List<BoardFileDTO> fileList;	// 첨부파일리스트
+
+	public BoardDTO() {
+	}
+
+	public BoardDTO(String bbscttWrter) {
+		this.bbscttWrter = bbscttWrter;
+	}
 }
 
 
