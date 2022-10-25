@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="board/layout/basic">
-	<th:block layout:fragment="title">
-		<title>게시글 등록</title>
-	</th:block>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="board/layout/basic">
+<th:block layout:fragment="title">
+    <title>게시글 등록</title>
+</th:block>
 
 	<th:block layout:fragment="content">
 		<div class="card-content">
@@ -28,238 +29,218 @@
 					</div>
 				</div>
 
-<!--				<div class="form-group">-->
-<!--					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>-->
-<!--					<div class="col-sm-10">-->
-<!--						<input type="text" th:field="*{bbscttWrter}" class="form-control" placeholder="이름을 입력해 주세요." />-->
-<!--					</div>-->
-<!--				</div>-->
+            <!--				<div class="form-group">-->
+            <!--					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>-->
+            <!--					<div class="col-sm-10">-->
+            <!--						<input type="text" th:field="*{bbscttWrter}" class="form-control" placeholder="이름을 입력해 주세요." />-->
+            <!--					</div>-->
+            <!--				</div>-->
 
-				<div class="form-group">
-					<label for="bbscttCn" class="col-sm-2 control-label">내용</label>
-					<div class="col-sm-10">
-						<textarea id="bbscttCn" th:field="*{bbscttCn}" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
-					</div>
-					<input type="file" th:field="*{bbscttImage}" style="display: none;"/>
-				</div>
+            <div class="form-group">
+                <label for="bbscttCn" class="col-sm-2 control-label">내용</label>
+                <div class="col-sm-10">
+                    <textarea id="bbscttCn" th:field="*{bbscttCn}" class="form-control"
+                              placeholder="내용을 입력해 주세요."></textarea>
+                </div>
+                <input type="hidden" th:field="*{bbscttImage}" value="image"/>
+            </div>
 
-				<div class="form-group">
-					<label for="bbscttGrade" class="col-sm-2 control-label">평점</label>
-						<fieldset>
-							<input type="radio" name="bbscttGrade" value="5" id="rate1"><label for="rate1" class="grade">⭐</label>
-							<input type="radio" name="bbscttGrade" value="4" id="rate2"><label for="rate2" class="grade">⭐</label>
-							<input type="radio" name="bbscttGrade" value="3" id="rate3"><label for="rate3" class="grade">⭐</label>
-							<input type="radio" name="bbscttGrade" value="2" id="rate4"><label for="rate4" class="grade">⭐</label>
-							<input type="radio" name="bbscttGrade" value="1" id="rate5"><label for="rate5" class="grade">⭐</label>
-						</fieldset>
-				</div>
+            <div class="form-group">
+                <label for="bbscttGrade" class="col-sm-2 control-label">평점</label>
+                <fieldset>
+                    <input type="radio" name="bbscttGrade" value="5" id="rate1">
+                    <label for="rate1" class="grade">⭐</label>
+                    <input type="radio" name="bbscttGrade" value="4" id="rate2">
+                    <label for="rate2" class="grade">⭐</label>
+                    <input type="radio" name="bbscttGrade" value="3" id="rate3">
+                    <label for="rate3" class="grade">⭐</label>
+                    <input type="radio" name="bbscttGrade" value="2" id="rate4">
+                    <label for="rate4" class="grade">⭐</label>
+                    <input type="radio" name="bbscttGrade" value="1" id="rate5">
+                    <label for="rate5" class="grade">⭐</label>
+                </fieldset>
+            </div>
 
-					<div class="form-group hash-tag">
-						<label for="bbscttHashtag" class="col-sm-2 control-label"></label>
-						<ul id="tag-list"></ul>
-						<div class="col-sm-10">
-							<input type="hidden" id="bbscttHashtag" name="bbscttHashtag" value="" />
+            <div class="form-group hash-tag">
+                <label for="bbscttHashtag" class="col-sm-2 control-label"></label>
+                <ul id="tag-list"></ul>
+                <div class="col-sm-10">
+                    <input type="hidden" id="bbscttHashtag" name="bbscttHashtag" value=""/>
 
-						</div>
-					</div>
+                </div>
+            </div>
 
-					<div class="form-group">
-						<label for="tag" class="col-sm-2 control-label">해시태그</label>
-						<div class="col-sm-10">
-							<input type="text" id="tag" class="form-control" placeholder="엔터로 해시태그를 등록해주세요." />
-						</div>
-					</div>
+            <div class="form-group">
+                <label for="tag" class="col-sm-2 control-label">해시태그</label>
+                <div class="col-sm-10">
+                    <input type="text" id="tag" class="form-control" placeholder="엔터로 해시태그를 등록해주세요."/>
+                </div>
+            </div>
 
-				<div class="btn_wrap text-center">
-					<a th:href="@{/board/list.do}" class="btn btn-default waves-effect waves-light">뒤로가기</a>
-					<button type="button" th:onclick="submitPost()" class="btn btn-primary waves-effect waves-light">저장하기</button>
-				</div>
-			</form>
+            <div class="btn_wrap text-center">
+                <a th:href="@{/board/list.do}" class="btn btn-default waves-effect waves-light">뒤로가기</a>
+                <button type="button" th:onclick="submitPost()" class="btn btn-primary waves-effect waves-light">저장하기
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- /.card-content -->
+</th:block>
 
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
 
-<!--			<input type="file" id="inputImage" />-->
-<!--			<img style="width: 50px; height: 50px" id="previewImage" src="https://dummyimage.com/300x100/ffffff/000000.png&text=file upload"/>-->
-<!--			<form th:field="fileForm" method="post">-->
-<!--				<input type="hidden" th:field="fileNo" />-->
-<!--				<input type="hidden" th:field="fileImageCode">-->
-<!--				<input type="hidden" th:field="fileNm" />-->
-<!--				<input type="hidden" th:field="fileNmTemp" />-->
-<!--				<input type="hidden" th:field="fileCours" />-->
-<!--			</form>-->
-		</div>
-		<!-- /.card-content -->
-	</th:block>
+        /* smartEditor */
+        var oEditors = [];
 
-	<th:block layout:fragment="script">
-		<script th:inline="javascript">
-			/*<![CDATA[*/
+        smartEditor = function () {
+            console.log("naver SamrtEditor");
+            nhn.husky.EZCreator.createInIFrame({
+                oAppRef      : oEditors,
+                elPlaceHolder: 'bbscttCn',
+                sSkinURI     : '/smarteditor/SmartEditor2Skin.html',
+                fCreator     : 'createSEditor2'
+            });
+        }
+        smartEditor();
 
-			/**
-			 * 단일파일 업로드
-			 */
-			// function readImage(input) {
-			// 	if (input.files && input.files[0]) {
-			// 		const reader = new FileReader();
-			//
-			// 		reader.onload = (e) => {
-			// 			const previewImage = document.getElementById('previewImage');
-			// 			previewImage.src = e.target.result;
-			// 		}
-			// 		reader.readAsDataURL(input.files[0]);
-			// 	}
-			// }
-			// // 이벤트 리스너
-			// document.getElementById('inputImage').addEventListener('change', (e) => {
-			// 	readImage(e.target);
-			// });
-
-			/* smartEditor */
-			var oEditors = [];
-
-			smartEditor = function() {
-				console.log("naver SamrtEditor");
-				nhn.husky.EZCreator.createInIFrame({
-					oAppRef : oEditors,
-					elPlaceHolder : 'bbscttCn',
-					sSkinURI: '/smarteditor/SmartEditor2Skin.html',
-					fCreator: 'createSEditor2'
-				});
-			}
-			smartEditor();
-			/* smartEditor */
+        /* smartEditor */
 
 
+        function submitPost() {
+            oEditors.getById['bbscttCn'].exec('UPDATE_CONTENTS_FIELD', []);
 
-			function insertIMG(filename) {
-				var sHTML = '<img src="C:/kth/images/"' + filename + '>';
-				oEditors.getById['bbscttCn'].exec('PASTE_HTML', [sHTML]);
-			}
+            // textarea 값 가져오기
+            var content = document.getElementById('bbscttCn').value;
 
-			function submitPost() {
-				oEditors.getById['bbscttCn'].exec('UPDATE_CONTENTS_FIELD', []);
+            // <p>태그 <br>로 바꾸기
+            var contentVal = content.replace(/<\/p><p>/gi, "<br>");
 
-				// 스마트 에디터 태그 제거 (TODO 사용할지 말지..)
-				// 에디터에서 엔터키 누르면 <p></p> 태그 생성되는데 태그는 지우고 내용만 디비에 저장하고 싶다..
-				// 근데 태그 삭제하는 정규식 사용하면 에디터 내부에 생성되는 <img> 태그까지 지워짐..
-				// 고민좀 해봐야할듯..
-				// var content = document.getElementById('bbscttCn').value.replace(/[<][^>]*[>]/gi, "");
+            // console.log('content = ' + contentVal);
 
-				// 일단 태그 안지움
-				var content = document.getElementById('bbscttCn').value;
+            if (content == '') {
+                alert('내용을 입력해주세요');
+                oEditors.getById['bbscttCn'].exec('FOCUS');
+                return;
+            } else {
+                alert('등록');
 
-				console.log('content = ' + content);
+                var text = oEditors.getById['bbscttCn'].getIR();
+                var $text = $(text);
+                var img = $text.find('img');
 
-				if(content == '') {
-					alert('내용을 입력해주세요');
-					oEditors.getById['bbscttCn'].exec('FOCUS');
-					return;
-				} else {
-					var bbscttHashTag = marginTag();
-					$('#bbscttHashtag').val(bbscttHashTag);
+                var src = img.attr('src');
+                var srcReplace = src.replace('/img/', '');
 
+                $('#bbscttImage').val(srcReplace);
 
-					var imgTag = document.getElementsByTagName('img');
-					for(var i= 0; i < 3; i++) {
-						console.log('imgTag =' + imgTag[i]);
-					}
+                console.log('src = '+src);
 
+                $('#sendForm').submit();
+                // var bbscttHashTag = marginTag();
+                // $('#bbscttHashtag').val(bbscttHashTag);
 
+                // var post = {
+                //     bbscttNo     : $('#bbscttNo').val(),
+                //     bbscttSj     : $('#bbscttSj').val(),
+                //     bbscttCn     : content,
+                //     bbscttImage  : $('#bbscttImage').val(),
+                //     bbscttGrade  : $('input[name=bbscttGrade]').val(),
+                //     bbscttHashtag: $('#bbscttHashtag').val(),
+                //     fileNo       : $('#file_0').val(),
+                //     fileImageCode: $('#bbscttNo').val(),
+                //     fileNm       : $('#file_0').val(),
+                //     fielNmTemp   : $('#file_0').val(),
+                //     fileCours    : $('#file_0').val()
+                // }
+                //
+                //
+                // console.log('post = ' + JSON.stringify(post));
+                //
+                // $.ajax({
+                //     url        : '/board/register.do',
+                //     data       : post,
+                //     contentType: false,
+                //     processData: false,
+                //     method     : 'POST',
+                //     success    : function (data) {
+                //         console.log('success data > ', data);
+                //         alert('저장');
+                //         // location.href = '/board/list.do';
+                //     },
+                //     error      : function (err) {
+                //         console.log('err data > ', err);
+                //         alert('실패');
+                //     }
+                // })
+            }
+        }
 
-					var post = {
-						bbscttSj : $('#bbscttSj').val(),
-						bbscttWrter: $('#bbscttWrter').val(),
-						bbscttCn : content,
-						bbscttImage : $('#bbscttImage').val(),
-						bbscttGrade : $('input[name=bbscttGrade]').val(),
-						bbscttHashtag : $('#bbscttHashtag').val(),
-						bbscttCchLa: $('input[name=bbscttCchLa]').val(),
-						bbscttCchLo: $('input[name=bbscttCchLo]').val()
-					}
+        /* 해시태그 시작 */
+        var tag = {};
+        var counter = 0;
 
-					console.log('post = ' + post);
+        // 입력한 값을 태그로 생성한다.
+        function addTag(value) {
+            tag[counter] = value;
+            counter++; // del-btn 의 고유 id 가 된다.
+        }
 
-					$.ajax({
-						url : '/board/register.do',
-						data : post,
-						method : 'POST',
-						success : function(data) {
-							console.log('success data > ', data);
-							alert('저장');
-							// location.href = '/board/list.do';
-						},
-						error : function(err) {
-							console.log('err data > ', err);
-							alert('실패');
-						}
-					})
-				}
-			}
+        // tag 안에 있는 값을 array type 으로 만들어서 넘긴다.
+        function marginTag() {
+            return Object.values(tag).filter(function (word) {
+                return word !== "";
+            });
+        }
 
+        $("#tag").on("keypress", function (e) {
+            var self = $(this);
 
+            //엔터나 스페이스바 눌렀을때 실행
+            if (e.key === "Enter" || e.keyCode == 32) {
 
+                var tagValue = self.val(); // 값 가져오기
 
+                // 해시태그 값 없으면 실행X
+                if (tagValue !== "") {
 
-			/* 해시태그 시작 */
-			var tag = {};
-			var counter = 0;
+                    // 같은 태그가 있는지 검사한다. 있다면 해당값이 array 로 return 된다.
+                    var result = Object.values(tag).filter(function (word) {
+                        return word === tagValue;
+                    })
 
-			// 입력한 값을 태그로 생성한다.
-			function addTag (value) {
-				tag[counter] = value;
-				counter++; // del-btn 의 고유 id 가 된다.
-			}
+                    // 해시태그가 중복되었는지 확인
+                    if (result.length == 0) {
+                        $("#tag-list").append("<li class='tag-item'>" + tagValue + "<span class='del-btn' idx='" + counter + "'>x</span></li>");
+                        addTag(tagValue);
+                        self.val("");
+                        var bbscttHashTag = marginTag();
+                        $('#bbscttHashtag').val(bbscttHashTag);
+                    } else {
+                        alert("태그값이 중복됩니다.");
+                    }
+                }
+                e.preventDefault(); // SpaceBar 시 빈공간이 생기지 않도록 방지
+            }
+        });
 
-			// tag 안에 있는 값을 array type 으로 만들어서 넘긴다.
-			function marginTag () {
-				return Object.values(tag).filter(function (word) {
-					return word !== "";
-				});
-			}
-
-			$("#tag").on("keypress", function (e) {
-				var self = $(this);
-
-				//엔터나 스페이스바 눌렀을때 실행
-				if (e.key === "Enter" || e.keyCode == 32) {
-
-					var tagValue = self.val(); // 값 가져오기
-
-					// 해시태그 값 없으면 실행X
-					if (tagValue !== "") {
-
-						// 같은 태그가 있는지 검사한다. 있다면 해당값이 array 로 return 된다.
-						var result = Object.values(tag).filter(function (word) {
-							return word === tagValue;
-						})
-
-						// 해시태그가 중복되었는지 확인
-						if (result.length == 0) {
-							$("#tag-list").append("<li class='tag-item'>"+tagValue+"<span class='del-btn' idx='"+counter+"'>x</span></li>");
-							addTag(tagValue);
-							self.val("");
-						} else {
-							alert("태그값이 중복됩니다.");
-						}
-					}
-					e.preventDefault(); // SpaceBar 시 빈공간이 생기지 않도록 방지
-				}
-			});
-
-			// 삭제 버튼
-			// 인덱스 검사 후 삭제
-			$(document).on("click", ".del-btn", function (e) {
-				var index = $(this).attr("idx");
-				tag[index] = "";
-				$(this).parent().remove();
-			});
-			/* 해시태그 끝 */
+        // 삭제 버튼
+        // 인덱스 검사 후 삭제
+        $(document).on("click", ".del-btn", function (e) {
+            var index = $(this).attr("idx");
+            tag[index] = "";
+            $(this).parent().remove();
+        });
+        /* 해시태그 끝 */
 
 
 
-			/* 게시글 등록/수정 validation */
-			function registerBoard(form) {
-			}
-			/* 게시글 등록/수정 validation */
+        /* 게시글 등록/수정 validation */
+        function registerBoard(form) {
+        }
+
+        /* 게시글 등록/수정 validation */
 
 
 
@@ -309,7 +290,7 @@
 
 			/*[- end of function -]*/
 
-			/*]]>*/
-		</script>
-	</th:block>
+        /*]]>*/
+    </script>
+</th:block>
 </html>

@@ -32,58 +32,7 @@ public class FileUtils {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    /**
-     * 서버에 첨부 파일을 생성하고, 업로드 파일 목록 반환
-     * @param files    - 파일 Array
-     * @param boardIdx - 게시글 번호
-     * @return 업로드 파일 목록
-     */
-    public List<BoardFileDTO> uploadFiles(MultipartFile[] files, Long boardIdx) {
 
-        /* 파일이 비어있으면 비어있는 리스트 반환 */
-        if (files[0].getSize() < 1) {
-            return Collections.emptyList();
-        }
-
-        /* 업로드 파일 정보를 담을 비어있는 리스트 */
-        List<BoardFileDTO> boardFileList = new ArrayList<>();
-
-        /* uploadPath에 해당하는 디렉터리가 존재하지 않으면, 부모 디렉터리를 포함한 모든 디렉터리를 생성 */
-        File dir = new File(uploadPath);
-        if (dir.exists() == false) {
-            dir.mkdirs();
-        }
-
-        /* 파일 개수만큼 forEach 실행 */
-        for (MultipartFile file : files) {
-            try {
-                /* 파일 확장자 */
-                final String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-                /* 서버에 저장할 파일명 (랜덤 문자열 + 확장자) */
-                final String saveName = getRandomString() + "." + extension;
-
-                /* 업로드 경로에 saveName과 동일한 이름을 가진 파일 생성 */
-                File target = new File(uploadPath, saveName);
-                file.transferTo(target);
-
-                /* 파일 정보 저장 */
-                BoardFileDTO boardFile = new BoardFileDTO();
-                boardFile.setFileNo(boardIdx);
-                boardFile.setFileNm(file.getOriginalFilename());
-                boardFile.setFileNmTemp(saveName);
-
-                /* 파일 정보 추가 */
-                boardFileList.add(boardFile);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } // end of for
-
-        return boardFileList;
-    }
 
 
     /**
@@ -91,7 +40,7 @@ public class FileUtils {
      * @param file
      * @return
      */
-    public static List<File> getImgFileList(File file) {
+    public static List<File> getImgFileList(File file, String path) {
 
         List<File> resultList = new ArrayList<>(); // 이미지 파일 저장할 리스트
 
@@ -105,11 +54,11 @@ public class FileUtils {
             String strImgExt = "jpg|png|gif|bmp"; // 허용할 이미지 타입
 
             @Override
-            public boolean accept(File pathname) { // 원하는 파일만 가져오기 위해 FileFilter 재정의
+            public boolean accept(File path) { // 원하는 파일만 가져오기 위해 FileFilter 재정의
 
                 boolean chkResult = false;
-                if(pathname.isFile()) {
-                    String ext = pathname.getName().substring(pathname.getName().lastIndexOf(".")+1);
+                if(path.isFile()) {
+                    String ext = path.getName().substring(path.getName().lastIndexOf(".")+1);
                     chkResult = strImgExt.contains(ext.toLowerCase());
                 } else {
                     chkResult = true;
@@ -122,7 +71,7 @@ public class FileUtils {
         for(File f : list) {
             if(f.isDirectory()) {
                 // 폴더이면 이미지목록을 가져오는 현재 메소드를 재귀호출
-                resultList.addAll(getImgFileList(f));
+                resultList.addAll(getImgFileList(f, path));
             } else {
                 // 폴더가 아니고 파일이면 리스트(resultList)에 추가
                 resultList.add(f);
@@ -181,5 +130,76 @@ public class FileUtils {
         }
 
         return dirName;
+    }
+
+    /**
+     * 서버에 첨부 파일을 생성하고, 업로드 파일 목록 반환
+     * @param fileList    - 파일 Array
+     * @param boardIdx - 게시글 번호
+     * @return 업로드 파일 목록
+     */
+    public List<BoardFileDTO> uploadFiles(List<File> fileList, Long boardIdx, String path) {
+
+        System.out.println("fileUtils >>>>>>>>>>>>>>>>>>>>>> "+fileList);
+        System.out.println("fileUtils getSize >>>>>>>>>>>>>>>>>>>>>> "+fileList.size());
+
+        /* 파일이 비어있으면 비어있는 리스트 반환 */
+        if (fileList.size() < 1) {
+            return Collections.emptyList();
+        }
+
+        System.out.println("업로드 파일 경로 >>>>>>>>>>" + path);
+
+        /* 업로드 파일 정보를 담을 비어있는 리스트 */
+        List<BoardFileDTO> boardFileList = new ArrayList<>();
+
+        /* uploadPath에 해당하는 디렉터리가 존재하지 않으면, 부모 디렉터리를 포함한 모든 디렉터리를 생성 */
+        File dir = new File(path);
+        if (dir.exists() == false) {
+            dir.mkdirs();
+        }
+
+        System.out.println("fileImageCode 이게 널 ?? = =====================================================");
+//        String fileImageCode = Long.toString(boardIdx);
+//        System.out.println("fileImageCode 이게 널 ?? = " + fileImageCode);
+
+        /* 파일 개수만큼 forEach 실행 */
+        for (File file : fileList) {
+            try {
+                /* 파일 확장자 */
+                final String extension = FilenameUtils.getExtension(file.getName());
+                /* 서버에 저장할 파일명 (랜덤 문자열 + 확장자) */
+                final String saveName = file + "." + extension;
+
+                System.out.println("extension >>>>>>>>>>>> " + extension);
+                System.out.println("saveName >>>>>>>>>>>>>>>>> " + saveName);
+
+                /* 업로드 경로에 saveName과 동일한 이름을 가진 파일 생성 */
+                File target = new File(path, saveName);
+                file.renameTo(target);
+
+                System.out.println("====================널포인터 나는곳 ===========================");
+
+                /* 파일 정보 저장 */
+                BoardFileDTO boardFile = new BoardFileDTO();
+                boardFile.setFileNm(path + file.getName());
+                boardFile.setFileNmTemp(saveName);
+                boardFile.setFileImageCode("netive");
+                boardFile.setFileCours(path);
+
+                System.out.println("파일테이블에 저장 file.getName =>>>>>>>>>>>>> " + path + file.getName());
+                System.out.println("파일테이블에 저장 saveName =>>>>>>>>>>>>> " + saveName);
+//                System.out.println("파일테이블에 저장 fileImageCode =>>>>>>>>>>>>> " + fileImageCode);
+                System.out.println("파일테이블에 저장 path =>>>>>>>>>>>>> " + path);
+
+                /* 파일 정보 추가 */
+                boardFileList.add(boardFile);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } // end of for
+
+        return boardFileList;
     }
 }

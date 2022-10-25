@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.List;
 
 import com.netive.nplate.domain.BoardFileDTO;
+import com.netive.nplate.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,9 @@ public class BoardController {
 	@Autowired
 	private BoardService boardSerive;
 
+	@Autowired
+	private FileUtils fileUtils;
+
 	/**
 	 * 게시글 작성
 	 * @param idx
@@ -42,6 +46,8 @@ public class BoardController {
 				return "redirect:board/list.do";
 			}
 			model.addAttribute("board", boardDTO);
+			List<BoardFileDTO> fileList = boardSerive.getFileList(idx);
+			model.addAttribute("fileList", fileList);
 		}
 		
 		return "board/write";
@@ -56,15 +62,26 @@ public class BoardController {
 	@PostMapping("/board/register.do")
 	public String openBoardRegister(BoardDTO boardDTO, Model model, MultipartFile[] files, HttpServletRequest request) {
 
-		String imgSrc = boardDTO.getBbscttCn();
-		System.out.println(imgSrc);
+		System.out.println("boardDTO >>>>>>>>>> " + boardDTO);
+		System.out.println("files >>>>>>>>>> " + files);
 
-//		List<BoardFileDTO> fileList =
+		try {
 
-		String path = request.getSession().getServletContext().getRealPath("/img");
+			String path = request.getSession().getServletContext().getRealPath("/img");
 
+			System.out.println("컨트롤러 path = >>>>>>>>>>>>>>>>>>>>> " + path);
+//			List<File> fileList = fileUtils.getImgFileList(file, path);
 
-		boardSerive.registerBoard(boardDTO);
+			boolean isRegistered = boardSerive.registerBoard(boardDTO, files, path);
+
+			if (isRegistered == false) {
+				System.out.println("등록 실패");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+//		boardSerive.registerBoard(boardDTO);
 		List<BoardDTO> boardList = boardSerive.getBordList();
 		model.addAttribute("boardList", boardList);
 
@@ -91,17 +108,21 @@ public class BoardController {
 	 */
 	@GetMapping("/board/view.do")
 	public String openBoardDetail(@RequestParam(value="idx", required=false) Long idx, Model model) {
+
+		System.out.println("view idx = " + idx);
 		if(idx == null) {
 			// 올바르지 않은 접근
 			return "redirect:/board/list.do";
 		}
 		
 		BoardDTO boardDTO = boardSerive.getBoardDetail(idx);
-//		if(boardDTO == null || "Y".equals(boardDTO.getDeleteYn())) {
-//			// 없는 게시글 or 이미 삭제된 게시글
-//			return "redirect:/board/list.do";
-//		}
 		model.addAttribute("board", boardDTO);
+
+		List<BoardFileDTO> fileList = boardSerive.getFileList(idx);
+		model.addAttribute("fileList", fileList);
+
+		System.out.println("view fileList >>>>>>>>>>>>>>>>>>>>" + fileList);
+
 		boardSerive.cntPlus(idx); // 게시글 조회수 증가
 		return "board/view";
 	}
@@ -225,8 +246,8 @@ public class BoardController {
 
 				String sRealFileName = "";
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-				String today = formatter.format(new Date());
-				sRealFileName = today + UUID.randomUUID().toString() + sFileName.substring(sFileName.lastIndexOf("."));
+//				String today = formatter.format(new Date());
+				sRealFileName = UUID.randomUUID().toString() + sFileName.substring(sFileName.lastIndexOf("."));
 				String realFileName = path + sRealFileName;
 
 				// 서버에 파일 쓰기
@@ -261,6 +282,10 @@ public class BoardController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+
+
+
 	}
 
 	/**

@@ -6,29 +6,52 @@
 		FILE_IMAGE_CODE,
 		FILE_NM,
 		FILE_NM_TEMP,
-		FILE_COURS
+		FILE_COURS,
+		BBSCTT_NO
 	</sql>
 
-	<insert id="insertFile">
+	<insert id="insertFile" parameterType="list">
 		INSERT INTO NETIVE_PROJECT01_IMAGE_FILE
-			<include refid="boardFileColumns"/>
-		VALUES (
-			<foreach collection="list" item="list" separator=",">
-				#{fileNo},
-				#{fileImageCode},
-				#{fileNm},
-				#{fileNmTemp},
-				#{fileCours}
+			(
+			FILE_IMAGE_CODE,
+			FILE_NM,
+			FILE_NM_TEMP,
+			FILE_COURS,
+			BBSCTT_NO
+			)
+		VALUES
+		<foreach collection="list" item="list" separator=",">
+				(
+				#{list.fileImageCode},
+				#{list.fileNm},
+				#{list.fileNmTemp},
+				#{list.fileCours},
+				#{list.bbscttNo}
 				)
 			</foreach>
 	</insert>
+
+	<select id="selectFileList" parameterType="long" resultType="BoardFileDTO">
+		SELECT
+		<include refid="boardFileColumns" />
+		FROM
+		NETIVE_PROJECT01_IMAGE_FILE
+		WHERE
+		BBSCTT_NO = #{bbscttNo}
+	</select>
+
 
 	<delete id="deleteFile">
 		DELETE FROM NETIVE_PROJECT01_IMAGE_FILE WHERE FILE_NO = #{fileNo}
 	</delete>
 
-	<select id="findByBno" resultType="BoardFileDTO">
-		SELECT * FROM NETIVE_PROJECT01_IMAGE_FILE WHERE FILE_IMAGE_CODE = #{fileImageCode}
+	<select id="selectFileTotalCount" parameterType="long" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			NETIVE_PROJECT01_IMAGE_FILE
+		WHERE
+			BBSCTT_NO = #{bbscttNo}
 	</select>
 
 </mapper>

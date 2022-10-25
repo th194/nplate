@@ -18,7 +18,7 @@
 		BBSCTT_CCH_LO
 	</sql>
 
-	<insert id="insertBoard" parameterType="BoardDTO">
+	<insert id="insertBoard" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="bbscttSj">
 		INSERT INTO NETIVE_PROJECT01_BOARD(
 			BBSCTT_SJ,
 			BBSCTT_CN,

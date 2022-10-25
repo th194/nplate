@@ -10,5 +10,6 @@ public class BoardFileDTO {
     private String fileImageCode;       // 파일 코드
     private String fileNm;              // 원본파일명
     private String fileNmTemp;          // 임시파일명
-    private String cours;               // 파일경로
+    private String fileCours;               // 파일경로
+    private Long bbscttNo;
 }

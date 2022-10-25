@@ -24,6 +24,8 @@ public class BoardDTO {
 	private Double bbscttCchLa;			// 지도 위도
 	private Double bbscttCchLo;			// 지도 경도
 	private List<BoardFileDTO> fileList;	// 첨부파일리스트
+	private String changeYn;			// 파일 변경 여부
+	private List<Long> fileIndxs;		// 파일 인덱스 리스트
 
 	public BoardDTO() {
 	}

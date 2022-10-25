@@ -7,15 +7,15 @@ import java.util.List;
 
 @Mapper
 public interface BoardFileMapper {
-    public int insertAttach(List<BoardFileDTO> attachList);
+    public int insertFile(List<BoardFileDTO> attachList);
 
-    public BoardFileDTO selectAttachDetail(Long idx);
+    public BoardFileDTO selectFileDetail(Long idx);
 
-    public int deleteAttach(Long boardIdx);
+    public int deleteFile(Long boardIdx);
 
-    public List<BoardFileDTO> selectAttachList(Long boardIdx);
+    public List<BoardFileDTO> selectFileList(Long boardIdx);
 
-    public int selectAttachTotalCount(Long boardIdx);
+    public int selectFileTotalCount(Long boardIdx);
 
 
 }
