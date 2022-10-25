@@ -38,7 +38,7 @@
 					<div class="col-sm-10">
 						<textarea id="bbscttCn" th:field="*{bbscttCn}" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
 					</div>
-					<input type="hidden" th:field="*{bbscttImage}" />
+					<input type="file" th:field="*{bbscttImage}" style="display: none;"/>
 				</div>
 
 				<div class="form-group">
@@ -73,6 +73,17 @@
 					<button type="button" th:onclick="submitPost()" class="btn btn-primary waves-effect waves-light">저장하기</button>
 				</div>
 			</form>
+
+
+<!--			<input type="file" id="inputImage" />-->
+<!--			<img style="width: 50px; height: 50px" id="previewImage" src="https://dummyimage.com/300x100/ffffff/000000.png&text=file upload"/>-->
+<!--			<form th:field="fileForm" method="post">-->
+<!--				<input type="hidden" th:field="fileNo" />-->
+<!--				<input type="hidden" th:field="fileImageCode">-->
+<!--				<input type="hidden" th:field="fileNm" />-->
+<!--				<input type="hidden" th:field="fileNmTemp" />-->
+<!--				<input type="hidden" th:field="fileCours" />-->
+<!--			</form>-->
 		</div>
 		<!-- /.card-content -->
 	</th:block>
@@ -80,6 +91,25 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			/*<![CDATA[*/
+
+			/**
+			 * 단일파일 업로드
+			 */
+			// function readImage(input) {
+			// 	if (input.files && input.files[0]) {
+			// 		const reader = new FileReader();
+			//
+			// 		reader.onload = (e) => {
+			// 			const previewImage = document.getElementById('previewImage');
+			// 			previewImage.src = e.target.result;
+			// 		}
+			// 		reader.readAsDataURL(input.files[0]);
+			// 	}
+			// }
+			// // 이벤트 리스너
+			// document.getElementById('inputImage').addEventListener('change', (e) => {
+			// 	readImage(e.target);
+			// });
 
 			/* smartEditor */
 			var oEditors = [];
@@ -96,49 +126,66 @@
 			smartEditor();
 			/* smartEditor */
 
+
+
+			function insertIMG(filename) {
+				var sHTML = '<img src="C:/kth/images/"' + filename + '>';
+				oEditors.getById['bbscttCn'].exec('PASTE_HTML', [sHTML]);
+			}
+
 			function submitPost() {
 				oEditors.getById['bbscttCn'].exec('UPDATE_CONTENTS_FIELD', []);
+
+				// 스마트 에디터 태그 제거 (TODO 사용할지 말지..)
+				// 에디터에서 엔터키 누르면 <p></p> 태그 생성되는데 태그는 지우고 내용만 디비에 저장하고 싶다..
+				// 근데 태그 삭제하는 정규식 사용하면 에디터 내부에 생성되는 <img> 태그까지 지워짐..
+				// 고민좀 해봐야할듯..
+				// var content = document.getElementById('bbscttCn').value.replace(/[<][^>]*[>]/gi, "");
+
+				// 일단 태그 안지움
 				var content = document.getElementById('bbscttCn').value;
-				console.log(content);
+
+				console.log('content = ' + content);
 
 				if(content == '') {
 					alert('내용을 입력해주세요');
 					oEditors.getById['bbscttCn'].exec('FOCUS');
 					return;
 				} else {
-
-
-					var file = document.getElementsByTagName('img');
-					for(var i=0; i < file.length; i++) {
-						var imgs = file.item(i);
-						console.log('imgs '+i+' 명 = '+imgs);
-					}
-
 					var bbscttHashTag = marginTag();
 					$('#bbscttHashtag').val(bbscttHashTag);
 
 
+					var imgTag = document.getElementsByTagName('img');
+					for(var i= 0; i < 3; i++) {
+						console.log('imgTag =' + imgTag[i]);
+					}
+
+
+
 					var post = {
-						bbscttSj : $('#bbscttSj')[0].value,
+						bbscttSj : $('#bbscttSj').val(),
 						bbscttCn : content,
-						bbscttImage : 'sendFile',
+						bbscttImage : $('#bbscttImage').val(),
 						bbscttGrade : $('input[name=bbscttGrade]').val(),
 						bbscttHashtag : $('#bbscttHashtag').val(),
 						bbscttCchLa: $('input[name=bbscttCchLa]').val(),
 						bbscttCchLo: $('input[name=bbscttCchLo]').val()
 					}
 
+					console.log('post = ' + post);
+
 					$.ajax({
 						url : '/board/register.do',
 						data : post,
 						method : 'POST',
 						success : function(data) {
-							console.log('success data > ', JSON.stringify(data));
+							console.log('success data > ', data);
 							alert('저장');
 							// location.href = '/board/list.do';
 						},
 						error : function(err) {
-							console.log('err data > ', JSON.stringify(err));
+							console.log('err data > ', err);
 							alert('실패');
 						}
 					})

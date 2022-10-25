@@ -29,17 +29,25 @@
 				<div class="form-group">
 					<label for="bbscttCn" class="col-sm-2 control-label">내용</label>
 					<div class="col-sm-10">
-						<p class="form-control" th:text="*{bbscttCn}"></p>
+						<textarea id="bbscttCn" class="form-control" th:text="*{bbscttCn}"></textarea>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="bbscttHashtag" class="col-sm-2 control-label">해시태그</label>
+					<div class="col-sm-10">
+						<p class="form-control" th:text="*{bbscttHashtag}"></p>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label for="bbscttRgsde" class="col-sm-2 control-label">등록일</label>
 					<div class="col-sm-10">
-<!--						<p class="form-control" th:text="*{#temporals.format( bbscttRgsde, 'yyyy-MM-dd' )}"></p>-->
 						<p class="form-control" th:text="*{bbscttRgsde}"></p>
 					</div>
 				</div>
+
+				<img src="C:/kth/images/20221024140833e2d51f57-ccc6-48cf-94bf-e36c598e1b3f.png" alt="test">
 
 				<div class="form-group">
 					<label for="bbscttRdcnt" class="col-sm-2 control-label">조회 수</label>
@@ -61,6 +69,8 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			/*<![CDATA[*/
+
+
 
 			/*게시글 삭제 함수*/
 			function deleteBoard(idx) {
@@ -89,6 +99,34 @@
 			var map = new kakao.maps.Map($map, options);
 			$map.append(map);
 			/*[- end of function -]*/
+
+			var board = /*[[${board}]]*/"";
+			console.log('board = ' + JSON.stringify(board));
+
+			/* smartEditor */
+			var oEditors = [];
+
+			smartEditor = function() {
+				nhn.husky.EZCreator.createInIFrame({
+					oAppRef : oEditors,
+					elPlaceHolder : 'bbscttCn',
+					sSkinURI: '/smarteditor/SmartEditor2Skin.html',
+					fCreator: 'createSEditor2',
+					htParams: {
+						bUseToolbar : true,					// 툴바 사용 여부 (true : 사용 / false : 사용하지 않음)
+						bUseVerticalResizer : false,			// 입력창 크기 조절바 사용 여부 ( true : 사용 / false : 사용하지 않음)
+						bUseModeChanger : true				// 모드 탭 (Editor | HTML | TEXT ) 사용 여부 (true : 사용 / false : 사용하지 않음)
+					},
+					fOnAppLoad : function() {
+						var editor = oEditors.getById['bbscttCn'];
+						editor.exec('PASTE_HTML', [board.bbscttCn]);
+						editor.exec('DISABLE_WYSIWYG');
+						editor.exec('DISABLE_ALL_UI');
+					}
+				});
+			}
+			smartEditor();
+			/* smartEditor */
 
 			/*]]>*/
 		</script>

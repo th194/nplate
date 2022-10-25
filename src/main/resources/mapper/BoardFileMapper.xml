@@ -13,12 +13,14 @@
 		INSERT INTO NETIVE_PROJECT01_IMAGE_FILE
 			<include refid="boardFileColumns"/>
 		VALUES (
-		#{fileNo},
-		#{fileImageCode},
-		#{fileNm},
-		#{fileNmTemp},
-		#{fileCours}
-		)
+			<foreach collection="list" item="list" separator=",">
+				#{fileNo},
+				#{fileImageCode},
+				#{fileNm},
+				#{fileNmTemp},
+				#{fileCours}
+				)
+			</foreach>
 	</insert>
 
 	<delete id="deleteFile">

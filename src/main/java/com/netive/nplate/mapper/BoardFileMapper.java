@@ -7,7 +7,15 @@ import java.util.List;
 
 @Mapper
 public interface BoardFileMapper {
-    public void insertFile(BoardFileDTO file);
-    public void deleteFile(String fileNo);
-    public List<BoardFileDTO> findByBno(Long bno);
+    public int insertAttach(List<BoardFileDTO> attachList);
+
+    public BoardFileDTO selectAttachDetail(Long idx);
+
+    public int deleteAttach(Long boardIdx);
+
+    public List<BoardFileDTO> selectAttachList(Long boardIdx);
+
+    public int selectAttachTotalCount(Long boardIdx);
+
+
 }
