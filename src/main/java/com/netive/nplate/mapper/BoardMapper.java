@@ -15,4 +15,5 @@ public interface BoardMapper {
 	public List<BoardDTO> selectBoardList();
 	public int selectBoardTotalCount();
 	public boolean cntPlus(Long idx);
+	public BoardDTO findByIdx(Long idx);
 }

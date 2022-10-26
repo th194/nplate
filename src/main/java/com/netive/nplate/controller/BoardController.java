@@ -31,23 +31,20 @@ public class BoardController {
 
 	/**
 	 * 게시글 작성
-	 * @param idx
+	 * @param bbscttNo
 	 * @param model
 	 * @return
 	 */
 	@GetMapping("/board/write.do")
-	public String openBoardWrite(@RequestParam(value = "idx", required = false) Long idx, Model model) {
-		if (idx == null) {
+	public String openBoardWrite(@RequestParam(value = "bbscttNo", required = false) Long bbscttNo, Model model) {
+		System.out.println("게시글 수정 idx = " + bbscttNo);
+		if (bbscttNo == null) {
 			model.addAttribute("board", new BoardDTO());
-			
 		} else {
-			BoardDTO boardDTO = boardSerive.getBoardDetail(idx);
-			if(boardDTO == null) {
-				return "redirect:board/list.do";
-			}
+			BoardDTO boardDTO = boardSerive.getBoardDetail(bbscttNo);
+
+			System.out.println("boardDTO >>>>>>>>>>>>>>>>> " + boardDTO);
 			model.addAttribute("board", boardDTO);
-			List<BoardFileDTO> fileList = boardSerive.getFileList(idx);
-			model.addAttribute("fileList", fileList);
 		}
 		
 		return "board/write";
@@ -62,11 +59,7 @@ public class BoardController {
 	@PostMapping("/board/register.do")
 	public String openBoardRegister(BoardDTO boardDTO, Model model, MultipartFile[] files, HttpServletRequest request) {
 
-		System.out.println("boardDTO >>>>>>>>>> " + boardDTO);
-		System.out.println("files >>>>>>>>>> " + files);
-
 		try {
-
 			String path = request.getSession().getServletContext().getRealPath("/img");
 
 			System.out.println("컨트롤러 path = >>>>>>>>>>>>>>>>>>>>> " + path);
@@ -109,7 +102,6 @@ public class BoardController {
 	@GetMapping("/board/view.do")
 	public String openBoardDetail(@RequestParam(value="idx", required=false) Long idx, Model model) {
 
-		System.out.println("view idx = " + idx);
 		if(idx == null) {
 			// 올바르지 않은 접근
 			return "redirect:/board/list.do";
@@ -121,12 +113,22 @@ public class BoardController {
 		List<BoardFileDTO> fileList = boardSerive.getFileList(idx);
 		model.addAttribute("fileList", fileList);
 
-		System.out.println("view fileList >>>>>>>>>>>>>>>>>>>>" + fileList);
 
 		boardSerive.cntPlus(idx); // 게시글 조회수 증가
 		return "board/view";
 	}
-	
+
+	/**
+	 * 게시글 수정
+	 * @param board
+	 * @return
+	 */
+	@PostMapping("/board/update.do")
+	public String updateBoard(BoardDTO board) {
+		boardSerive.updateBoard(board);
+		return "redirect:/board/list.do";
+	}
+
 	/**
 	 * 게시글 삭제
 	 * @param idx
@@ -234,8 +236,13 @@ public class BoardController {
 			} else {
 				// 디렉토리 설정 및 업로드
 				// 파일경로
+
+				// 서버 재부팅하면 이미지 사라짐..
 				String defaultPath = request.getSession().getServletContext().getRealPath("/");
 				String path = defaultPath + "img" + File.separator;
+
+				// 하.. Not Allowed -_-;
+//				String path = "D:/images/";
 
 				File file = new File(path);
 
@@ -269,6 +276,7 @@ public class BoardController {
 				sFileInfo += "&bNewLine=true";
 				// img 태그의 title 속성을 원본파일명으로 적용시켜주기 위함
 				sFileInfo += "&sFileName=" + sFileName;
+//				sFileInfo += "&sFileURL=D:/images/" + sRealFileName;
 				sFileInfo += "&sFileURL=/img/" + sRealFileName;
 
 				System.out.println("sFileInfo = " + sFileInfo);

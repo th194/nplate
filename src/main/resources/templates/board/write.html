@@ -5,36 +5,31 @@
     <title>게시글 등록</title>
 </th:block>
 
-	<th:block layout:fragment="content">
-		<div class="card-content">
-			<form class="form-horizontal form-grade" th:action="@{/board/register.do}" th:object="${board}" method="post">
-				<!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
-<!--				<input type="hidden" th:if="*{bbscttNo != null and bbscttNo > 0}" th:field="*{bbscttNo}" />-->
+<th:block layout:fragment="content">
+    <div class="card-content">
+        <form id="saveForm" class="form-horizontal form-grade" th:action="@{/board/register.do}" th:object="${board}">
+            <!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
+            <input type="hidden" th:if="*{bbscttNo != null and bbscttNo > 0}" th:field="*{bbscttNo}" />
 
-				<!-- 작성자 -->
-				<input type="hidden" th:field="*{bbscttWrter}" />
+            <!-- 작성자 -->
+            <input type="hidden" th:field="*{bbscttWrter}"/>
 
-				<div class="form-group">
-					<label for="bbscttSj" class="col-sm-2 control-label">제목</label>
-					<div class="col-sm-10">
-						<input type="text" th:field="*{bbscttSj}" class="form-control" placeholder="제목을 입력해 주세요." />
-					</div>
-				</div>
+            <div class="form-group">
+                <label for="bbscttSj" class="col-sm-2 control-label">제목</label>
+                <div class="col-sm-10">
+                    <input type="text" th:field="*{bbscttSj}" class="form-control" placeholder="제목을 입력해 주세요."/>
+                </div>
+            </div>
 
-				<div class="form-group">
-					<label for="btnMap" class="col-sm-2 control-label">장소등록</label>
-					<div class="col-sm-10">
-						<button id="btnMap" type="button" class="btn btn-primary waves-effect waves-light" onclick="openPopup()">장소등록</button>
-						<div id="map" style="width:100%;height:350px;display: none"></div>
-					</div>
-				</div>
-
-            <!--				<div class="form-group">-->
-            <!--					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>-->
-            <!--					<div class="col-sm-10">-->
-            <!--						<input type="text" th:field="*{bbscttWrter}" class="form-control" placeholder="이름을 입력해 주세요." />-->
-            <!--					</div>-->
-            <!--				</div>-->
+            <div class="form-group">
+                <label for="btnMap" class="col-sm-2 control-label">장소등록</label>
+                <div class="col-sm-10">
+                    <button id="btnMap" type="button" class="btn btn-primary waves-effect waves-light"
+                            onclick="openPopup()">장소등록
+                    </button>
+                    <div id="map" style="width:100%;height:350px;display: none"></div>
+                </div>
+            </div>
 
             <div class="form-group">
                 <label for="bbscttCn" class="col-sm-2 control-label">내용</label>
@@ -65,7 +60,7 @@
                 <label for="bbscttHashtag" class="col-sm-2 control-label"></label>
                 <ul id="tag-list"></ul>
                 <div class="col-sm-10">
-                    <input type="hidden" id="bbscttHashtag" name="bbscttHashtag" value=""/>
+                    <input type="hidden" id="bbscttHashtag" name="bbscttHashtag" value="" th:field="*{bbscttHashtag}"/>
 
                 </div>
             </div>
@@ -95,7 +90,6 @@
         var oEditors = [];
 
         smartEditor = function () {
-            console.log("naver SamrtEditor");
             nhn.husky.EZCreator.createInIFrame({
                 oAppRef      : oEditors,
                 elPlaceHolder: 'bbscttCn',
@@ -124,7 +118,6 @@
                 oEditors.getById['bbscttCn'].exec('FOCUS');
                 return;
             } else {
-                alert('등록');
 
                 var text = oEditors.getById['bbscttCn'].getIR();
                 var $text = $(text);
@@ -135,45 +128,46 @@
 
                 $('#bbscttImage').val(srcReplace);
 
-                console.log('src = '+src);
+                console.log('src = ' + src);
 
-                $('#sendForm').submit();
-                // var bbscttHashTag = marginTag();
-                // $('#bbscttHashtag').val(bbscttHashTag);
+                // $('#sendForm').submit();
+                var bbscttHashTag = marginTag();
+                $('#bbscttHashtag').val(bbscttHashTag);
 
-                // var post = {
-                //     bbscttNo     : $('#bbscttNo').val(),
-                //     bbscttSj     : $('#bbscttSj').val(),
-                //     bbscttCn     : content,
-                //     bbscttImage  : $('#bbscttImage').val(),
-                //     bbscttGrade  : $('input[name=bbscttGrade]').val(),
-                //     bbscttHashtag: $('#bbscttHashtag').val(),
-                //     fileNo       : $('#file_0').val(),
-                //     fileImageCode: $('#bbscttNo').val(),
-                //     fileNm       : $('#file_0').val(),
-                //     fielNmTemp   : $('#file_0').val(),
-                //     fileCours    : $('#file_0').val()
-                // }
-                //
-                //
-                // console.log('post = ' + JSON.stringify(post));
-                //
-                // $.ajax({
-                //     url        : '/board/register.do',
-                //     data       : post,
-                //     contentType: false,
-                //     processData: false,
-                //     method     : 'POST',
-                //     success    : function (data) {
-                //         console.log('success data > ', data);
-                //         alert('저장');
-                //         // location.href = '/board/list.do';
-                //     },
-                //     error      : function (err) {
-                //         console.log('err data > ', err);
-                //         alert('실패');
-                //     }
-                // })
+                var bbscttGrade = $('input:radio[name=bbscttGrade]:checked').val();
+                console.log('별점 ====================== ' + bbscttGrade);
+
+
+                var post = {
+                    // bbscttNo     : $('#bbscttNo').val(),
+                    bbscttSj     : $('#bbscttSj').val(),
+                    bbscttCn     : content,
+                    bbscttWrter  : $('#bbscttWrter').val(),
+                    bbscttImage  : $('#bbscttImage').val(),
+                    bbscttGrade  : bbscttGrade,
+                    bbscttHashtag: $('#bbscttHashtag').val(),
+                    bbscttStore  : $('input[name=bbscttStore]').val(),
+                    bbscttCchLa  : $('input[name=bbscttCchLa]').val(),
+                    bbscttCchLo  : $('input[name=bbscttCchLo]').val()
+                }
+
+
+                console.log('post = ' + JSON.stringify(post));
+
+                $.ajax({
+                    url    : '/board/register.do',
+                    data   : post,
+                    method : 'POST',
+                    success: function (data) {
+                        console.log('success data > ', data);
+                        alert('저장');
+                        // location.href = '/member/board/list';
+                    },
+                    error  : function (err) {
+                        console.log('err data > ', err);
+                        alert('실패');
+                    }
+                });
             }
         }
 
@@ -215,8 +209,8 @@
                         $("#tag-list").append("<li class='tag-item'>" + tagValue + "<span class='del-btn' idx='" + counter + "'>x</span></li>");
                         addTag(tagValue);
                         self.val("");
-                        var bbscttHashTag = marginTag();
-                        $('#bbscttHashtag').val(bbscttHashTag);
+                        // var bbscttHashTag = marginTag();
+                        // $('#bbscttHashtag').val(bbscttHashTag);
                     } else {
                         alert("태그값이 중복됩니다.");
                     }
@@ -243,6 +237,27 @@
         /* 게시글 등록/수정 validation */
 
 
+        /* 게시글 수정 */
+        window.onload = () => {
+            updateBoard();
+        }
+
+        function updateBoard() {
+            var board = [[${board}]];
+            console.log('board = ' + JSON.stringify(board));
+            if (!board) {
+                return false;
+            }
+
+            var form = document.getElementById('saveForm');
+            var fields = [];
+
+            fields.forEach(field => {
+                form[field].value = board[field];
+                console.log('filed = ' + field);
+            });
+        }
+        /* 게시글 수정 */
 
         /* 지도 관련 */
         // 지도 팝업
@@ -269,35 +284,42 @@
 
             mapContainer.style.display='block';
 
-            // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
-            var map = new kakao.maps.Map(mapContainer, mapOption);
+				// 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+				var map = new kakao.maps.Map(mapContainer, mapOption);
 
-            // 지도를 클릭한 위치에 표출할 마커입니다
-            var marker = new kakao.maps.Marker({
-                // 지도 중심좌표에 마커를 생성합니다
-                position: map.getCenter()
-            });
-            // 지도에 마커를 표시합니다
-            marker.setMap(map);
+				// 지도를 클릭한 위치에 표출할 마커입니다
+				var marker = new kakao.maps.Marker({
+					// 지도 중심좌표에 마커를 생성합니다
+					position: map.getCenter()
+				});
+				 // 지도에 마커를 표시합니다
+				marker.setMap(map);
 
             var latitude = document.createElement('input');
             var longitude = document.createElement('input');
+            var store = document.createElement('input');
 
-            latitude.setAttribute('type', 'hidden');
-            latitude.setAttribute('name', 'bbscttCchLa');
-            latitude.setAttribute('value', lat);
+				latitude.setAttribute('type', 'hidden');
+				latitude.setAttribute('name', 'bbscttCchLa');
+				latitude.setAttribute('value', lat);
 
-            longitude.setAttribute('type', 'hidden');
-            longitude.setAttribute('name', 'bbscttCchLo');
-            longitude.setAttribute('value', lng);
+				longitude.setAttribute('type', 'hidden');
+				longitude.setAttribute('name', 'bbscttCchLo');
+				longitude.setAttribute('value', lng);
+
+            store.setAttribute('type', 'hidden');
+            store.setAttribute('name', 'bbscttStore');
+            store.setAttribute('value', title);
+
 
             mapContainer.appendChild(latitude);
             mapContainer.appendChild(longitude);
+            mapContainer.appendChild(store);
         }
         /* 지도 관련 */
 
 
-        /*[- end of function -]*/
+			/*[- end of function -]*/
 
         /*]]>*/
     </script>

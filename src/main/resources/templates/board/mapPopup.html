@@ -63,7 +63,7 @@
 </th:block>
 
 <th:block layout:fragment="script">
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=앱키"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=326897593e49c2218efe8c3613445f46&libraries=services"></script>
     <script th:inline="javascript">
         // 마커를 담을 배열입니다
         var markers = [];
@@ -226,9 +226,6 @@
                 });
 
             marker.setMap(map); // 지도 위에 마커를 표출합니다
-
-            console.log('포지션============');
-            console.log(position.getLat());
 
             markers.push(marker);  // 배열에 생성된 마커를 추가합니다
 

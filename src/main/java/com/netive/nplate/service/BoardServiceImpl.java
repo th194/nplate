@@ -62,19 +62,19 @@ public class BoardServiceImpl implements BoardService {
         System.out.println("serviceImpl path >>>>>>>>>>>>>>>>> " + path);
         System.out.println("serviceImpl getBbscttNo() >>>>>>>>>>>>>>>>> " + board.getBbscttNo());
 
-        List<BoardFileDTO> fileList = fileUtils.uploadFiles(fileSrc, board.getBbscttNo(), path);
+//        List<BoardFileDTO> fileList = fileUtils.uploadFiles(fileSrc, board.getBbscttNo(), path);
 
 
-        System.out.println("boardServiceImpl fileList =>>>>>>>>>>>>>>>>>>> " +fileList);
+//        System.out.println("boardServiceImpl fileList =>>>>>>>>>>>>>>>>>>> " +fileList);
+//
+//        System.out.println("fileList validation >>>>>>>>>>>>>>>> " +CollectionUtils.isEmpty(fileList));
 
-        System.out.println("fileList validation >>>>>>>>>>>>>>>> " +CollectionUtils.isEmpty(fileList));
-
-        if(CollectionUtils.isEmpty(fileList) == false) {
-            queryResult = boardFileMapper.insertFile(fileList);
-            if(queryResult < 1) {
-                queryResult = 0;
-            }
-        }
+//        if(CollectionUtils.isEmpty(fileList) == false) {
+//            queryResult = boardFileMapper.insertFile(fileList);
+//            if(queryResult < 1) {
+//                queryResult = 0;
+//            }
+//        }
 
 
         return (queryResult > 0);
@@ -86,15 +86,24 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.selectBoardDetail(idx);
     }
 
+    // 게시글 수정
+    @Override
+    public Long updateBoard(BoardDTO board) {
+        boardMapper.updateBoard(board);
+        return board.getBbscttNo();
+    }
+
+    @Override
+    public BoardDTO findBoardIdx(Long idx) {
+        return boardMapper.findByIdx(idx);
+    }
+
     // 게시글 삭제
     @Override
     public boolean deleteBoard(Long idx) {
         int queryResult = 0;
-        BoardDTO boardDTO = boardMapper.selectBoardDetail(idx);
-
-//		if(boardDTO != null && "N".equals(boardDTO.getDeleteYn())) {
-//			queryResult = boardMapper.deleteBoard(idx);
-//		}
+        queryResult = boardMapper.deleteBoard(idx);
+        System.out.println("삭제====================================="+queryResult);
         return (queryResult == 1) ? true : false;
     }
 

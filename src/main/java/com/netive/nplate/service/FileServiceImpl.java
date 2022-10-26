@@ -16,7 +16,7 @@ import java.util.UUID;
 @Service
 public class FileServiceImpl implements FileService {
 
-    private final String fileDir = "E:/test/";
+    private final String fileDir = "D:/images/";
 
     @Autowired
     private FileMapper fileMapper;

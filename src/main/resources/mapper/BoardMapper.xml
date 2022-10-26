@@ -18,7 +18,7 @@
 		BBSCTT_CCH_LO
 	</sql>
 
-	<insert id="insertBoard" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="bbscttSj">
+	<insert id="insertBoard" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="bbscttNo">
 		INSERT INTO NETIVE_PROJECT01_BOARD(
 			BBSCTT_SJ,
 			BBSCTT_CN,
@@ -50,28 +50,40 @@
 		WHERE
 		BBSCTT_NO = #{bbscttNo}
 	</select>
+
+	<!-- 게시글 상세정보 조회 -->
+	<select id="findByIdx" parameterType="long" resultType="BoardDTO">
+		SELECT
+		<include refid="boardColumns" />
+		FROM
+		NETIVE_PROJECT01_BOARD
+		WHERE
+		BBSCTT_NO = #{bbscttNo}
+	</select>
+
+	<update id="updateBoard" parameterType="BoardDTO">
+		UPDATE NETIVE_PROJECT01_BOARD
+		SET
+			BBSCTT_UPDDE = NOW(),
+			BBSCTT_SJ = #{bbscttSj},
+			BBSCTT_CN = #{bbscttCn},
+			BBSCTT_IMAGE = #{bbscttImage},
+			BBSCTT_GRADE = #{bbscttGrade},
+			BBSCTT_STORE = #{bbscttStore},
+			BBSCTT_HASHTAG = #{bbscttHashtag},
+			BBSCTT_CCH_LA = #{bbscttCchLa},
+			BBSCTT_CCH_LO = #{bbscttCchLo}
+		WHERE
+			BBSCTT_NO=#{bbscttNo}
+	</update>
 	
-<!--	<update id="updateBoard" parameterType="BoardDTO">-->
-<!--		UPDATE tb_board-->
-<!--		SET-->
-<!--			 update_time=NOW()-->
-<!--			,title = #{title}-->
-<!--			,content = #{content}-->
-<!--			,writer = #{writer}-->
-<!--			,notice_yn = IFNULL(#{noticeYn}, 'N')-->
-<!--			,secret_yn = IFNULL(#{secretYn}, 'N')-->
-<!--		WHERE-->
-<!--			idx=#{idx}	-->
-<!--	</update>-->
-	
-<!--	<update id="deleteBoard" parameterType="long">-->
-<!--		UPDATE tb_board-->
-<!--		SET -->
-<!--			 delete_yn = 'Y'-->
-<!--			,delete_time = NOW()-->
-<!--		WHERE-->
-<!--			idx = #{idx}-->
-<!--	</update>-->
+	<delete id="deleteBoard" parameterType="long">
+		DELETE
+		FROM
+			NETIVE_PROJECT01_BOARD
+		WHERE
+			BBSCTT_NO = #{bbscttNo}
+	</delete>
 
 	<select id="selectBoardList" parameterType="BoardDTO" resultType="BoardDTO">
 		SELECT

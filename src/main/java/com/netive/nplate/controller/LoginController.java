@@ -41,6 +41,7 @@ public class LoginController {
     public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
 
+
         try {
             // 로그인 되어있으면 -> 피드(임시로 myPage 지정)
             // 로그인 되어있지 않으면 -> 로그인 페이지

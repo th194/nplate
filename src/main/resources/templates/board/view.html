@@ -6,7 +6,7 @@
 
 	<th:block layout:fragment="content">
 		<div class="card-content">
-			<form class="form-horizontal form-view" th:object="${board}">
+			<form class="form-horizontal form-view form-grade" th:object="${board}">
 				<div class="form-group">
 					<label for="bbscttSj" class="col-sm-2 control-label">제목</label>
 					<div class="col-sm-10">
@@ -34,6 +34,23 @@
 				</div>
 
 				<div class="form-group">
+					<label for="bbscttGrade" class="col-sm-2 control-label">평점</label>
+					<fieldset>
+						<input type="radio" name="bbscttGrade" value="5" id="rate1">
+						<label for="rate1" class="grade">⭐</label>
+						<input type="radio" name="bbscttGrade" value="4" id="rate2">
+						<label for="rate2" class="grade">⭐</label>
+						<input type="radio" name="bbscttGrade" value="3" id="rate3">
+						<label for="rate3" class="grade">⭐</label>
+						<input type="radio" name="bbscttGrade" value="2" id="rate4">
+						<label for="rate4" class="grade">⭐</label>
+						<input type="radio" name="bbscttGrade" value="1" id="rate5">
+						<label for="rate5" class="grade">⭐</label>
+					</fieldset>
+				</div>
+
+
+				<div class="form-group">
 					<label for="bbscttHashtag" class="col-sm-2 control-label">해시태그</label>
 					<div class="col-sm-10">
 						<p class="form-control" th:text="*{bbscttHashtag}"></p>
@@ -57,7 +74,7 @@
 			<div class="btn_wrap text-center">
 				<a th:href="@{/board/list.do}" class="btn btn-default waves-effect waves-light">뒤로가기</a>
 				<a th:href="@{/board/write.do( bbscttNo=${board.bbscttNo} )}" class="btn btn-primary waves-effect waves-light">수정하기</a>
-				<button type="button" class="btn btn-danger waves-effect waves-light" th:onclick="deleteBoard()">삭제하기</button>
+				<button type="button" class="btn btn-danger waves-effect waves-light" th:myVal="*{board.bbscttNo}" th:onclick="deleteBoard(this.getAttribute('myVal'))">삭제하기</button>
 			</div>
 		</div>
 		<!-- /.card-content -->
@@ -67,7 +84,31 @@
 		<script th:inline="javascript">
 			/*<![CDATA[*/
 
+			var board = [[${board}]];
+			console.log('board = ' + JSON.stringify(board));
 
+			/* 평점 렌더링 */
+			$('input[name=bbscttGrade]').attr('disabled', true);
+
+			console.log('별점 점수 ============================== ' + board.bbscttGrade);
+			switch (board.bbscttGrade) {
+				case 1 :
+					$('#rate5').attr('checked', true);
+					break;
+				case 2 :
+					$('#rate4').attr('checked', true);
+					break;
+				case 3 :
+					$('#rate3').attr('checked', true);
+					break;
+				case 4 :
+					$('#rate2').attr('checked', true);
+					break;
+				case 5 :
+					$('#rate1').attr('checked', true);
+					break;
+			}
+			/* 평점 렌더링 */
 
 			/*게시글 삭제 함수*/
 			function deleteBoard(idx) {
@@ -87,20 +128,27 @@
 			}
 
 			var $map = document.getElementById('map');
-			console.log('$map = ' + JSON.stringify($map));
+
 			var options = {
-				center : new kakao.maps.LatLng(33.450701, 126.570667),
+				center : new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo),
 				level : 3
 			}
 
+			// 지도 생성
 			var map = new kakao.maps.Map($map, options);
-			$map.append(map);
-			/*[- end of function -]*/
 
-			var board = /*[[${board}]]*/"";
-			var fileList = /*[[${fileList}]]*/"";
-			console.log('board = ' + JSON.stringify(board));
-			console.log('fileList = ' + JSON.stringify(fileList));
+			// 마커가 표시될 위치
+			var markerPosition = new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo);
+
+			// 마커 생성
+			var marker = new kakao.maps.Marker({
+				position : markerPosition
+			});
+
+			// 마커생성
+			marker.setMap(map);
+
+			$map.append(map);
 
 
 			/* smartEditor */
@@ -128,6 +176,7 @@
 			smartEditor();
 			/* smartEditor */
 
+			/*[- end of function -]*/
 			/*]]>*/
 		</script>
 	</th:block>
