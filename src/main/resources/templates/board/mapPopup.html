@@ -279,16 +279,22 @@
         function displayInfowindow(marker, title) {
             var position = marker.getPosition();
 
+            var infoMap = new Map();
+
+            infoMap.set("lat", position.getLat());
+            infoMap.set("lng", position.getLng());
+            infoMap.set("title", title);
+
             var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
-            content += '<div><button type="button" onclick="';
-            content += 'closePopup(';
-            content += position.getLat();
-            content += ','
-            content += position.getLng();
-            content += ')">추가하기</button></div>';
+            content += '<div><button type="button" id="addInfo">추가하기</button>';
 
             infowindow.setContent(content);
             infowindow.open(map, marker);
+
+            var btn = document.getElementById('addInfo');
+            btn.onclick = function () {
+                closePopup(infoMap);
+            }
         }
 
         // 검색결과 목록의 자식 Element를 제거하는 함수입니다
@@ -299,9 +305,9 @@
         }
 
         // 내가 추가함
-        function closePopup(lat, lng) {
+        function closePopup(info) {
             window.close();
-            window.opener.getMapInfo(lat, lng);
+            window.opener.getMapInfo(info);
         }
 
     </script>
