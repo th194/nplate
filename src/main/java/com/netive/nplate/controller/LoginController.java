@@ -1,5 +1,6 @@
 package com.netive.nplate.controller;
 
+import com.netive.nplate.configuration.SessionConfig;
 import com.netive.nplate.domain.Area;
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.domain.MemberDTO;
@@ -81,6 +82,9 @@ public class LoginController {
 
         if(memberDTO != null) {
             HttpSession session = request.getSession();
+
+            // 중복로그인 체크
+            SessionConfig.getSessionidCheck("member", dto.getId());
 
             session.setAttribute("member", memberDTO);
             session.setAttribute("memberID", memberDTO.getId());
