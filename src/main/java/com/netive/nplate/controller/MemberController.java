@@ -15,10 +15,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class MemberController {
@@ -35,10 +38,16 @@ public class MemberController {
 
     // 회원목록
     @GetMapping("/list")
-    public String list(Model model) {
-        List<MemberDTO> memberList = memberService.getMemberList();
-        model.addAttribute("memberList", memberList);
-        return "member/list";
+    public String list(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String id = (String) session.getAttribute("memberID");
+        if (Objects.equals(id, "admin")) {
+            List<MemberDTO> memberList = memberService.getMemberList();
+            model.addAttribute("memberList", memberList);
+            return "member/list";
+        } else {
+            return "redirect:/";
+        }
     }
 
     // 회원가입 페이지
@@ -64,6 +73,8 @@ public class MemberController {
 
             if (result > 0) {
                 fileService.saveFile(file, memberDTO.getId());
+                model.addAttribute("message", "가입이 완료되었습니다.");
+                model.addAttribute("url", "/");
                 return "member/index";
             } else {
                 model.addAttribute("message", "else msg======");
@@ -84,7 +95,6 @@ public class MemberController {
     @GetMapping("/member/info")
     public String info(String id, Model model) throws IOException {
         MemberDTO memberDTO = memberService.getMemberInfo(id);
-        FileDTO fileDTO = fileService.getFileInfo(id);
 
         // 생일 처리
         String birthday = memberDTO.getBirthday();
@@ -137,6 +147,7 @@ public class MemberController {
         return "member/updateForm";
     }
 
+
     // 회원 정보 수정
     @PostMapping("/member/update")
     public String update(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
@@ -150,10 +161,10 @@ public class MemberController {
         return "redirect:/list"; // 처리 수정해야함
     }
 
+
     // 회원가입 아이디 중복 조회
-    @ResponseBody
     @GetMapping("member/checkOverlappedID")
-    public String checkOverlappedID(String id) {
+    public @ResponseBody String checkOverlappedID(String id) {
         boolean result = memberService.checkOverlappedId(id) <= 0;
         if (result) {
             return "usable";
@@ -161,6 +172,7 @@ public class MemberController {
             return "overlapped";
         }
     }
+
 
     // 공통 에러페이지
     @GetMapping("/member/error")

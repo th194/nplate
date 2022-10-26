@@ -83,6 +83,7 @@ public class LoginController {
             HttpSession session = request.getSession();
 
             session.setAttribute("member", memberDTO);
+            session.setAttribute("memberID", memberDTO.getId());
             session.setAttribute("isLogOn", true);
 
             model.addAttribute("memberInfo", memberDTO);
