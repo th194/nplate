@@ -9,10 +9,7 @@ import com.netive.nplate.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,7 +50,9 @@ public class LoginController {
 
                 model.addAttribute("memberInfo", memberDTO);
                 model.addAttribute("area", Area.values());
+
                 return "member/myPage";
+
             } else {
                 return "member/index";
             }
@@ -66,13 +65,14 @@ public class LoginController {
     }
 
 
-    // 로그인
-    @PostMapping("/member/login")
-    public String login(MemberDTO dto, Model model, HttpServletRequest request, HttpServletResponse response, RedirectAttributes rAttr) {
+    // 로그인 후 마이페이지 이동
+    @PostMapping("/member/myPage")
+    public String login(MemberDTO dto, Model model, HttpServletRequest request) {
         MemberDTO memberDTO = memberService.login(dto.getId(), dto.getPwd());
 
         if(memberDTO != null) {
             HttpSession session = request.getSession();
+
             session.setAttribute("member", memberDTO);
             session.setAttribute("isLogOn", true);
 
@@ -80,20 +80,35 @@ public class LoginController {
             return "member/myPage";
 
         } else {
-            rAttr.addAttribute("result", "loginFailed");
+            model.addAttribute("message", "아이디와 비밀번호를 다시 확인해주세요.");
+            model.addAttribute("url", "/");
             return "member/error";
         }
     }
 
 
+    // 마이페이지 주소로 이동
+    @GetMapping("/member/myPage")
+    public String myPage(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession();
+
+        try {
+            if ((boolean) session.getAttribute("isLogOn")) {
+                model.addAttribute("memberInfo", session.getAttribute("member"));
+                return "member/myPage";
+            } else {
+                return "redirect:/";
+            }
+
+        } catch (Exception e) {
+            return "redirect:/";
+        }
+    }
+
     // 로그아웃
     @GetMapping("/member/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
-        /*
-        session.removeAttribute("member");
-        session.setAttribute("isLogOn", false);
-        */
         session.invalidate();
 
         return "redirect:/";
@@ -175,6 +190,7 @@ public class LoginController {
         }
     }
 
+
     // 회원정보 수정폼
     @GetMapping("member/myInfoUpdateForm")
     public String myInfoUpdateForm(Model model, HttpServletRequest request) throws IOException {
@@ -207,6 +223,5 @@ public class LoginController {
             return "member/error";
         }
     }
-
 
 }
