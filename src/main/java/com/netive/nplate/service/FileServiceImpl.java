@@ -46,7 +46,7 @@ public class FileServiceImpl implements FileService {
         FileDTO dto = new FileDTO(id, origName, savedName, savedPath);
 
         // 로컬에 저장
-        File savedFile = new File(savedName);
+        File savedFile = new File(savedPath);
         file.transferTo(savedFile);
 
         // 데이터베이스에 파일 이름 저장
