@@ -59,7 +59,7 @@ public class LoginController {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             session.invalidate();
             return "member/index";
         }
