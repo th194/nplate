@@ -6,6 +6,7 @@ import com.netive.nplate.domain.MemberDTO;
 import com.netive.nplate.service.FileService;
 import com.netive.nplate.service.MemberService;
 
+import com.netive.nplate.util.MemberUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,6 +29,9 @@ public class MemberController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private MemberUtils memberUtils;
+
 
     // 회원목록
     @GetMapping("/list")
@@ -46,20 +50,31 @@ public class MemberController {
 
     // 회원 등록
     @PostMapping("/member/submit")
-    public String submit(MemberDTO memberDTO, @RequestParam MultipartFile file) throws IOException {
+    public String submit(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
         try {
             // 생일 문자열 형식 변경
             String formatDate = memberDTO.getBirthday().replaceAll("-", "");
             memberDTO.setBirthday(formatDate);
 
+            // 비밀번호 암호회
+            String encPwd = memberUtils.encrypt(memberDTO.getPwd());
+            memberDTO.setPwd(encPwd);
+
             int result = memberService.registerMember(memberDTO);
+
             if (result > 0) {
                 fileService.saveFile(file, memberDTO.getId());
                 return "member/index";
             } else {
+                model.addAttribute("message", "else msg======");
+                model.addAttribute("url", "/member/error");
                 return "member/error";
             }
+
         } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "catch msg=======");
+            model.addAttribute("url", "/member/error");
             return "member/error";
         }
     }
@@ -145,6 +160,15 @@ public class MemberController {
         } else {
             return "overlapped";
         }
+    }
+
+    // 공통 에러페이지
+    @GetMapping("/member/error")
+    public String errorPage(Model model) {
+        // todo 처리변경(임시 에러 처리)
+        model.addAttribute("message", null);
+        model.addAttribute("url", null);
+        return "member/error";
     }
 
 }

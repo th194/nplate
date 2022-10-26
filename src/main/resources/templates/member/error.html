@@ -20,8 +20,10 @@
                 alert(msg);
             }
             var url = [[ ${url} ]];
-            console.log(url);
-            location.replace(url);
+            if (url) {
+                console.log(url);
+                location.replace(url);
+            }
         });
 
     </script>

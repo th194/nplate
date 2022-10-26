@@ -6,6 +6,7 @@ import com.netive.nplate.domain.MemberDTO;
 import com.netive.nplate.service.BoardService;
 import com.netive.nplate.service.LoginService;
 import com.netive.nplate.service.MemberService;
+import com.netive.nplate.util.MemberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Controller
@@ -28,6 +30,9 @@ public class LoginController {
 
     @Autowired
     private BoardService boardSerive;
+
+    @Autowired
+    private MemberUtils memberUtils;
 
 
     // 첫페이지
@@ -67,8 +72,12 @@ public class LoginController {
 
     // 로그인 후 마이페이지 이동
     @PostMapping("/member/myPage")
-    public String login(MemberDTO dto, Model model, HttpServletRequest request) {
-        MemberDTO memberDTO = memberService.login(dto.getId(), dto.getPwd());
+    public String login(MemberDTO dto, Model model, HttpServletRequest request) throws NoSuchAlgorithmException {
+
+        // 비밀번호 암호화 처리 추가
+        String encPwd = memberUtils.encrypt(dto.getPwd());
+
+        MemberDTO memberDTO = memberService.login(dto.getId(), encPwd);
 
         if(memberDTO != null) {
             HttpSession session = request.getSession();
