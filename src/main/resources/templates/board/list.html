@@ -14,33 +14,69 @@
 	</th:block>
 
 	<th:block layout:fragment="content">
-		<div class="table-responsive clearfix">
-			<table class="table table-hover">
-				<thead>
-					<tr>
-						<th>번호</th>
-						<th>제목</th>
-						<th>작성자</th>
-						<th>등록일</th>
-						<th>조회 수</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:if="${not #lists.isEmpty( boardList )}" th:each="row : ${boardList}">
-						<td scope="row" th:text="${row.bbscttNo}"></td>
-						<td class="text-left">
-							<a th:href="@{/board/view.do( idx=${row.bbscttNo} )}" th:text="${row.bbscttSj}"></a>
-						</td>
-						<td th:text="${row.bbscttWrter}"></td>
-<!--						<td th:text="${#temporals.format( row.bbscttRgsde, 'yyyy-MM-dd' )}"></td>-->
-						<td th:text="${row.bbscttRgsde}"></td>
-						<td th:text="${row.bbscttRdcnt}"></td>
-					</tr>
-					<tr th:unless="${not #lists.isEmpty( boardList )}">
-						<td colspan="5">조회된 결과가 없습니다.</td>
-					</tr>
-				</tbody>
-			</table>
+
+		<div class="list-wrap" th:if="${not #lists.isEmpty( boardList )}" th:each="row : ${boardList}">
+			<div class="fixed_img_col">
+				<ul>
+					<li>
+						<span th:text="${row.bbscttNo}">번호</span>
+						<a th:href="@{/board/view.do( idx=${row.bbscttNo} )}" th:text="${row.bbscttSj}">
+							<span class="thumb">
+								<img th:src="${row.bbscttImage}" alt="테스트">
+								<em>제목</em>
+							</span>
+							<strong th:text="${row.bbscttImage}">이미지 제목</strong>
+						</a>
+						<p th:text="${row.bbscttRgsde}">날짜</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--		<div class="table-responsive clearfix">-->
+<!--			<table class="table table-hover">-->
+<!--				<thead>-->
+<!--					<tr>-->
+<!--						<th>번호</th>-->
+<!--						<th>제목</th>-->
+<!--						<th>작성자</th>-->
+<!--						<th>등록일</th>-->
+<!--						<th>조회 수</th>-->
+<!--					</tr>-->
+<!--				</thead>-->
+<!--				<tbody>-->
+<!--					<tr th:if="${not #lists.isEmpty( boardList )}" th:each="row : ${boardList}">-->
+<!--						<td scope="row" th:text="${row.bbscttNo}"></td>-->
+<!--						<td class="text-left">-->
+<!--							<a th:href="@{/board/view.do( idx=${row.bbscttNo} )}" th:text="${row.bbscttSj}"></a>-->
+<!--						</td>-->
+<!--						<td th:text="${row.bbscttWrter}"></td>-->
+<!--&lt;!&ndash;						<td th:text="${#temporals.format( row.bbscttRgsde, 'yyyy-MM-dd' )}"></td>&ndash;&gt;-->
+<!--						<td th:text="${row.bbscttRgsde}"></td>-->
+<!--						<td th:text="${row.bbscttRdcnt}"></td>-->
+<!--					</tr>-->
+<!--					<tr th:unless="${not #lists.isEmpty( boardList )}">-->
+<!--						<td colspan="5">조회된 결과가 없습니다.</td>-->
+<!--					</tr>-->
+<!--				</tbody>-->
+<!--			</table>-->
 
 			<div class="btn_wrap text-right">
 				<a th:href="@{/member/board/write}" class="btn btn-primary waves-effect waves-light">글 등록</a>
@@ -73,6 +109,10 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			/*<![CDATA[*/
+			var row = [[${row}]];
+			console.log('row = ' + JSON.stringify(row));
+
+
 			/*[- end of function -]*/
 			/*]]>*/
 		</script>

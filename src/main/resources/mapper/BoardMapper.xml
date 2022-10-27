@@ -32,10 +32,10 @@
 		) VALUES (
 		#{bbscttSj},
 		#{bbscttCn},
-		#{bbscttWrter},
+		"123",
 		#{bbscttImage},
 		#{bbscttGrade},
-		"맛집",
+		#{bbscttStore},
 		IFNULL(#{bbscttHashtag}, ''),
 		#{bbscttCchLa},
 		#{bbscttCchLo}
