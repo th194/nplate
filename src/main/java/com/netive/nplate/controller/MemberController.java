@@ -183,4 +183,37 @@ public class MemberController {
         return "member/error";
     }
 
+
+    // 테스트용 페이지
+    @GetMapping("/member/test")
+    public String testPage(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        try {
+            System.out.println("로그인 여부");
+            System.out.println(session.getAttribute("isLogOn"));
+
+            if ((boolean) session.getAttribute("isLogOn")) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
+
+                // 생일 처리
+                String birthday = memberDTO.getBirthday();
+                if (!birthday.contains("-")) {
+                    String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
+                    memberDTO.setBirthday(formatDay);
+                }
+
+                model.addAttribute("memberInfo", memberDTO);
+                return "member/test";
+            } else {
+                return "member/error";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.invalidate();
+            return "redirect:/";
+        }
+    }
+
 }
