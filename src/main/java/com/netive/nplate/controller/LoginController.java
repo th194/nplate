@@ -108,7 +108,7 @@ public class LoginController {
         HttpSession session = request.getSession();
 
         try {
-            if ((boolean) session.getAttribute("isLogOn")) {
+            if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
                 model.addAttribute("memberInfo", session.getAttribute("member"));
                 return "member/test";
             } else {
