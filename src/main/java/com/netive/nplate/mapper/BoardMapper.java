@@ -2,6 +2,7 @@ package com.netive.nplate.mapper;
 
 import java.util.List;
 
+import com.netive.nplate.domain.Criteria;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.netive.nplate.domain.BoardDTO;
@@ -12,8 +13,8 @@ public interface BoardMapper {
 	public BoardDTO selectBoardDetail(Long idx);
 	public int updateBoard(BoardDTO params);
 	public int deleteBoard(Long idx);
-	public List<BoardDTO> selectBoardList();
-	public int selectBoardTotalCount();
+	public List<BoardDTO> selectBoardList(Criteria cri);
+	public int selectBoardTotalCount(Criteria cri);
 	public boolean cntPlus(Long idx);
-	public BoardDTO findByIdx(Long idx);
+	public List<BoardDTO> selectBoardSearchList(BoardDTO board);
 }

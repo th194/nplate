@@ -24,6 +24,8 @@ public class BoardDTO {
 	private Double bbscttCchLa;			// 지도 위도
 	private Double bbscttCchLo;			// 지도 경도
 
+	private String type;				// 검색 타입
+	private String keyword;				// 검색 내용
 	public BoardDTO() {
 	}
 

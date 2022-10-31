@@ -18,6 +18,37 @@
 		BBSCTT_CCH_LO
 	</sql>
 
+	<!-- 게시글 검색 -->
+	<sql id="search">
+		<!-- 검색 키워드가 있을 때 -->
+		<if test="keyword != null and keyword != ''">
+			<choose>
+				<!-- 검색 유형이 있을 때 -->
+				<when test="type != null and type != ''">
+					<choose>
+						<when test="type.equals( 'bbscttSj' )">
+							AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
+						</when>
+						<when test="type.equals( 'bbscttCn' )">
+							AND BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')
+						</when>
+						<when test="type.equals( 'bbscttWrter' )">
+							AND BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')
+						</when>
+					</choose>
+				</when>
+				<!-- 전체 검색일 때 때 -->
+				<otherwise>
+					AND (
+					BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
+					OR BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')
+					OR BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')
+					)
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
 	<insert id="insertBoard" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="bbscttNo">
 		INSERT INTO NETIVE_PROJECT01_BOARD(
 			BBSCTT_SJ,
@@ -85,22 +116,27 @@
 			BBSCTT_NO = #{bbscttNo}
 	</delete>
 
-	<select id="selectBoardList" parameterType="BoardDTO" resultType="BoardDTO">
+	<!--게시글 목록-->
+	<select id="selectBoardList" resultType="BoardDTO">
 		SELECT
 			<include refid="boardColumns"/>
 		FROM
 			NETIVE_PROJECT01_BOARD
--- 		WHERE
--- 			BBSCTT_WRTER ='netive'
+		WHERE BBSCTT_NO
+			<include refid="search"></include>
 		ORDER BY
 			BBSCTT_NO DESC
+		LIMIT #{skip}, #{amount}
 	</select>
-	
+
+	<!-- 게시글 수 카운트 -->
 	<select id ="selectBoardTotalCount" parameterType="BoardDTO" resultType="int">
 		SELECT
 			COUNT(*)
 		FROM
 			NETIVE_PROJECT01_BOARD
+			WHERE BBSCTT_NO
+		<include refid="search"></include>
 	</select>
 	
 	<update id="cntPlus" parameterType="long">
@@ -110,4 +146,15 @@
 		WHERE
 			BBSCTT_NO = #{bbscttNo}
 	</update>
+
+	<!-- 게시글 검색 -->
+	<select id="selectBoardSearchList" parameterType="BoardDTO" resultType="BoardDTO">
+		SELECT
+		    *
+		FROM NETIVE_PROJECT01_BOARD
+		WHERE BBSCTT_NO
+		<if test="type != null">
+			<include refid="search"></include>
+		</if>
+	</select>
 </mapper>

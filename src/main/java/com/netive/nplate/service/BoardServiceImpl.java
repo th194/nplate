@@ -1,21 +1,18 @@
 package com.netive.nplate.service;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.netive.nplate.domain.BoardFileDTO;
+import com.netive.nplate.domain.Criteria;
 import com.netive.nplate.mapper.BoardFileMapper;
 import com.netive.nplate.util.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.mapper.BoardMapper;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -93,11 +90,6 @@ public class BoardServiceImpl implements BoardService {
         return board.getBbscttNo();
     }
 
-    @Override
-    public BoardDTO findBoardIdx(Long idx) {
-        return boardMapper.findByIdx(idx);
-    }
-
     // 게시글 삭제
     @Override
     public boolean deleteBoard(Long idx) {
@@ -109,13 +101,18 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 목록
     @Override
-    public List<BoardDTO> getBordList() {
+    public List<BoardDTO> getBordList(Criteria cri) {
         List<BoardDTO> boardList = Collections.emptyList();
-        int boardTotalCount = boardMapper.selectBoardTotalCount();
+        int boardTotalCount = boardMapper.selectBoardTotalCount(cri);
         if (boardTotalCount > 0) {
-            boardList = boardMapper.selectBoardList();
+            boardList = boardMapper.selectBoardList(cri);
         }
         return boardList;
+    }
+
+    @Override
+    public int selectBoardTotalCount(Criteria cri) {
+        return boardMapper.selectBoardTotalCount(cri);
     }
 
     // 게시글 조회수 증가
@@ -134,6 +131,11 @@ public class BoardServiceImpl implements BoardService {
 //            return Collections.emptyList();
 //        }
         return boardFileMapper.selectFileList(idx);
+    }
+
+    @Override
+    public List<BoardDTO> getSearchList(BoardDTO board) {
+        return boardMapper.selectBoardSearchList(board);
     }
 
 

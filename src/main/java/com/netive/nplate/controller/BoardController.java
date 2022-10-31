@@ -6,7 +6,8 @@ import java.util.*;
 import java.util.List;
 
 import com.netive.nplate.domain.BoardFileDTO;
-import com.netive.nplate.util.FileUtils;
+import com.netive.nplate.domain.BoardPageDTO;
+import com.netive.nplate.domain.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
@@ -25,9 +26,6 @@ public class BoardController {
 	
 	@Autowired
 	private BoardService boardSerive;
-
-	@Autowired
-	private FileUtils fileUtils;
 
 	/**
 	 * 게시글 작성
@@ -62,9 +60,6 @@ public class BoardController {
 		try {
 			String path = request.getSession().getServletContext().getRealPath("/img");
 
-			System.out.println("컨트롤러 path = >>>>>>>>>>>>>>>>>>>>> " + path);
-//			List<File> fileList = fileUtils.getImgFileList(file, path);
-
 			boolean isRegistered = boardSerive.registerBoard(boardDTO, files, path);
 
 			if (isRegistered == false) {
@@ -73,10 +68,6 @@ public class BoardController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-//		boardSerive.registerBoard(boardDTO);
-		List<BoardDTO> boardList = boardSerive.getBordList();
-		model.addAttribute("boardList", boardList);
 
 		return "board/list";
 	}
@@ -87,9 +78,16 @@ public class BoardController {
 	 * @return
 	 */
 	@GetMapping("/board/list.do")
-	public String openBoardList(Model model) {
-		List<BoardDTO> boardList = boardSerive.getBordList();
+	public String openBoardList(Criteria cri, Model model) {
+		List<BoardDTO> boardList = boardSerive.getBordList(cri);
 		model.addAttribute("boardList", boardList);
+
+		int total = boardSerive.selectBoardTotalCount(cri);
+
+		BoardPageDTO boardPageDTO = new BoardPageDTO(cri, total);
+
+		model.addAttribute("pageMaker", boardPageDTO);
+
 		return "board/list";
 	}
 	
@@ -241,9 +239,6 @@ public class BoardController {
 				String defaultPath = request.getSession().getServletContext().getRealPath("/");
 				String path = defaultPath + "img" + File.separator;
 
-				// 하.. Not Allowed -_-;
-//				String path = "D:/images/";
-
 				File file = new File(path);
 
 				if(!file.exists()) {
@@ -294,6 +289,20 @@ public class BoardController {
 
 
 
+	}
+
+	/**
+	 * 게시글 검색
+	 * @param keyword
+	 * @return
+	 */
+	@GetMapping("/board/search.do")
+	@ResponseBody
+	private List<BoardDTO> getSearchList(@RequestParam("type") String type, @RequestParam("keyword") String keyword) throws Exception {
+		BoardDTO boardDTO = new BoardDTO();
+		boardDTO.setType(type);
+		boardDTO.setKeyword(keyword);
+		return boardSerive.getSearchList(boardDTO);
 	}
 
 	/**
