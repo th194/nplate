@@ -100,9 +100,12 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
 
-
         /* 게시글 검색 */
-        function getSearchList(page) {
+        window.onload = () => {
+            getSearchList();
+        }
+
+        function getSearchList() {
 
             var selectOption = $('#type option:selected').val();
             var searchInput = $('input[name=keyword]').val();
@@ -152,6 +155,8 @@
                                 </div>
                             `;
                         });
+                    } else {
+                        str = `<div>검색 결과가 없습니다.</div>`
                     }
                     $('#boardList').empty().append(str);
                 },
