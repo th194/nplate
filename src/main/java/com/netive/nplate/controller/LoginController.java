@@ -5,6 +5,7 @@ import com.netive.nplate.domain.Area;
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.domain.MemberDTO;
 import com.netive.nplate.service.BoardService;
+import com.netive.nplate.service.FileService;
 import com.netive.nplate.service.LoginService;
 import com.netive.nplate.service.MemberService;
 import com.netive.nplate.util.MemberUtils;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class LoginController {
@@ -31,6 +33,9 @@ public class LoginController {
 
     @Autowired
     private BoardService boardSerive;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     private MemberUtils memberUtils;
@@ -239,4 +244,34 @@ public class LoginController {
         }
     }
 
+
+    // 회원 탈퇴
+    @PostMapping("/member/deleteAcc")
+    public String delete(Model model, MemberDTO dto, HttpServletRequest request) throws IOException, NoSuchAlgorithmException {
+        HttpSession session = request.getSession();
+
+        // 비밀번호 암호화 처리 추가
+        String encPwd = memberUtils.encrypt(dto.getPwd());
+
+        try {
+            if (session.getAttribute("member") != null) {
+                MemberDTO sessionDto = (MemberDTO) session.getAttribute("member");
+
+                if (Objects.equals(sessionDto.getId(), dto.getId()) && Objects.equals(sessionDto.getPwd(), encPwd)) {
+                    memberService.deleteMember(dto.getId()); // 회원 DB 삭제처리
+                    fileService.deleteFile(dto.getId()); // 프로필 사진 파일 및 DB 삭제
+
+                    model.addAttribute("message", "탈퇴가 완료되었습니다.");
+                    model.addAttribute("url", "/");
+                    session.invalidate();
+
+                    return "member/index";
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/";
+    }
 }
