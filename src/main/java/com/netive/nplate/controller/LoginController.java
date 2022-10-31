@@ -228,7 +228,7 @@ public class LoginController {
                 model.addAttribute("memberInfo", memberDTO);
                 model.addAttribute("area", Area.values());
 
-                return "member/updateForm";
+                return "bootstrap-template/updateForm";
             } else {
                 return "member/error";
             }
