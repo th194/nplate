@@ -58,7 +58,7 @@ public class LoginController {
                 model.addAttribute("memberInfo", memberDTO);
                 model.addAttribute("area", Area.values());
 
-                return "member/test";
+                return "bootstrap-template/feed";
 
             } else {
                 return "member/index";
@@ -92,7 +92,7 @@ public class LoginController {
             session.setAttribute("isLogOn", true);
 
             model.addAttribute("memberInfo", memberDTO);
-            return "member/test";
+            return "bootstrap-template/feed";
 
         } else {
             model.addAttribute("message", "아이디와 비밀번호를 다시 확인해주세요.");
@@ -110,7 +110,7 @@ public class LoginController {
         try {
             if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
                 model.addAttribute("memberInfo", session.getAttribute("member"));
-                return "member/test";
+                return "bootstrap-template/feed";
             } else {
                 return "redirect:/";
             }
@@ -193,7 +193,7 @@ public class LoginController {
 
                 model.addAttribute("memberInfo", memberDTO);
                 model.addAttribute("area", Area.values());
-                return "member/myInfo";
+                return "bootstrap-template/myInfo";
             } else {
                 return "member/error";
             }
