@@ -6,138 +6,100 @@
 
 <th:block layout:fragment="content">
     <div class="container">
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">회원가입</h1>
+                            </div>
+                            <form class="user" id="joinForm" th:action="@{/member/submit}" method="post" enctype="multipart/form-data">
+                                <!-- ID -->
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input type="text" class="form-control form-control-user" id="id" name="id" placeholder="ID" onchange="changeId()" />
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <button type="button" class="btn btn-primary btn-user btn-block" onclick="checkId()">
+                                            아이디 중복 조회
+                                        </button>
+                                    </div>
+                                </div>
 
-    <div class="card o-hidden border-0 shadow-lg my-5">
-        <div class="card-body p-0">
-            <!-- Nested Row within Card Body -->
-            <div class="row">
-<!--                <div class="col-lg-5 d-none d-lg-block bg-register-image" id="test11"></div>-->
-                <div class="col-lg-12">
-                    <div class="p-5">
-                        <div class="text-center">
-                            <h1 class="h4 text-gray-900 mb-4">회원가입</h1>
+                                <!-- 이름 -->
+                                <div class="form-group">
+                                    <input type="text" class="form-control form-control-user" id="name" name="name" placeholder="이름" />
+                                </div>
+
+                                <!-- 성별 -->
+                                <div class="form-group">
+                                    <div>
+                                        <select class="form-control" name="sexCd" id="sexCd" style="border-radius: 10rem">
+                                            <option value="F">여성</option>
+                                            <option value="M">남성</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- 생일 -->
+                                <div class="form-group">
+                                    <label for="birthday">생일</label>
+                                    <input type="date" id="birthday" name="birthday" class="form-control form-control-user" />
+                                </div>
+
+                                <!-- 휴대폰번호 -->
+                                <div class="form-group">
+                                    <input type="text" class="form-control form-control-user" id="tel" name="tel" placeholder="휴대폰 번호를 -없이 입력해주세요">
+                                </div>
+
+                                <!-- 비밀번호 todo 위로 올리기 -->
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input type="password" id="pwd" name="pwd" class="form-control form-control-user" placeholder="비밀번호">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="password" id="pwd2" name="pwd2" class="form-control form-control-user" placeholder="비밀번호를 다시 입력해주세요">
+                                    </div>
+                                </div>
+
+                                <!-- 이메일 -->
+                                <div class="form-group">
+                                    <input type="text" class="form-control form-control-user" id="email" name="email" placeholder="이메일 주소">
+                                </div>
+
+                                <!-- 지역 -->
+                                <div class="form-group">
+                                    <div>
+                                        <select class="form-control" name="area" id="area" style="border-radius: 10rem">
+                                            <option th:each="val : ${area}" th:value="${val.getCode()}" th:utext="${val}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- 닉네임 todo 위로 올리기 -->
+                                <div class="form-group">
+                                    <input type="text" id="nickName" name="nickName" class="form-control form-control-user" placeholder="닉네임">
+                                </div>
+
+                                <!-- 프로필사진 -->
+                                <div class="form-group">
+                                    <label for="file">프로필사진</label>
+                                    <div class="col-sm-10">
+                                        <input type="file" id="file" name="file" class="form-control" accept="image/*" onchange="loadFile(this)"/>
+                                        <div id="uploadResult"></div>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-primary btn-user btn-block" onclick="submitForm()">
+                                    가입하기
+                                </button>
+                            </form>
                         </div>
-                        <form class="user" th:action="@{/member/submit}" method="post" enctype="multipart/form-data">
-                            <!-- ID -->
-                            <div class="form-group row">
-                                <div class="col-sm-6 mb-3 mb-sm-0">
-                                    <input type="text" class="form-control form-control-user" id="id" name="id" placeholder="ID" />
-                                </div>
-                                <div class="col-sm-6">
-                                    <button type="button" class="btn btn-primary btn-user btn-block" onclick="checkId()">
-                                        아이디 중복 조회
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- 이름 -->
-                            <div class="form-group">
-                                <input type="text" class="form-control form-control-user" id="name" name="name" placeholder="이름" />
-                            </div>
-
-                            <!-- 성별 -->
-
-                            <div class="form-group">
-                                <div>
-                                    <select class="form-control" name="sexCd" id="sexCd" style="border-radius: 10rem">
-                                        <option value="F">여성</option>
-                                        <option value="M">남성</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <!--
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" id="female" name="sexCd" class="custom-control-input" value="F" />
-                                    <label class="custom-control-label" for="female">여성</label>
-                                    <input type="radio" id="male" name="sexCd" class="custom-control-input" value="M"  />
-                                    <label class="custom-control-label" for="male">남성</label>
-                                </div>
-                                -->
-
-<!--                                <label for="female">성별</label>-->
-                                <!--
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" id="female" name="sexCd" value="F" />
-                                    <label class="form-check-label" for="female">여성</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" id="male" name="sexCd" value="M"  />
-                                    <label class="form-check-label" for="male">남성</label>
-                                </div>
-                                -->
-                            </div>
-
-                            <!-- 생일 -->
-                            <div class="form-group">
-                                <label for="birthday">생일</label>
-                                <input type="date" id="birthday" name="birthday" class="form-control form-control-user" />
-                            </div>
-
-                            <!-- 휴대폰번호 -->
-                            <div class="form-group">
-                                <input type="text" class="form-control form-control-user" id="tel" name="tel" placeholder="휴대폰 번호를 -없이 입력해주세요">
-                            </div>
-
-                            <!-- 비밀번호 todo 위로 올리기 -->
-                            <div class="form-group row">
-                                <div class="col-sm-6 mb-3 mb-sm-0">
-                                    <input type="password" id="pwd" name="pwd" class="form-control form-control-user" placeholder="비밀번호">
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="password" id="pwd2" name="pwd2" class="form-control form-control-user" placeholder="비밀번호를 다시 입력해주세요">
-                                </div>
-                            </div>
-
-                            <!-- 이메일 -->
-                            <div class="form-group">
-                                <input type="text" class="form-control form-control-user" id="email" name="email" placeholder="이메일 주소">
-                            </div>
-
-                            <!-- 지역 -->
-                            <div class="form-group">
-                                <div>
-                                    <select class="form-control" name="area" id="area" style="border-radius: 10rem">
-                                        <option th:each="val : ${area}" th:value="${val.getCode()}" th:utext="${val}"></option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- 닉네임 todo 위로 올리기 -->
-                            <div class="form-group">
-                                <input type="text" id="nickName" name="nickName" class="form-control form-control-user" placeholder="닉네임">
-                            </div>
-
-                            <!-- 프로필사진 -->
-                            <div class="form-group">
-                                <label for="file">프로필사진</label>
-                                <div class="col-sm-10">
-                                    <input type="file" id="file" name="file" class="form-control" accept="image/*" onchange="loadFile(this)"/>
-                                    <div id="uploadResult"></div>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary btn-user btn-block">
-                                가입하기
-                            </button>
-                        </form>
-                        <!--
-                        <hr>
-                        <div class="text-center">
-                            <a class="small" href="forgot-password.html">Forgot Password?</a>
-                        </div>
-                        <div class="text-center">
-                            <a class="small" href="login.html">Already have an account? Login!</a>
-                        </div>
-                        -->
                     </div>
-
                 </div>
             </div>
         </div>
-    </div>
-
     </div>
 </th:block>
 
@@ -145,7 +107,10 @@
     <script th:inline="javascript">
 
         // 아이디 중복체크
+        var isCheckedId = false;
         function checkId() {
+            console.log('아이디 체크전: ' + isCheckedId);
+
             var _id = $("#id").val();
 
             $.ajax({
@@ -156,9 +121,12 @@
                 data: { id: _id },
                 success: function (data) {
                     if (data === 'usable') {
+                        isCheckedId = true;
                         alert("사용할 수 있는 ID입니다.");
+                        console.log('아이디 체크후: ' + isCheckedId);
                     } else {
                         alert("사용할 수 없는 ID입니다.(중복)");
+                        console.log('아이디 체크후(중복): ' + isCheckedId);
                     }
                 },
                 error: function () {
@@ -167,7 +135,12 @@
             });
         }
 
+        // 중복확인 후 아이디 변경시
+        function changeId() {
+            if (isCheckedId) isCheckedId = false;
+        }
 
+        // 올린 파일 이미지 미리보기
         function loadFile(input) {
             var file = input.files[0];	//선택된 파일 가져오기
 
@@ -189,6 +162,16 @@
             }
 
             container.appendChild(newImage);
+        }
+
+        // 폼 밸리데이션 체크 todo 밸리데이션 더 추가하기
+        function submitForm() {
+            // 아이디 중복 확인 여부
+            if (!isCheckedId) {
+                alert('아이디 중복 확인을 해주세요.');
+            } else {
+                document.getElementById('joinForm').submit();
+            }
         }
     </script>
 </th:block>
