@@ -6,20 +6,20 @@
 </th:block>
 
 <th:block layout:fragment="search">
-    <form id="searchForm" name="searchForm"
+    <form id="searchForm" name="searchForm" onsubmit="return false;"
           class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
         <div class="input-group">
-            <select id="type" name="type">
+            <select id="searchType" name="searchType">
                 <option value="">선택</option>
                 <option value="bbscttSj">제목</option>
                 <option value="bbscttCn">내용</option>
                 <option value="bbscttWrter">작성자</option>
             </select>
-            <input type="text" placeholder="Search..." name="keyword" class="form-control bg-light border-0 small">
+            <input type="text" placeholder="Search..." id="keyword" name="keyword" class="form-control bg-light border-0 small" />
             <div class="input-group-append">
-                <input type="button" class="btn btn-primary" th:onclick="getSearchList('1')">
-                <i class="fas fa-search fa-sm"></i>
-                </input>
+                <button type="button" onclick="movePage(1)" class="btn btn-primary">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
             </div>
         </div>
     </form>
@@ -27,29 +27,8 @@
 
 <th:block layout:fragment="content">
 
-    <div class="col mb-5" th:if="${not #lists.isEmpty( boardList )}" th:each="row : ${boardList}">
-        <div class="card h-100">
-            <!-- Product image-->
-            <img class="card-img-top" src="/images/8aab4e65-5c80-42fa-bdee-0879b743ed18.png" alt="..."/>
-            <!-- Product details-->
-            <div class="card-body p-4">
-                <div class="text-center">
-                    <!-- Product name-->
-                    <h5 class="fw-bolder" th:text="${row.bbscttSj}"></h5>
-                    <!-- Product price-->
+    <div class="col mb-5">
 
-                </div>
-            </div>
-            <!-- Product actions-->
-            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                <div class="text-center">
-                    <a class="btn btn-outline-dark mt-auto" th:href="@{/board/view.do( idx=${row.bbscttNo} )}">구경하기</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col mb-5" th:unless="${not #lists.isEmpty( boardList )}">
-        검색결과가 없습니다.
     </div>
 
 </th:block>
@@ -58,38 +37,13 @@
     <div class="col-sm-12 col-md-7">
         <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
             <ul class="pagination">
-                <!-- 이전 버튼 -->
-                <th:block th:if="${pageMaker.prev}">
-                    <li class="paginate_button page-item">
-                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link"
-                           th:onclick="movePage([[${pageMaker.pageStart - 1}]])">이전</a>
-                    </li>
-                </th:block>
 
-                <!-- 페이지 번호 -->
-                <th:block th:with="pageMaker = ${pageMaker}">
-                    <th:block th:each="num : *{#numbers.sequence(pageMaker.pageStart, pageMaker.pageEnd)}">
-                        <li class="paginate_button page-item" th:classappend="${pageMaker.cri.pageNum == num} ? 'active' : ''">
-                            <a href="javascript:void(0)" th:text="${num}" aria-controls="dataTable" class="page-link"
-                               th:onclick="movePage([[${num}]])"></a>
-                        </li>
-                    </th:block>
-                </th:block>
-
-
-                <!-- 다음 버튼 -->
-                <th:block th:if="${pageMaker.next}">
-                    <li class="paginate_button page-item">
-                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link"
-                           th:onclick="movePage([[${pageMaker.pageEnd + 1}]])">다음</a>
-                    </li>
-                </th:block>
             </ul>
         </div>
     </div>
 
     <div class="btn_wrap text-right">
-        <a th:href="@{/member/board/write}" class="btn btn-primary waves-effect waves-light">글 등록</a>
+        <a th:href="@{/board/write.do}" class="btn btn-primary waves-effect waves-light">글 등록</a>
     </div>
 </th:block>
 
@@ -98,95 +52,219 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
 
+        /* 게시글 리스트 조회 S */
+        window.onload = () => {
+            setQueryStringParams();
+            findAllPost();
+        }
+
+        function findAllPost() {
+            var list = [[${response.list}]];
+            if (!list.length) {
+                document.getElementById('list').innerHTML = '<div>검색 결과가 없습니다.</div>';
+                drawPage();
+                return false;
+            }
+
+            var pagination = [[${response.pagination}]];
+            var params = [[${params}]];
+            var num = pagination.totalRecordCount - ((params.page - 1) * params.recordSize);
+
+            drawList(list, num);
+            drawPage(pagination, params);
+        }
+
+        // 조회 목록
+        function drawList(list, num) {
+            var html = '';
+            list.forEach(obj => {
+                html += `
+                    <div class="card h-100">
+                    <!-- Product image-->
+                    <img class="card-img-top" src="/images/8aab4e65-5c80-42fa-bdee-0879b743ed18.png" alt="..."/>
+                    <!-- Product details-->
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <!-- Product name-->
+                            <h5 class="fw-bolder">${obj.bbscttSj}</h5>
+                            <!-- Product price-->
+
+                        </div>
+                    </div>
+                    <!-- Product actions-->
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center">
+                            <a class="btn btn-outline-dark mt-auto" href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">구경하기</a>
+                        </div>
+                    </div>
+                    </div>
+                `;
+            });
+            document.getElementById('list').innerHTML = html;
+        }
+
+        function drawPage(pagination, params) {
+            if (!pagination || !params) {
+                document.querySelector('.pagination').innerHTML = '';
+                return false;
+            }
+
+            var html = '';
+
+            // 첫 페이지, 이전 페이지
+            if(pagination.existPrevPage) {
+                html += `
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.startPage - 1});" aria-label="Previous">
+                        <span aria-hidden="true">&lsaquo;</span>
+                        </a>
+                    </li>
+                `;
+            }
+
+            // 페이지 번호
+            for (var i = pagination.startPage; i <= pagination.endPage; i ++) {
+                var active = (i === params.page) ? 'active' : '';
+                html += `
+                <li  class="${active} paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${i});">${i}</a>
+                </li>
+                `;
+            }
+
+            if (pagination.existNextPage) {
+                html += `
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.endPage + 1});" aria-label="Next">
+                        <span aria-hidden="true">&rsaquo;</span>
+                    </a>
+                </li>
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.totalPageCount});" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                `;
+            }
+
+            document.querySelector('.pagination').innerHTML = html;
+        }
+
+        // 쿼리스트링 파라미터 세팅
+        function setQueryStringParams() {
+            // location 객체의 search를 이용해서 쿼리 스트링 파라미터를 조회할 수 있다.
+            if (!location.search) {
+                return false;
+            }
+
+            var form = document.getElementById('searchForm');
+
+            new URLSearchParams(location.search).forEach((value, key) => {
+                if (form[key]) {
+                    form[key].value = value;
+                }
+            });
+
+            document.getElementById('keyword').value = form.keyword.value;
+        }
+
+
+        /* 게시글 리스트 조회 E */
+
         var searchObj = {};
 
         /* 게시글 검색 */
-        function getSearchList(page) {
-            var selectOption = $('#type option:selected').val();
-            var searchInput = $('input[name=keyword]').val();
-
-            if(selectOption == null || selectOption == '') {
-                alert('검색 분류를 선택해주세요');
-                return;
-            }
-            if(searchInput == null || searchInput == '') {
-                alert('검색어를 입력해주세요');
-                return;
-            }
-
-            var data = {
-                type   : $('#type option:selected').val(),
-                keyword: $('input[name=keyword]').val(),
-                pageNum : (page) ? page : 1,
-                amount : 10
-            }
-            console.log(page);
-            $.ajax({
-                type   : 'GET',
-                url    : "/board/search.do",
-                data   : data,
-                success: function (result) {
-                    var searchList = result.searchList;
-                    var pageMaker = result.searchPageMaker;
-                    searchObj.keyword = pageMaker.cri.keyword;
-                    searchObj.type = pageMaker.cri.type;
-                    // 검색결과 리스트 생성
-                    if (searchList != undefined && searchList != '') {
-                        var str = '';
-                        var paging = '';
-
-                        searchList.forEach(function (item) {
-                            console.log('item = ' + JSON.stringify(item));
-                                str += `<div class="col mb-5">
-                                <div class="card h-100">
-                                <img class="card-img-top" src="${item.bbscttImage}" alt="..."/>
-                                <div class="card-body p-4">
-                                <div class="text-center">
-                                <h5 class="fw-bolder">${item.bbscttSj}</h5>
-                                </div>
-                                </div>
-                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center">
-                                <a class="btn btn-outline-dark mt-auto" href="/board/view.do?idx=${item.bbscttNo}" onclick="goViewPage(${item.bbscttNo})">구경하기</a>
-                                </div>
-                                </div>
-                                </div>
-                                </div>
-                            `;
-                        });
-
-                        // 첫 페이지, 이전 페이지
-                        if (pageMaker.prev) {
-                            paging += `
-                        <li class="paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${pageMaker.pageStart - 1});" aria-label="Previous"><span aria-hidden="true">&lsaquo;</span></a></li>
-                            `;
-                        }
-
-                        // 페이지 번호
-                        for (var i = pageMaker.pageStart; i <= pageMaker.pageEnd; i++) {
-                            var active = (i === pageMaker.cri.pageNum) ? 'active' : '';
-                            console.log('i = '+ i);
-                            console.log('active = ' + active);
-                            paging += `<li  class="${active} paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${i});">${i}</a></li>`;
-                        }
-
-                        // 다음 페이지, 마지막 페이지
-                        if (pageMaker.next) {
-                            paging += `
-                        <li class="paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${pageMaker.pageEnd + 1});" aria-label="Next"><span aria-hidden="true">&rsaquo;</span></a></li>
-                            `;
-                        }
-                    } else {
-                        str = `<div>검색 결과가 없습니다.</div>`;
-                    }
-                    $('#boardList').empty().append(str);
-                    $('.pagination').empty().append(paging);
-                },
-                error  : function (err) {
-                    console.log('err = ' + JSON.stringify(err));
-                }
-            });
-        }
+        // function getSearchList(page) {
+        //     var selectOption = $('#type option:selected').val();
+        //     var searchInput = $('input[name=keyword]').val();
+        //
+        //     if(selectOption == null || selectOption == '') {
+        //         alert('검색 분류를 선택해주세요');
+        //         return;
+        //     }
+        //     if(searchInput == null || searchInput == '') {
+        //         alert('검색어를 입력해주세요');
+        //         return;
+        //     }
+        //
+        //     var data = {
+        //         type   : $('#type option:selected').val(),
+        //         keyword: $('input[name=keyword]').val(),
+        //         pageNum : (page) ? page : 1,
+        //         amount : 10
+        //     }
+        //     console.log(page);
+        //     $.ajax({
+        //         type   : 'GET',
+        //         url    : "/board/search.do",
+        //         data   : data,
+        //         success: function (result) {
+        //             var searchList = result.searchList;
+        //             var pageMaker = result.searchPageMaker;
+        //             searchObj.keyword = pageMaker.cri.keyword;
+        //             searchObj.type = pageMaker.cri.type;
+        //             // 검색결과 리스트 생성
+        //             if (searchList != undefined && searchList != '') {
+        //                 var str = '';
+        //                 var paging = '';
+        //
+        //                 searchList.forEach(function (item) {
+        //                     console.log('item = ' + JSON.stringify(item));
+        //                         str += `<div class="col mb-5">
+        //                         <div class="card h-100">
+        //                         <img class="card-img-top" src="${item.bbscttImage}" alt="..."/>
+        //                         <div class="card-body p-4">
+        //                         <div class="text-center">
+        //                         <h5 class="fw-bolder">${item.bbscttSj}</h5>
+        //                         </div>
+        //                         </div>
+        //                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+        //                         <div class="text-center">
+        //                         <a class="btn btn-outline-dark mt-auto" href="/board/view.do?idx=${item.bbscttNo}" onclick="goViewPage(${item.bbscttNo})">구경하기</a>
+        //                         </div>
+        //                         </div>
+        //                         </div>
+        //                         </div>
+        //                     `;
+        //                 });
+        //
+        //                 // 첫 페이지, 이전 페이지
+        //                 if (pageMaker.prev) {
+        //                     paging += `
+        //                 <li class="paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${pageMaker.pageStart - 1});" aria-label="Previous"><span aria-hidden="true">&lsaquo;</span></a></li>
+        //                     `;
+        //                 }
+        //
+        //                 // 페이지 번호
+        //                 for (var i = pageMaker.pageStart; i <= pageMaker.pageEnd; i++) {
+        //                     var active = (i === pageMaker.cri.pageNum) ? 'active' : '';
+        //                     console.log('i = '+ i);
+        //                     console.log('active = ' + active);
+        //                     paging += `<li  class="${active} paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${i});">${i}</a></li>`;
+        //                 }
+        //
+        //                 // 다음 페이지, 마지막 페이지
+        //                 if (pageMaker.next) {
+        //                     paging += `
+        //                 <li class="paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${pageMaker.pageEnd + 1});" aria-label="Next"><span aria-hidden="true">&rsaquo;</span></a></li>
+        //                     `;
+        //                 }
+        //             } else {
+        //                 str = `<div>검색 결과가 없습니다.</div>`;
+        //             }
+        //             $('#boardList').empty().append(str);
+        //             $('.pagination').empty().append(paging);
+        //         },
+        //         error  : function (err) {
+        //             console.log('err = ' + JSON.stringify(err));
+        //         }
+        //     });
+        // }
         /* 게시글 검색 */
 
 
@@ -214,34 +292,38 @@
         /* 현재 페이지 기억 */
 
         /* 검색 페이지 이동 */ //이게맞나..
-        function moveSearchPage(page) {
-            var queryParams = {
-                pageNum: (page) ? page : 1,
-                amount: 10,
-                keyword: searchObj.keyword,
-                type: searchObj.type
-            }
-
-
-            $.ajax({
-                url : '/board/search.do',
-                data : queryParams,
-                method : 'GET',
-                success : function(result) {
-                    getSearchList(page);
-                },
-                error : function(err) {
-                    console.log('err', err);
-                }
-            });
-        }
+        // function moveSearchPage(page) {
+        //     var queryParams = {
+        //         pageNum: (page) ? page : 1,
+        //         amount: 10,
+        //         keyword: searchObj.keyword,
+        //         type: searchObj.type
+        //     }
+        //
+        //
+        //     $.ajax({
+        //         url : '/board/search.do',
+        //         data : queryParams,
+        //         method : 'GET',
+        //         success : function(result) {
+        //             getSearchList(page);
+        //         },
+        //         error : function(err) {
+        //             console.log('err', err);
+        //         }
+        //     });
+        // }
         /* 검색 페이지 이동 */
 
         /* 페이지 이동 */
         function movePage(page) {
+            var form = document.getElementById('searchForm');
             var queryParams = {
-                pageNum: (page) ? page : 1,
-                amount: 10
+                page: (page) ? page : 1,
+                recordSize : 10,
+                pageSize : 10,
+                keyword : form.keyword.value,
+                searchType : form.searchType.value
             }
             location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
         }
@@ -251,7 +333,7 @@
 
         /* 게시글 상세페이지 이동 */
         function goViewPage(idx) {
-            var queryString = (location.search) ? location.search + `$id=${id}` : `?id=${id}`;
+            var queryString = (location.search) ? location.search + `$idx=${idx}` : `?idx=${idx}`;
             location.href = '/board/view.do' + queryString;
         }
         /* 게시글 상세페이지 이동 */

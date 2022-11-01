@@ -3,25 +3,25 @@ package com.netive.nplate.controller;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.List;
 
-import com.netive.nplate.domain.BoardFileDTO;
-import com.netive.nplate.domain.PageMaker;
-import com.netive.nplate.domain.Criteria;
+import com.netive.nplate.common.MessageDTO;
+import com.netive.nplate.domain.*;
+import com.netive.nplate.paging.PagingResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.service.BoardService;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
+@RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 	
 	@Autowired
@@ -34,41 +34,48 @@ public class BoardController {
 	 * @return
 	 */
 	@GetMapping("/board/write.do")
-	public String openBoardWrite(@RequestParam(value = "bbscttNo", required = false) Long bbscttNo, Model model) {
-		System.out.println("게시글 수정 idx = " + bbscttNo);
-		if (bbscttNo == null) {
-			model.addAttribute("board", new BoardDTO());
-		} else {
-			BoardDTO boardDTO = boardSerive.getBoardDetail(bbscttNo);
-
-			System.out.println("boardDTO >>>>>>>>>>>>>>>>> " + boardDTO);
-			model.addAttribute("board", boardDTO);
+	public String openBoardWrite(@RequestParam(value = "bbscttNo", required = false) final Long bbscttNo, Model model) {
+//		if (bbscttNo == null) {
+//			model.addAttribute("board", new BoardDTO());
+//		} else {
+//			BoardDTO boardDTO = boardSerive.getBoardDetail(bbscttNo);
+//
+//			System.out.println("boardDTO >>>>>>>>>>>>>>>>> " + boardDTO);
+//			model.addAttribute("board", boardDTO);
+//		}
+		if (bbscttNo != null) {
+			BoardDTO board = boardSerive.getBoardDetail(bbscttNo);
+			model.addAttribute("board", board);
 		}
 		
 		return "board/write";
 	}
 
 	/**
-	 * 게시글 등록/수정
-	 * @param boardDTO
-	 * @param model
+	 * 게시글 등록
+	 * @param board
 	 * @return
 	 */
 	@PostMapping("/board/register.do")
-	public String openBoardRegister(BoardDTO boardDTO, Model model, MultipartFile[] files, HttpServletRequest request) {
+	public String openBoardRegister(final BoardDTO board, Model model) {
 
-		try {
-			String path = request.getSession().getServletContext().getRealPath("/img");
+//		try {
+//			String path = request.getSession().getServletContext().getRealPath("/img");
+//
+//			boolean isRegistered = boardSerive.registerBoard(boardDTO, files, path);
+//
+//			if (isRegistered == false) {
+//				System.out.println("등록 실패");
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return "board/list";
+		boardSerive.registerBoard(board);
+//		MessageDTO message = new MessageDTO("게시글 생성이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
+//		log.info("message = " + message);
 
-			boolean isRegistered = boardSerive.registerBoard(boardDTO, files, path);
-
-			if (isRegistered == false) {
-				System.out.println("등록 실패");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+//		return showMessageAndRedirect(message, model);
 		return "board/list";
 	}
 
@@ -78,49 +85,24 @@ public class BoardController {
 	 * @return
 	 */
 	@GetMapping("/board/list.do")
-	public String openBoardList(Criteria cri, Model model) {
-		List<BoardDTO> boardList = boardSerive.getBordList(cri);
-		model.addAttribute("boardList", boardList);
+	public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model) {
+//		List<BoardDTO> boardList = boardSerive.getBordList(cri);
+//		model.addAttribute("boardList", boardList);
+//
+//		int total = boardSerive.selectBoardTotalCount(cri);
+//
+//		PageMaker pageMaker = new PageMaker(cri, total);
+//
+//		model.addAttribute("pageMaker", pageMaker);
 
-		int total = boardSerive.selectBoardTotalCount(cri);
+//		return "board/list";
 
-		PageMaker pageMaker = new PageMaker(cri, total);
-
-		model.addAttribute("pageMaker", pageMaker);
+		PagingResponse<BoardDTO> response = boardSerive.getBoardList(params);
+		model.addAttribute("response", response);
 
 		return "board/list";
 	}
 
-	/**
-	 * 게시글 검색
-	 * @param keyword
-	 * @return
-	 */
-	@GetMapping("/board/search.do")
-	@ResponseBody
-	private Map<String, Object> getSearchList(@RequestParam("type") String type, @RequestParam("keyword") String keyword, Criteria cri) throws Exception {
-		Map<String, Object> resMap = new HashMap<>();
-		BoardDTO boardDTO = new BoardDTO();
-		boardDTO.setType(type);
-		boardDTO.setKeyword(keyword);
-
-
-		int total = boardSerive.selectBoardTotalCount(cri);
-
-		List<BoardDTO> searchList = boardSerive.getSearchList(cri);
-
-		System.out.println("total = " + total);
-		System.out.println("cri = " + cri);
-
-		PageMaker pageMaker = new PageMaker(cri, total);
-		System.out.println("pageMaker = " + pageMaker);
-
-		resMap.put("searchList", searchList);
-		resMap.put("searchPageMaker", pageMaker);
-
-		return resMap;
-	}
-	
 	/**
 	 * 게시글 상세보기
 	 * @param idx
@@ -128,23 +110,58 @@ public class BoardController {
 	 * @return
 	 */
 	@GetMapping("/board/view.do")
-	public String openBoardDetail(@RequestParam(value="idx", required=false) Long idx, Model model) {
+	public String openBoardDetail(@RequestParam final Long idx, Model model) {
 
-		if(idx == null) {
-			// 올바르지 않은 접근
-			return "redirect:/board/list.do";
-		}
-		
-		BoardDTO boardDTO = boardSerive.getBoardDetail(idx);
-		model.addAttribute("board", boardDTO);
-
-		List<BoardFileDTO> fileList = boardSerive.getFileList(idx);
-		model.addAttribute("fileList", fileList);
-
-
-		boardSerive.cntPlus(idx); // 게시글 조회수 증가
+//		if(idx == null) {
+//			// 올바르지 않은 접근
+//			return "redirect:/board/list.do";
+//		}
+//
+//		BoardDTO boardDTO = boardSerive.getBoardDetail(idx);
+//		model.addAttribute("board", boardDTO);
+//
+//		List<BoardFileDTO> fileList = boardSerive.getFileList(idx);
+//		model.addAttribute("fileList", fileList);
+//
+//
+//		boardSerive.cntPlus(idx); // 게시글 조회수 증가
+//		return "board/view";
+		BoardDTO board = boardSerive.getBoardDetail(idx);
+		model.addAttribute("board", board);
 		return "board/view";
 	}
+
+	/**
+	 * 게시글 검색
+	 * @param keyword
+	 * @return
+	 */
+//	@GetMapping("/board/search.do")
+//	@ResponseBody
+//	private Map<String, Object> getSearchList(@RequestParam("type") String type, @RequestParam("keyword") String keyword, Criteria cri) throws Exception {
+//		Map<String, Object> resMap = new HashMap<>();
+//		BoardDTO boardDTO = new BoardDTO();
+//		boardDTO.setType(type);
+//		boardDTO.setKeyword(keyword);
+//
+//
+//		int total = boardSerive.selectBoardTotalCount(cri);
+//
+//		List<BoardDTO> searchList = boardSerive.getSearchList(cri);
+//
+//		System.out.println("total = " + total);
+//		System.out.println("cri = " + cri);
+//
+//		PageMaker pageMaker = new PageMaker(cri, total);
+//		System.out.println("pageMaker = " + pageMaker);
+//
+//		resMap.put("searchList", searchList);
+//		resMap.put("searchPageMaker", pageMaker);
+//
+//		return resMap;
+//	}
+	
+
 
 	/**
 	 * 게시글 수정
@@ -152,9 +169,10 @@ public class BoardController {
 	 * @return
 	 */
 	@PostMapping("/board/update.do")
-	public String updateBoard(BoardDTO board) {
+	public String updateBoard(final BoardDTO board, Model model) {
 		boardSerive.updateBoard(board);
-		return "redirect:/board/list.do";
+		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
+		return showMessageAndRedirect(message, model);
 	}
 
 	/**
@@ -163,23 +181,27 @@ public class BoardController {
 	 * @return
 	 */
 	@PostMapping("/board/delete.do")
-	public String deleteBoard(@RequestParam(value="idx", required=false) Long idx) {
-		if(idx == null) {
-			return "redirect:/board/list.do";
-		}
-		
-		try {
-			boolean isDelete = boardSerive.deleteBoard(idx);
-			if(isDelete == false) {
-				
-			}
-		} catch (DataAccessException daex) { // DB 처리과정 문제 발생
-			daex.printStackTrace();
-		} catch (Exception e) { // 시스템 에러
-			e.printStackTrace();
-		}
-		
-		return "redirect:/board/list.do";
+	public String deleteBoard(@RequestParam final Long idx, @RequestParam final Map<String, Object> queryParams, Model model) {
+//		if(idx == null) {
+//			return "redirect:/board/list.do";
+//		}
+//
+//		try {
+//			boolean isDelete = boardSerive.deleteBoard(idx);
+//			if(isDelete == false) {
+//
+//			}
+//		} catch (DataAccessException daex) { // DB 처리과정 문제 발생
+//			daex.printStackTrace();
+//		} catch (Exception e) { // 시스템 에러
+//			e.printStackTrace();
+//		}
+//
+//		return "redirect:/board/list.do";
+
+		boardSerive.deleteBoard(idx);
+		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/board/list.do", RequestMethod.GET, queryParams);
+		return showMessageAndRedirect(message, model);
 	}
 
 
@@ -315,6 +337,11 @@ public class BoardController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private String showMessageAndRedirect(final MessageDTO params, Model model) {
+		model.addAttribute("params", params);
+		return "common/messageRedirect";
 	}
 
 	/**

@@ -1,21 +1,22 @@
 package com.netive.nplate.service;
 
-import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
-import com.netive.nplate.domain.BoardFileDTO;
-import com.netive.nplate.domain.Criteria;
+import com.netive.nplate.domain.SearchDTO;
 import com.netive.nplate.mapper.BoardFileMapper;
+import com.netive.nplate.paging.Pagination;
+import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.util.FileUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.mapper.BoardMapper;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
     @Autowired
@@ -27,116 +28,106 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private BoardFileMapper boardFileMapper;
 
-    // 게시글 등록/수정
+    // 게시글 등록
     @Override
-    public boolean registerBoard(BoardDTO board) {
-        int queryResult = 0;
-        if (board.getBbscttNo() == null) {
-            queryResult = boardMapper.insertBoard(board);
-        } else {
-            queryResult = boardMapper.updateBoard(board);
-        }
-        System.out.println("queryResult = " + queryResult);
-        return (queryResult == 1) ? true : false;
-    }
-
-    @Override
-    public boolean registerBoard(BoardDTO board, MultipartFile[] files, String path) {
-        int queryResult = 1;
-
-        if (registerBoard(board) == false) {
-            return false;
-        }
-
-        File file = new File(path);
-
-        List<File> fileSrc = fileUtils.getImgFileList(file, path);
-
-        System.out.println("fileSrc = >>>>>>>>>>>>>>>>> " + fileSrc);
-
-        System.out.println("serviceImpl files >>>>>>>>>>>>>>>>> " + files);
-        System.out.println("serviceImpl board >>>>>>>>>>>>>>>>> " + board);
-        System.out.println("serviceImpl path >>>>>>>>>>>>>>>>> " + path);
-        System.out.println("serviceImpl getBbscttNo() >>>>>>>>>>>>>>>>> " + board.getBbscttNo());
-
-//        List<BoardFileDTO> fileList = fileUtils.uploadFiles(fileSrc, board.getBbscttNo(), path);
-
-
-//        System.out.println("boardServiceImpl fileList =>>>>>>>>>>>>>>>>>>> " +fileList);
-//
-//        System.out.println("fileList validation >>>>>>>>>>>>>>>> " +CollectionUtils.isEmpty(fileList));
-
-//        if(CollectionUtils.isEmpty(fileList) == false) {
-//            queryResult = boardFileMapper.insertFile(fileList);
-//            if(queryResult < 1) {
-//                queryResult = 0;
-//            }
+    @Transactional
+    public Long registerBoard(final BoardDTO board) {
+//        int queryResult = 0;
+//        if (board.getBbscttNo() == null) {
+//            queryResult = boardMapper.insertBoard(board);
+//        } else {
+//            queryResult = boardMapper.updateBoard(board);
 //        }
-
-
-        return (queryResult > 0);
+//        return (queryResult == 1) ? true : false;
+        boardMapper.insertBoard(board);
+        return board.getBbscttNo();
     }
+
+//    @Override
+//    public boolean registerBoard(BoardDTO board, MultipartFile[] files, String path) {
+//        int queryResult = 1;
+//
+//        if (registerBoard(board) == false) {
+//            return false;
+//        }
+//
+//        File file = new File(path);
+//
+//        List<File> fileSrc = fileUtils.getImgFileList(file, path);
+//
+//
+//        return (queryResult > 0);
+//    }
 
     // 게시글 상세
     @Override
-    public BoardDTO getBoardDetail(Long idx) {
+    public BoardDTO getBoardDetail(final Long idx) {
         return boardMapper.selectBoardDetail(idx);
     }
 
     // 게시글 수정
     @Override
-    public Long updateBoard(BoardDTO board) {
+    @Transactional
+    public Long updateBoard(final BoardDTO board) {
         boardMapper.updateBoard(board);
         return board.getBbscttNo();
     }
 
     // 게시글 삭제
     @Override
-    public boolean deleteBoard(Long idx) {
-        int queryResult = 0;
-        queryResult = boardMapper.deleteBoard(idx);
-        System.out.println("삭제====================================="+queryResult);
-        return (queryResult == 1) ? true : false;
+    public Long deleteBoard(final Long idx) {
+//        int queryResult = 0;
+//        queryResult = boardMapper.deleteBoard(idx);
+//        System.out.println("삭제====================================="+queryResult);
+//        return (queryResult == 1) ? true : false;
+        boardMapper.deleteBoard(idx);
+        return idx;
     }
 
     // 게시글 목록
     @Override
-    public List<BoardDTO> getBordList(Criteria cri) {
-        List<BoardDTO> boardList = Collections.emptyList();
-        int boardTotalCount = boardMapper.selectBoardTotalCount(cri);
-        if (boardTotalCount > 0) {
-            boardList = boardMapper.selectBoardList(cri);
-        }
-        return boardList;
+    public PagingResponse<BoardDTO> getBoardList(final SearchDTO params) {
+//        List<BoardDTO> boardList = Collections.emptyList();
+//        int boardTotalCount = boardMapper.selectBoardTotalCount(cri);
+//        if (boardTotalCount > 0) {
+//            boardList = boardMapper.selectBoardList(cri);
+//        }
+//        return boardList;
+        int count = boardMapper.count(params);
+        Pagination pagination = new Pagination(count, params);
+        params.setPagination(pagination);
+
+        List<BoardDTO> list = boardMapper.selectBoardList(params);
+        return new PagingResponse<>(list, pagination);
     }
 
     // 게시글 총 갯수
-    @Override
-    public int selectBoardTotalCount(Criteria cri) {
-        return boardMapper.selectBoardTotalCount(cri);
-    }
-
-    // 게시글 조회수 증가
-    @Override
-    public boolean cntPlus(Long idx) {
-        return boardMapper.cntPlus(idx);
-    }
-
-    // 파일목록 가져오기
-    @Override
-    public List<BoardFileDTO> getFileList(Long idx) {
-        int fileTotalCnt = boardFileMapper.selectFileTotalCount(idx);
-        System.out.println("idx = " + idx);
-        System.out.println("fileTotalCnt = " + fileTotalCnt);
-        return boardFileMapper.selectFileList(idx);
-    }
-
-    @Override
-    public List<BoardDTO> getSearchList(Criteria cri) {
-
-        System.out.println("서비스 cri = " + cri);
-        return boardMapper.selectBoardSearchList(cri);
-    }
+//    @Override
+//    public int selectBoardTotalCount(Criteria cri) {
+//        return boardMapper.selectBoardTotalCount(cri);
+//    }
+//
+//    // 게시글 조회수 증가
+//    @Override
+//    public boolean cntPlus(Long idx) {
+//        return boardMapper.cntPlus(idx);
+//    }
+//
+//    // 파일목록 가져오기
+//    @Override
+//    public List<BoardFileDTO> getFileList(Long idx) {
+//        int fileTotalCnt = boardFileMapper.selectFileTotalCount(idx);
+//        System.out.println("idx = " + idx);
+//        System.out.println("fileTotalCnt = " + fileTotalCnt);
+//        return boardFileMapper.selectFileList(idx);
+//    }
+//
+//    @Override
+//    public List<BoardDTO> getSearchList(Criteria cri) {
+//
+//        System.out.println("서비스 cri = " + cri);
+//        return boardMapper.selectBoardSearchList(cri);
+//    }
 
 
 }

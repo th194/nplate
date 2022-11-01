@@ -24,15 +24,15 @@
 		<if test="keyword != null and keyword != ''">
 			<choose>
 				<!-- 검색 유형이 있을 때 -->
-				<when test="type != null and type != ''">
+				<when test="searchType != null and searchType != ''">
 					<choose>
-						<when test="type.equals( 'bbscttSj' )">
+						<when test="searchType.equals( 'bbscttSj' )">
 							AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
 						</when>
-						<when test="type.equals( 'bbscttCn' )">
+						<when test="searchType.equals( 'bbscttCn' )">
 							AND BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')
 						</when>
-						<when test="type.equals( 'bbscttWrter' )">
+						<when test="searchType.equals( 'bbscttWrter' )">
 							AND BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')
 						</when>
 					</choose>
@@ -49,6 +49,7 @@
 		</if>
 	</sql>
 
+	<!-- 게시글 저장 -->
 	<insert id="insertBoard" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="bbscttNo">
 		INSERT INTO NETIVE_PROJECT01_BOARD(
 			BBSCTT_SJ,
@@ -63,7 +64,7 @@
 		) VALUES (
 		#{bbscttSj},
 		#{bbscttCn},
-		"123",
+		"netive",
 		#{bbscttImage},
 		#{bbscttGrade},
 		#{bbscttStore},
@@ -73,6 +74,7 @@
 		)
 	</insert>
 
+	<!-- 게시글 상세보기 -->
 	<select id="selectBoardDetail" parameterType="long" resultType="BoardDTO">
 		SELECT
 			<include refid="boardColumns"/>
@@ -109,7 +111,7 @@
 	</delete>
 
 	<!--게시글 목록-->
-	<select id="selectBoardList" parameterType="Criteria" resultType="BoardDTO">
+	<select id="selectBoardList" parameterType="SearchDTO" resultType="BoardDTO">
 		SELECT
 			<include refid="boardColumns"/>
 		FROM
@@ -118,12 +120,12 @@
 			<include refid="search"></include>
 		ORDER BY
 			BBSCTT_NO DESC
-		LIMIT #{skip}, #{amount}
+		LIMIT #{pagination.limitStart}, #{recordSize}
 	</select>
 
 
 	<!-- 게시글 검색 -->
-	<select id="selectBoardSearchList" parameterType="Criteria" resultType="BoardDTO">
+	<select id="selectBoardSearchList" parameterType="SearchDTO" resultType="BoardDTO">
 		SELECT
 		<include refid="boardColumns"/>
 		FROM NETIVE_PROJECT01_BOARD
@@ -137,13 +139,13 @@
 	</select>
 
 	<!-- 게시글 수 카운트 -->
-	<select id ="selectBoardTotalCount" parameterType="Criteria" resultType="int">
+	<select id ="count" parameterType="SearchDTO" resultType="int">
 		SELECT
 			COUNT(*)
 		FROM
 			NETIVE_PROJECT01_BOARD
-			WHERE BBSCTT_NO
-		<include refid="search"></include>
+<!--			WHERE BBSCTT_NO-->
+<!--		<include refid="search"></include>-->
 	</select>
 
 	<!-- 게시글 조회수 증가 -->

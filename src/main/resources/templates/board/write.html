@@ -7,20 +7,20 @@
 
 <th:block layout:fragment="view">
     <div class="card-content">
-        <form id="saveForm" class="form-horizontal form-grade" th:action="@{/board/register.do}" th:object="${board}">
+        <form id="saveForm" class="form-horizontal form-grade">
             <!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
-            <input type="hidden" th:if="*{bbscttNo != null and bbscttNo > 0}" th:field="*{bbscttNo}"/>
+            <input type="hidden" id="bbscttNo" name="bbscttNo" th:if="${board != null}" th:value="${board.bbscttNo}"/>
 
             <!-- 작성자 -->
-            <input type="hidden" th:field="*{bbscttWrter}"/>
-            <input type="hidden" th:field="*{bbscttStore}"/>
-            <input type="hidden" th:field="*{bbscttCchLo}"/>
-            <input type="hidden" th:field="*{bbscttCchLa}"/>
+            <input type="hidden" id="bbscttWrter" name="bbscttWrter"/>
+            <input type="hidden" id="bbscttStore" name="bbscttStore"/>
+            <input type="hidden" id="bbscttCchLo" name="bbscttCchLo"/>
+            <input type="hidden" id="bbscttCchLa" name="bbscttCchLa"/>
 
             <div class="form-group">
                 <label for="bbscttSj" class="col-sm-2 control-label">제목</label>
                 <div class="col-sm-10">
-                    <input type="text" th:field="*{bbscttSj}" class="form-control" placeholder="제목을 입력해 주세요."/>
+                    <input type="text" id="bbscttSj" name="bbscttSj" class="form-control" placeholder="제목을 입력해 주세요."/>
                 </div>
             </div>
 
@@ -37,10 +37,10 @@
             <div class="form-group">
                 <label for="bbscttCn" class="col-sm-2 control-label">내용</label>
                 <div class="col-sm-10">
-                    <textarea id="bbscttCn" th:field="*{bbscttCn}" class="form-control"
+                    <textarea id="bbscttCn" name="bbscttCn" class="form-control"
                               placeholder="내용을 입력해 주세요."></textarea>
                 </div>
-                <input type="hidden" th:field="*{bbscttImage}" value="image"/>
+                <input type="hidden" id="bbscttImage" name="bbscttImage" />
             </div>
 
             <div class="form-group">
@@ -63,7 +63,7 @@
                 <label for="bbscttHashtag" class="col-sm-2 control-label"></label>
                 <ul id="tag-list"></ul>
                 <div class="col-sm-10">
-                    <input type="hidden" id="bbscttHashtag" name="bbscttHashtag" value="" th:field="*{bbscttHashtag}"/>
+                    <input type="hidden" id="bbscttHashtag" name="bbscttHashtag" value=""/>
 
                 </div>
             </div>
@@ -88,22 +88,27 @@
 <th:block layout:fragment="script">
     <script th:inline="javascript">
         /*<![CDATA[*/
-        var board = [[${board}]];
 
-        var post = {
-            bbscttNo     : $('#bbscttNo').val(),
-            bbscttSj     : $('#bbscttSj').val(),
-            bbscttCn     : board.bbscttCn,
-            bbscttWrter  : $('#bbscttWrter').val(),
-            bbscttImage  : $('#bbscttImage').val(),
-            bbscttGrade  : board.bbscttGrade,
-            bbscttHashtag: $('#bbscttHashtag').val(),
-            bbscttStore  : $('input[name=bbscttStore]').val(),
-            bbscttCchLa  : $('input[name=bbscttCchLa]').val(),
-            bbscttCchLo  : $('input[name=bbscttCchLo]').val()
+        /* 게시글 상세정보 렌더링 S */
+        window.onload = () => {
+            renderBoardInfo();
         }
 
-        console.log('수정 post = ' + JSON.stringify(post));
+        function renderBoardInfo() {
+            var board = [[${board}]];
+            if(!board) {
+                return false;
+            }
+
+            var form = document.getElementById('saveForm');
+            var fields = ['bbscttNo', 'bbscttSj', 'bbscttCn', 'bbscttHashtag', 'bbscttCchLa', 'bbscttCchLo', 'bbscttStore'];
+            fields.forEach(field => {
+                form[field].value = board[field];
+            });
+        }
+        /* 게시글 상세정보 렌더링 E */
+
+        var board = [[${board}]];
 
 
 
@@ -175,7 +180,7 @@
                     bbscttNo     : $('#bbscttNo').val(),
                     bbscttSj     : $('#bbscttSj').val(),
                     bbscttCn     : content,
-                    bbscttWrter  : $('#bbscttWrter').val(),
+                    // bbscttWrter  : $('#bbscttWrter').val(),
                     bbscttImage  : $('#bbscttImage').val(),
                     bbscttGrade  : bbscttGrade,
                     bbscttHashtag: $('#bbscttHashtag').val(),
@@ -184,16 +189,15 @@
                     bbscttCchLo  : $('input[name=bbscttCchLo]').val()
                 }
 
-
-                console.log('post = ' + JSON.stringify(post));
+                var url = [[${board}]] == null ? '/board/register.do' : '/board/update.do';
 
                 $.ajax({
-                    url    : '/board/register.do',
+                    url    : url,
                     data   : post,
                     method : 'POST',
                     success: function (data) {
                         alert('저장');
-                        // location.href = '/member/board/list';
+                        location.href = '/board/list';
                     },
                     error  : function (err) {
                         console.log('err data > ', err);
@@ -259,85 +263,83 @@
         /* 해시태그 끝 */
 
         /* 게시글 수정 */
-        if(board.bbscttNo != null) {
-            window.onload = () => {
-                console.log('온로드 함수 실행');
-                updateBoard();
-            }
-        }
-
-
-        function updateBoard() {
-            var board = [[${board}]];
-            console.log('board = ' + JSON.stringify(board));
-            if (!board) {
-                return false;
-            }
-
-            var form = document.getElementById('saveForm');
-            var fields = ['bbscttNo', 'bbscttSj', 'bbscttCn', 'bbscttHashtag', 'bbscttCchLa', 'bbscttCchLo', 'bbscttStore'];
-
-            fields.forEach(field => {
-                form[field].value = board[field];
-                console.log('form 밸류값 '+form[field].value);
-            });
-
-            console.log('스토어 = ' + $('input[name=bbscttStore]').val());
-            console.log('스토어 = ' + $('input[name=bbscttCchLa]').val());
-            console.log('스토어 = ' + $('input[name=bbscttCchLo]').val());
-
-            console.log('해시태그 값 = ' + board.bbscttHashtag);
-            if(board.bbscttHashtag != null && !isEmpty(board.bbscttHashtag)) {
-                $("#tag-list").append("<li class='tag-item'>" + board.bbscttHashtag + "<span class='del-btn' idx='" + 0 + "'>x</span></li>");
-            }
-
-
-            if (board.bbscttNo != null) {
-                var $mapForm;
-                $mapForm = '<div id="updateMap" style="width:100%;height:350px;"></div>';
-                $('#mapContainer').empty().append($mapForm);
-
-                var mapContainer = document.getElementById('updateMap'), // 지도를 표시할 div
-                    mapOption = {
-                        center: new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo), // 지도의 중심좌표
-                        level : 2 // 지도의 확대 레벨
-                    };
-
-                mapContainer.style.display = 'block';
-
-                // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
-                var map = new kakao.maps.Map(mapContainer, mapOption);
-
-                // 지도를 클릭한 위치에 표출할 마커입니다
-                var marker = new kakao.maps.Marker({
-                    // 지도 중심좌표에 마커를 생성합니다
-                    position: map.getCenter()
-                });
-                // 지도에 마커를 표시합니다
-                marker.setMap(map);
-
-            }
-
-            /* 평점 렌더링 */
-            switch (board.bbscttGrade) {
-                case 1 :
-                    $('#rate5').attr('checked', true);
-                    break;
-                case 2 :
-                    $('#rate4').attr('checked', true);
-                    break;
-                case 3 :
-                    $('#rate3').attr('checked', true);
-                    break;
-                case 4 :
-                    $('#rate2').attr('checked', true);
-                    break;
-                case 5 :
-                    $('#rate1').attr('checked', true);
-                    break;
-            }
-            /* 평점 렌더링 */
-        }
+        // window.onload = () => {
+        //     console.log('온로드 함수 실행');
+        //     updateBoard();
+        // }
+        //
+        //
+        // function updateBoard() {
+        //     var board = [[${board}]];
+        //     console.log('board = ' + JSON.stringify(board));
+        //     if (!board) {
+        //         return false;
+        //     }
+        //
+        //     var form = document.getElementById('saveForm');
+        //     var fields = ['bbscttNo', 'bbscttSj', 'bbscttCn', 'bbscttHashtag', 'bbscttCchLa', 'bbscttCchLo', 'bbscttStore'];
+        //
+        //     fields.forEach(field => {
+        //         form[field].value = board[field];
+        //         console.log('form 밸류값 '+form[field].value);
+        //     });
+        //
+        //     console.log('스토어 = ' + $('input[name=bbscttStore]').val());
+        //     console.log('스토어 = ' + $('input[name=bbscttCchLa]').val());
+        //     console.log('스토어 = ' + $('input[name=bbscttCchLo]').val());
+        //
+        //     console.log('해시태그 값 = ' + board.bbscttHashtag);
+        //     if(board.bbscttHashtag != null && !isEmpty(board.bbscttHashtag)) {
+        //         $("#tag-list").append("<li class='tag-item'>" + board.bbscttHashtag + "<span class='del-btn' idx='" + 0 + "'>x</span></li>");
+        //     }
+        //
+        //
+        //     if (board.bbscttNo != null) {
+        //         var $mapForm;
+        //         $mapForm = '<div id="updateMap" style="width:100%;height:350px;"></div>';
+        //         $('#mapContainer').empty().append($mapForm);
+        //
+        //         var mapContainer = document.getElementById('updateMap'), // 지도를 표시할 div
+        //             mapOption = {
+        //                 center: new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo), // 지도의 중심좌표
+        //                 level : 2 // 지도의 확대 레벨
+        //             };
+        //
+        //         mapContainer.style.display = 'block';
+        //
+        //         // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+        //         var map = new kakao.maps.Map(mapContainer, mapOption);
+        //
+        //         // 지도를 클릭한 위치에 표출할 마커입니다
+        //         var marker = new kakao.maps.Marker({
+        //             // 지도 중심좌표에 마커를 생성합니다
+        //             position: map.getCenter()
+        //         });
+        //         // 지도에 마커를 표시합니다
+        //         marker.setMap(map);
+        //
+        //     }
+        //
+        //     /* 평점 렌더링 */
+        //     switch (board.bbscttGrade) {
+        //         case 1 :
+        //             $('#rate5').attr('checked', true);
+        //             break;
+        //         case 2 :
+        //             $('#rate4').attr('checked', true);
+        //             break;
+        //         case 3 :
+        //             $('#rate3').attr('checked', true);
+        //             break;
+        //         case 4 :
+        //             $('#rate2').attr('checked', true);
+        //             break;
+        //         case 5 :
+        //             $('#rate1').attr('checked', true);
+        //             break;
+        //     }
+        //     /* 평점 렌더링 */
+        // }
 
 
         /* 게시글 수정 */
