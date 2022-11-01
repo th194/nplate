@@ -241,9 +241,7 @@
         function movePage(page) {
             var queryParams = {
                 pageNum: (page) ? page : 1,
-                amount: 10,
-                keyword: searchObj.keyword,
-                type: searchObj.type
+                amount: 10
             }
             location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
         }
