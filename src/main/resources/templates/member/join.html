@@ -18,7 +18,10 @@
                                 <!-- ID -->
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
-                                        <input type="text" class="form-control form-control-user" id="id" name="id" placeholder="ID" onchange="changeId()" />
+                                        <input type="text" id="id" name="id" placeholder="ID" onchange="changeId()" required
+                                            class="form-control form-control-user"
+                                            data-parsley-length="[4, 10]"
+                                            data-parsley-error-message="아이디를 입력해 주세요"/>
                                     </div>
                                     <div class="col-sm-6">
                                         <button type="button" class="btn btn-primary btn-user btn-block" onclick="checkId()">
@@ -27,15 +30,34 @@
                                     </div>
                                 </div>
 
+                                <!-- 비밀번호  -->
+                                <div class="form-group">
+                                    <input type="password" id="pwd" name="pwd" placeholder="비밀번호" required
+                                            class="form-control form-control-user"
+                                            data-parsley-length="[4, 10]"
+                                            data-parsley-error-message="비밀번호를 입력해 주세요" />
+                                </div>
+
                                 <!-- 이름 -->
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-user" id="name" name="name" placeholder="이름" />
+                                    <input type="text" id="name" name="name" placeholder="이름" required
+                                            class="form-control form-control-user"
+                                            data-parsley-length="[2, 5]"
+                                            data-parsley-error-message="이름을 입력해 주세요"	/>
+                                </div>
+
+                                <!-- 닉네임 -->
+                                <div class="form-group">
+                                    <input type="text" id="nickName" name="nickName" placeholder="닉네임" required
+                                            class="form-control form-control-user"
+                                            data-parsley-length="[2,10]"
+                                            data-parsley-error-message="닉네임을 입력해 주세요"	/>
                                 </div>
 
                                 <!-- 성별 -->
                                 <div class="form-group">
                                     <div>
-                                        <select class="form-control" name="sexCd" id="sexCd" style="border-radius: 10rem">
+                                        <select id="sexCd" name="sexCd" class="form-control" style="border-radius: 10rem" required>
                                             <option value="F">여성</option>
                                             <option value="M">남성</option>
                                         </select>
@@ -45,42 +67,37 @@
                                 <!-- 생일 -->
                                 <div class="form-group">
                                     <label for="birthday">생일</label>
-                                    <input type="date" id="birthday" name="birthday" class="form-control form-control-user" />
+                                    <input type="date" id="birthday" name="birthday" required
+                                            class="form-control form-control-user"
+                                            data-parsley-error-message="생일을 입력해 주세요"/>
                                 </div>
 
                                 <!-- 휴대폰번호 -->
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-user" id="tel" name="tel" placeholder="휴대폰 번호를 -없이 입력해주세요">
+                                    <input type="text" id="tel" name="tel" placeholder="휴대폰 번호를 -없이 입력해주세요" required
+                                            class="form-control form-control-user"
+                                            data-parsley-length="[11,11]"
+                                            data-parsley-error-message="휴대폰 번호를 -없이 입력해주세요" />
                                 </div>
 
-                                <!-- 비밀번호 todo 위로 올리기 -->
-                                <div class="form-group row">
-                                    <div class="col-sm-6 mb-3 mb-sm-0">
-                                        <input type="password" id="pwd" name="pwd" class="form-control form-control-user" placeholder="비밀번호">
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <input type="password" id="pwd2" name="pwd2" class="form-control form-control-user" placeholder="비밀번호를 다시 입력해주세요">
-                                    </div>
-                                </div>
 
                                 <!-- 이메일 -->
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-user" id="email" name="email" placeholder="이메일 주소">
+                                    <input type="email" id="email" name="email" placeholder="이메일 주소" required
+                                            data-parsley-maxlength="40"
+                                            data-parsley-error-message="이메일주소를 입력해 주세요"
+                                            data-parsley-type="email" class="form-control form-control-user"/>
                                 </div>
 
                                 <!-- 지역 -->
                                 <div class="form-group">
                                     <div>
-                                        <select class="form-control" name="area" id="area" style="border-radius: 10rem">
+                                        <select class="form-control" name="area" id="area" style="border-radius: 10rem" required>
                                             <option th:each="val : ${area}" th:value="${val.getCode()}" th:utext="${val}"></option>
                                         </select>
                                     </div>
                                 </div>
 
-                                <!-- 닉네임 todo 위로 올리기 -->
-                                <div class="form-group">
-                                    <input type="text" id="nickName" name="nickName" class="form-control form-control-user" placeholder="닉네임">
-                                </div>
 
                                 <!-- 프로필사진 -->
                                 <div class="form-group">
@@ -164,15 +181,36 @@
             container.appendChild(newImage);
         }
 
-        // 폼 밸리데이션 체크 todo 밸리데이션 더 추가하기
+
+        // 폼 밸리데이션 체크
+        var form = $('#joinForm').parsley();
+
         function submitForm() {
-            // 아이디 중복 확인 여부
-            if (!isCheckedId) {
-                alert('아이디 중복 확인을 해주세요.');
-            } else {
-                document.getElementById('joinForm').submit();
+            if (form.validate()) {
+                if (!isCheckedId) {
+                    alert('아이디 중복 확인을 해주세요.');
+                } else {
+                    document.getElementById('joinForm').submit();
+                }
+
             }
         }
+/*
+        if (!isCheckedId) {
+            alert('아이디 중복 확인을 해주세요.');
+        } else {
+
+            console.log('파슬리 밸리드');
+            console.log(form.validate());
+            // console.log(form.isValid());
+            if (form.validate()) {
+                document.getElementById('joinForm').submit();
+            } else {
+                console.log('폼밸리데이션 확인=======');
+            }
+        }
+        */
+
     </script>
 </th:block>
 
