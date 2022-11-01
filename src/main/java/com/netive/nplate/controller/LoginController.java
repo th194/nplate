@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -273,5 +274,21 @@ public class LoginController {
         }
 
         return "redirect:/";
+    }
+
+
+    // 회원 정보 수정
+    @PostMapping("/member/update")
+    public String update(MemberDTO memberDTO, @RequestParam MultipartFile file) throws IOException {
+
+        // 프로필 사진 수정
+        if (!file.isEmpty()) {
+            fileService.updateFile(file, memberDTO.getId());
+        }
+
+        // 그 외 정보 수정
+        memberService.updateInfo(memberDTO);
+
+        return "redirect:/member/myInfo"; // 처리 수정해야함
     }
 }

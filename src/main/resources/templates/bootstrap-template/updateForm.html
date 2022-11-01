@@ -7,9 +7,26 @@
 <th:block layout:fragment="main-content">
     <form class="form-horizontal" th:object="${memberInfo}" th:action="@{/member/update}" method="post" enctype="multipart/form-data">
         <div class="form-group">
+            <label for="file" class="col-sm-2 control-label">프로필사진</label>
+            <div class="col-sm-10">
+                <input type="file" id="file" name="file" class="form-control" accept="image/*" onchange="loadFile(this)"/>
+                <div id="uploadResult">
+                    <img th:src=" '/member/info/profile?id=' + ${memberInfo.id}" th:width="100px" th:height="100px" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label for="id" class="col-sm-2 control-label">ID</label>
             <div class="col-sm-10">
                 <input type="text" id="id" name="id" class="form-control" th:value="${memberInfo.id}" readonly />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="nickName" class="col-sm-2 control-label">닉네임</label>
+            <div class="col-sm-10">
+                <input type="text" id="nickName" name="nickName" class="form-control" th:value="${memberInfo.nickName}" />
             </div>
         </div>
 
@@ -34,23 +51,6 @@
                     <option th:each="val : ${area}" th:value="${val.getCode()}" th:utext="${val}"
                             th:selected="${memberInfo.area} == ${val.getCode()}"></option>
                 </select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="nickName" class="col-sm-2 control-label">닉네임</label>
-            <div class="col-sm-10">
-                <input type="text" id="nickName" name="nickName" class="form-control" th:value="${memberInfo.nickName}" />
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="file" class="col-sm-2 control-label">프로필사진</label>
-            <div class="col-sm-10">
-                <input type="file" id="file" name="file" class="form-control" accept="image/*" onchange="loadFile(this)"/>
-                <div id="uploadResult">
-                    <img th:src=" '/member/info/profile?id=' + ${memberInfo.id}" th:width="100px" th:height="100px" />
-                </div>
             </div>
         </div>
 

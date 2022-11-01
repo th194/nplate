@@ -154,12 +154,13 @@ public class MemberController {
     }
 
 
-    // 회원 정보 수정
-    @PostMapping("/member/update")
+    // 회원 정보 수정 todo 관리 페이지 처리 수정
+    @PostMapping("/member/adminUpdate")
     public String update(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
 
-        // 프로필 사진 수정
-        fileService.updateFile(file, memberDTO.getId());
+        if (!file.isEmpty()) { // 프로필 사진 수정
+            fileService.updateFile(file, memberDTO.getId());
+        }
 
         // 그 외 정보 수정
         memberService.updateInfo(memberDTO);
