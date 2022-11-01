@@ -17,5 +17,5 @@ public interface BoardService {
 	public int selectBoardTotalCount(Criteria cri);
 	public boolean cntPlus(Long idx);
 	public List<BoardFileDTO> getFileList(Long idx);
-	public List<BoardDTO> getSearchList(BoardDTO board);
+	public List<BoardDTO> getSearchList(Criteria cri);
 }

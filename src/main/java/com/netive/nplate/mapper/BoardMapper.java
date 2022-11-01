@@ -16,5 +16,5 @@ public interface BoardMapper {
 	public List<BoardDTO> selectBoardList(Criteria cri);
 	public int selectBoardTotalCount(Criteria cri);
 	public boolean cntPlus(Long idx);
-	public List<BoardDTO> selectBoardSearchList(BoardDTO board);
+	public List<BoardDTO> selectBoardSearchList(Criteria cri);
 }

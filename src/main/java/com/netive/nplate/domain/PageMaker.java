@@ -3,24 +3,15 @@ package com.netive.nplate.domain;
 import lombok.Data;
 
 @Data
-public class BoardPageDTO {
-    /* 페이지 시작 번호 */
-    private int pageStart;
-
-    /* 페이지 끝 번호 */
-    private int pageEnd;
-
-    /* 이전, 다음 버튼 존재 유무 */
-    private boolean next, prev;
-
-    /* 행 전체 개수 */
-    private int total;
-
-    /* 현재페이지 번호(pageNum), 행 표시 수(amount), 검색 키워드(keyword), 검색 종류(type)*/
-    private Criteria cri;
+public class PageMaker {
+    private int pageStart;                          // 페이지 시작 번호
+    private int pageEnd;                            // 페이지 끝 번호
+    private boolean next, prev;                     // 이전, 다음 버튼 존재 유무
+    private int total;                              // 행 전체 개수
+    private Criteria cri;                           // 현재페이지 번호(pageNum), 행 표시 수(amount), 검색 키워드(keyword), 검색 종류(type)*/
 
     /* 생성자(클래스 호출 시 각 변수 값 초기화 */
-    public BoardPageDTO(Criteria cri, int total) {
+    public PageMaker(Criteria cri, int total) {
 
         /* cri, total 초기화 */
         this.cri = cri;
@@ -46,4 +37,5 @@ public class BoardPageDTO {
         /* 다음 버튼 값 초기화 */
         this.next = this.pageEnd < realEnd;
     }
+
 }

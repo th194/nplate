@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.List;
 
 import com.netive.nplate.domain.BoardFileDTO;
-import com.netive.nplate.domain.BoardPageDTO;
+import com.netive.nplate.domain.PageMaker;
 import com.netive.nplate.domain.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -84,11 +84,41 @@ public class BoardController {
 
 		int total = boardSerive.selectBoardTotalCount(cri);
 
-		BoardPageDTO boardPageDTO = new BoardPageDTO(cri, total);
+		PageMaker pageMaker = new PageMaker(cri, total);
 
-		model.addAttribute("pageMaker", boardPageDTO);
+		model.addAttribute("pageMaker", pageMaker);
 
 		return "board/list";
+	}
+
+	/**
+	 * 게시글 검색
+	 * @param keyword
+	 * @return
+	 */
+	@GetMapping("/board/search.do")
+	@ResponseBody
+	private Map<String, Object> getSearchList(@RequestParam("type") String type, @RequestParam("keyword") String keyword, Criteria cri) throws Exception {
+		Map<String, Object> resMap = new HashMap<>();
+		BoardDTO boardDTO = new BoardDTO();
+		boardDTO.setType(type);
+		boardDTO.setKeyword(keyword);
+
+
+		int total = boardSerive.selectBoardTotalCount(cri);
+
+		List<BoardDTO> searchList = boardSerive.getSearchList(cri);
+
+		System.out.println("total = " + total);
+		System.out.println("cri = " + cri);
+
+		PageMaker pageMaker = new PageMaker(cri, total);
+		System.out.println("pageMaker = " + pageMaker);
+
+		resMap.put("searchList", searchList);
+		resMap.put("searchPageMaker", pageMaker);
+
+		return resMap;
 	}
 	
 	/**
@@ -285,24 +315,6 @@ public class BoardController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-
-
-
-	}
-
-	/**
-	 * 게시글 검색
-	 * @param keyword
-	 * @return
-	 */
-	@GetMapping("/board/search.do")
-	@ResponseBody
-	private List<BoardDTO> getSearchList(@RequestParam("type") String type, @RequestParam("keyword") String keyword) throws Exception {
-		BoardDTO boardDTO = new BoardDTO();
-		boardDTO.setType(type);
-		boardDTO.setKeyword(keyword);
-		return boardSerive.getSearchList(boardDTO);
 	}
 
 	/**

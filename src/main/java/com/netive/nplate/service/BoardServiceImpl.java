@@ -110,6 +110,7 @@ public class BoardServiceImpl implements BoardService {
         return boardList;
     }
 
+    // 게시글 총 갯수
     @Override
     public int selectBoardTotalCount(Criteria cri) {
         return boardMapper.selectBoardTotalCount(cri);
@@ -127,15 +128,14 @@ public class BoardServiceImpl implements BoardService {
         int fileTotalCnt = boardFileMapper.selectFileTotalCount(idx);
         System.out.println("idx = " + idx);
         System.out.println("fileTotalCnt = " + fileTotalCnt);
-//        if (fileTotalCnt < 1) {
-//            return Collections.emptyList();
-//        }
         return boardFileMapper.selectFileList(idx);
     }
 
     @Override
-    public List<BoardDTO> getSearchList(BoardDTO board) {
-        return boardMapper.selectBoardSearchList(board);
+    public List<BoardDTO> getSearchList(Criteria cri) {
+
+        System.out.println("서비스 cri = " + cri);
+        return boardMapper.selectBoardSearchList(cri);
     }
 
 

@@ -27,7 +27,6 @@
 
 <th:block layout:fragment="content">
 
-
     <div class="col mb-5" th:if="${not #lists.isEmpty( boardList )}" th:each="row : ${boardList}">
         <div class="card h-100">
             <!-- Product image-->
@@ -56,7 +55,6 @@
 </th:block>
 
 <th:block layout:fragment="paging">
-    <p th:text=${pageMaker}></p>
     <div class="col-sm-12 col-md-7">
         <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
             <ul class="pagination">
@@ -64,7 +62,7 @@
                 <th:block th:if="${pageMaker.prev}">
                     <li class="paginate_button page-item">
                         <a href="javascript:void(0)" aria-controls="dataTable" class="page-link"
-                           th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${pageMaker.cri.makeQueryString(pageMaker.pageStart - 1)} ]])">이전</a>
+                           th:onclick="movePage([[${pageMaker.pageStart - 1}]])">이전</a>
                     </li>
                 </th:block>
 
@@ -73,7 +71,7 @@
                     <th:block th:each="num : *{#numbers.sequence(pageMaker.pageStart, pageMaker.pageEnd)}">
                         <li class="paginate_button page-item" th:classappend="${pageMaker.cri.pageNum == num} ? 'active' : ''">
                             <a href="javascript:void(0)" th:text="${num}" aria-controls="dataTable" class="page-link"
-                               th:onclick="movePage([[ ${#request.requestURI} ]],[[ ${pageMaker.cri.makeQueryString(num)} ]])"></a>
+                               th:onclick="movePage([[${num}]])"></a>
                         </li>
                     </th:block>
                 </th:block>
@@ -83,7 +81,7 @@
                 <th:block th:if="${pageMaker.next}">
                     <li class="paginate_button page-item">
                         <a href="javascript:void(0)" aria-controls="dataTable" class="page-link"
-                           th:onclick="movePage( [[ ${#request.requestURI} ]], [[ ${pageMaker.cri.makeQueryString(pageMaker.pageEnd + 1)} ]])">다음</a>
+                           th:onclick="movePage([[${pageMaker.pageEnd + 1}]])">다음</a>
                     </li>
                 </th:block>
             </ul>
@@ -100,13 +98,10 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
 
+        var searchObj = {};
+
         /* 게시글 검색 */
-        window.onload = () => {
-            getSearchList();
-        }
-
-        function getSearchList() {
-
+        function getSearchList(page) {
             var selectOption = $('#type option:selected').val();
             var searchInput = $('input[name=keyword]').val();
 
@@ -122,23 +117,30 @@
             var data = {
                 type   : $('#type option:selected').val(),
                 keyword: $('input[name=keyword]').val(),
-                page : (page) ? page : 1,
-                recordSize : 10,
-                pageSize : 10
+                pageNum : (page) ? page : 1,
+                amount : 10
             }
-            console.log('전송 data = ' + JSON.stringify(data));
+            console.log(page);
+            if(page == null || page != '') {
+                return;
+            }
             $.ajax({
                 type   : 'GET',
                 url    : "/board/search.do",
                 data   : data,
                 success: function (result) {
-                    console.log('검색 결과 length = ' + result.length);
-                    console.log('검색 결과 result = ' + JSON.stringify(result));
+                    var searchList = result.searchList;
+                    var pageMaker = result.searchPageMaker;
+                    searchObj.keyword = pageMaker.cri.keyword;
+                    searchObj.type = pageMaker.cri.type;
                     // 검색결과 리스트 생성
-                    if (result.length >= 1) {
+                    if (searchList != undefined && searchList != '') {
                         var str = '';
-                        result.forEach(function (item) {
-                            str += `<div class="col mb-5">
+                        var paging = '';
+
+                        searchList.forEach(function (item) {
+                            console.log('item = ' + JSON.stringify(item));
+                                str += `<div class="col mb-5">
                                 <div class="card h-100">
                                 <img class="card-img-top" src="${item.bbscttImage}" alt="..."/>
                                 <div class="card-body p-4">
@@ -155,10 +157,33 @@
                                 </div>
                             `;
                         });
+
+                        // 첫 페이지, 이전 페이지
+                        if (pageMaker.prev) {
+                            paging += `
+                        <li class="paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${pageMaker.pageStart - 1});" aria-label="Previous"><span aria-hidden="true">&lsaquo;</span></a></li>
+                            `;
+                        }
+
+                        // 페이지 번호
+                        for (var i = pageMaker.pageStart; i <= pageMaker.pageEnd; i++) {
+                            var active = (i === pageMaker.cri.pageNum) ? 'active' : '';
+                            console.log('i = '+ i);
+                            console.log('active = ' + active);
+                            paging += `<li  class="${active} paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${i});">${i}</a></li>`;
+                        }
+
+                        // 다음 페이지, 마지막 페이지
+                        if (pageMaker.next) {
+                            paging += `
+                        <li class="paginate_button page-item"><a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="moveSearchPage(${pageMaker.pageEnd + 1});" aria-label="Next"><span aria-hidden="true">&rsaquo;</span></a></li>
+                            `;
+                        }
                     } else {
-                        str = `<div>검색 결과가 없습니다.</div>`
+                        str = `<div>검색 결과가 없습니다.</div>`;
                     }
                     $('#boardList').empty().append(str);
+                    $('.pagination').empty().append(paging);
                 },
                 error  : function (err) {
                     console.log('err = ' + JSON.stringify(err));
@@ -191,15 +216,42 @@
         // }
         /* 현재 페이지 기억 */
 
-        /* 페이지 이동 */
-        function movePage(uri, queryString) {
-        console.log(uri);
-        console.log(queryString);
+        /* 검색 페이지 이동 */ //이게맞나..
+        function moveSearchPage(page) {
+            var queryParams = {
+                pageNum: (page) ? page : 1,
+                amount: 10,
+                keyword: searchObj.keyword,
+                type: searchObj.type
+            }
 
-        location.href = uri + queryString;
+
+            $.ajax({
+                url : '/board/search.do',
+                data : queryParams,
+                method : 'GET',
+                success : function(result) {
+                    getSearchList(page);
+                },
+                error : function(err) {
+                    console.log('err', err);
+                }
+            });
         }
+        /* 검색 페이지 이동 */
 
         /* 페이지 이동 */
+        function movePage(page) {
+            var queryParams = {
+                pageNum: (page) ? page : 1,
+                amount: 10,
+                keyword: searchObj.keyword,
+                type: searchObj.type
+            }
+            location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+        }
+        /* 페이지 이동 */
+
 
 
         /* 게시글 상세페이지 이동 */

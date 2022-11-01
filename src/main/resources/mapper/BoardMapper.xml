@@ -38,13 +38,13 @@
 					</choose>
 				</when>
 				<!-- 전체 검색일 때 때 -->
-				<otherwise>
-					AND (
-					BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
-					OR BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')
-					OR BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')
-					)
-				</otherwise>
+<!--				<otherwise>-->
+<!--					AND (-->
+<!--					BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')-->
+<!--					OR BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')-->
+<!--					OR BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')-->
+<!--					)-->
+<!--				</otherwise>-->
 			</choose>
 		</if>
 	</sql>
@@ -109,7 +109,7 @@
 	</delete>
 
 	<!--게시글 목록-->
-	<select id="selectBoardList" resultType="BoardDTO">
+	<select id="selectBoardList" parameterType="Criteria" resultType="BoardDTO">
 		SELECT
 			<include refid="boardColumns"/>
 		FROM
@@ -121,8 +121,23 @@
 		LIMIT #{skip}, #{amount}
 	</select>
 
+
+	<!-- 게시글 검색 -->
+	<select id="selectBoardSearchList" parameterType="Criteria" resultType="BoardDTO">
+		SELECT
+		<include refid="boardColumns"/>
+		FROM NETIVE_PROJECT01_BOARD
+		WHERE BBSCTT_NO
+		<if test="type != null">
+			<include refid="search"></include>
+		</if>
+		ORDER BY
+		BBSCTT_NO DESC
+		LIMIT #{skip}, #{amount}
+	</select>
+
 	<!-- 게시글 수 카운트 -->
-	<select id ="selectBoardTotalCount" parameterType="BoardPageDTO" resultType="int">
+	<select id ="selectBoardTotalCount" parameterType="Criteria" resultType="int">
 		SELECT
 			COUNT(*)
 		FROM
@@ -130,7 +145,8 @@
 			WHERE BBSCTT_NO
 		<include refid="search"></include>
 	</select>
-	
+
+	<!-- 게시글 조회수 증가 -->
 	<update id="cntPlus" parameterType="long">
 		UPDATE NETIVE_PROJECT01_BOARD
 		SET
@@ -138,15 +154,4 @@
 		WHERE
 			BBSCTT_NO = #{bbscttNo}
 	</update>
-
-	<!-- 게시글 검색 -->
-	<select id="selectBoardSearchList" parameterType="BoardDTO" resultType="BoardDTO">
-		SELECT
-		    *
-		FROM NETIVE_PROJECT01_BOARD
-		WHERE BBSCTT_NO
-		<if test="type != null">
-			<include refid="search"></include>
-		</if>
-	</select>
 </mapper>
