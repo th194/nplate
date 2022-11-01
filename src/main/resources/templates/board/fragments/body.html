@@ -1,63 +1,68 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-	<body th:fragment="main-body">
-		<div class="fixed-navbar">
-			<div class="pull-left">
-				<h1 class="page-title">NPlate</h1>
-			</div>
-		</div>
-		<!-- /.fixed-navbar -->
+<body th:fragment="main-body">
+<div class="fixed-navbar">
+    <div class="pull-left">
+        <h1 class="page-title">NPlate</h1>
+    </div>
+</div>
+<!-- /.fixed-navbar -->
 
-		<div id="wrapper">
-			<div class="main-content">
-				<div class="row row-inline-block small-spacing">
-					<div class="col-xs-12">
-						<div class="box-content">
-							<div class="clearfix">
-								<h4 class="box-title pull-left"></h4>
-								<!-- /.box-title -->
-	
-								<th:block layout:fragment="search"></th:block>
-	
-							</div>
-							<!-- //.clearfix -->
-	
-							<th:block layout:fragment="content"></th:block>
-	
-							<th:block layout:fragment="paging"></th:block>
-						</div>
-						<!-- /.box-content -->
-						
-						<th:block layout:fragment="add-content"></th:block>
+<div>
+    <th:block layout:fragment="search"></th:block>
+</div>
+<!-- //.clearfix -->
 
-					</div>
-					<!-- /.col-xs-12 -->
-				</div>
-				<!-- /.row row-inline-block small-spacing -->
-				<footer class="footer">
-					<ul class="list-inline">
-						<li>2016 © NinjaAdmin.</li>
-					</ul>
-				</footer>
-			</div>
-			<!-- /.main-content -->
-		</div>
-		<!-- /#wrapper -->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center" id="boardList">
+            <th:block layout:fragment="content"></th:block>
+        </div>
+    </div>
+</section>
+<th:block layout:fragment="view"></th:block>
 
-		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery/jquery.slim.js}"></script>
-		<script th:src="@{/plugin/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js}"></script>
-		<script th:src="@{/plugin/bootstrap/js/bootstrap.min.js}"></script>
+<th:block layout:fragment="paging"></th:block>
 
-		<script th:src="@{/scripts/main.js}"></script>
-		<script th:src="@{/scripts/common.js}"></script>
+<th:block layout:fragment="add-content"></th:block>
 
-		<!-- kakao map api -->
-		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=326897593e49c2218efe8c3613445f46"></script>
-		<!-- kakao map api -->
+<!-- /.col-xs-12 -->
+<!-- /.row row-inline-block small-spacing -->
+<footer class="footer">
+    <ul>
+        <li>2022 @ Nplate</li>
+    </ul>
+</footer>
+<!-- /.main-content -->
+<!-- /#wrapper -->
 
-		<!-- smartEditor -->
-		<script th:src="@{/smarteditor/js/HuskyEZCreator.js}"></script>
-		<!-- smartEditor -->
-		<th:block layout:fragment="script"></th:block>
-	</body>
+<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery/jquery.slim.js}"></script>
+<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/bootstrap/js/bootstrap.js}"></script>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript-->
+<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<!-- Custom scripts for all pages-->
+<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js}"></script>
+
+<!-- Page level plugins -->
+<!--<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/chart.js/Chart.min.js}"></script>-->
+
+<!-- Page level custom scripts -->
+<!--<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-area-demo.js}"></script>-->
+<!--<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/js/demo/chart-pie-demo.js}"></script>-->
+
+<!-- kakao map api -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=326897593e49c2218efe8c3613445f46"></script>
+<!-- kakao map api -->
+
+<!-- smartEditor -->
+<script th:src="@{/smarteditor/js/HuskyEZCreator.js}"></script>
+<!-- smartEditor -->
+<th:block layout:fragment="script"></th:block>
+</body>
 </html>

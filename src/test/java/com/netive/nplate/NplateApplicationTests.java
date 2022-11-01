@@ -110,20 +110,20 @@ class BoardApplicationTests {
 		}
 	}
 
-	@Test
-	public void testSelect() {
-		int boardCount = boardMapper.selectBoardTotalCount();
-		if (boardCount != 0) {
-			List<BoardDTO> boardList = boardMapper.selectBoardList();
-			if(boardList != null) {
-				for(BoardDTO board : boardList) {
-					System.out.println("================================");
-					System.out.println(board.getBbscttSj());
-					System.out.println(board.getBbscttCn());
-					System.out.println(board.getBbscttWrter());
-					System.out.println("================================");
-				}
-			}
-		}
-	}
+//	@Test
+//	public void testSelect() {
+//		int boardCount = boardMapper.selectBoardTotalCount();
+//		if (boardCount != 0) {
+//			List<BoardDTO> boardList = boardMapper.selectBoardList();
+//			if(boardList != null) {
+//				for(BoardDTO board : boardList) {
+//					System.out.println("================================");
+//					System.out.println(board.getBbscttSj());
+//					System.out.println(board.getBbscttCn());
+//					System.out.println(board.getBbscttWrter());
+//					System.out.println("================================");
+//				}
+//			}
+//		}
+//	}
 }

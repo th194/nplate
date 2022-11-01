@@ -41,6 +41,8 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
 	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
+	// 타임리프 자바8 날짜 지원 라이브러리
+	implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-java8time', version: '3.0.4.RELEASE'
 
 	// 파일 관련 추가
 	implementation 'commons-io:commons-io:2.6'

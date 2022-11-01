@@ -4,7 +4,7 @@
 		<title>this is view page</title>
 	</th:block>
 
-	<th:block layout:fragment="content">
+	<th:block layout:fragment="view">
 		<div class="card-content">
 			<form class="form-horizontal form-view form-grade" th:object="${board}">
 				<div class="form-group">
@@ -72,9 +72,9 @@
 			</form>
 
 			<div class="btn_wrap text-center">
-				<a th:href="@{/board/list.do}" class="btn btn-default waves-effect waves-light">뒤로가기</a>
-				<a th:href="@{/board/write.do( bbscttNo=${board.bbscttNo} )}" class="btn btn-primary waves-effect waves-light">수정하기</a>
-				<button type="button" class="btn btn-danger waves-effect waves-light" th:myVal="*{board.bbscttNo}" th:onclick="deleteBoard(this.getAttribute('myVal'))">삭제하기</button>
+				<a href="javascript:void(0)" onclick="goListPage()" class="btn btn-default waves-effect waves-light">뒤로가기</a>
+				<a href="javascript:void(0)" onclick="goWritePage()" class="btn btn-primary waves-effect waves-light">수정하기</a>
+				<button type="button" class="btn btn-danger waves-effect waves-light" th:onclick="deleteBoard()">삭제하기</button>
 			</div>
 		</div>
 		<!-- /.card-content -->
@@ -111,21 +111,27 @@
 			/* 평점 렌더링 */
 
 			/*게시글 삭제 함수*/
-			function deleteBoard(idx) {
-
-				if (confirm(idx + "번 게시글을 삭제할까요?")) {
-					console.log(idx);
-					var uri = /*[[@{/board/delete.do}]]*/"";
-					var html = "";
-
-					html += '<form name="dataForm" action="'+uri+'" method="post">';
-					html += '<input type="hidden" name="idx" value="'+idx+'" />';
-					html += '</form>';
-
-					$("body").append(html);
-					document.dataForm.submit();
+			function deleteBoard() {
+				var idx = board.bbscttNo;
+				if (!confirm(idx + "번 게시글을 삭제할까요?")) {
+					return false;
 				}
+
+				var inputHtml = "";
+				new URLSearchParams(location.search).forEach((value, key) => {
+					inputHtml += `<input type="hidden" name="${key}" value="${value}" />`;
+				});
+
+				var formHtml = `<form id="deleteForm" action="/board/delete.do" method="post">
+									${inputHtml}
+								</form>`;
+
+				var doc = new DOMParser().parseFromString(formHtml, 'text/html');
+				var form = doc.body.firstChild;
+				document.body.append(form);
+				document.getElementById('deleteForm').submit();
 			}
+			/*게시글 삭제 함수*/
 
 			var $map = document.getElementById('map');
 
@@ -175,6 +181,20 @@
 			}
 			smartEditor();
 			/* smartEditor */
+
+			/* 수정하기 */
+			function goWritePage() {
+				location.href = '/board/write.do' + location.search;
+			}
+			/* 수정하기 */
+
+			/* 뒤로가기 */
+			function goListPage() {
+				var queryString = new URLSearchParams(location.search);
+				queryString.delete('idx');
+				location.href = '/board/list.do?' + queryString.toString();
+			}
+			/* 뒤로가기 */
 
 			/*[- end of function -]*/
 			/*]]>*/

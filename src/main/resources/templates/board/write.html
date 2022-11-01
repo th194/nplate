@@ -5,7 +5,7 @@
     <title>게시글 등록</title>
 </th:block>
 
-<th:block layout:fragment="content">
+<th:block layout:fragment="view">
     <div class="card-content">
         <form id="saveForm" class="form-horizontal form-grade" th:action="@{/board/register.do}" th:object="${board}">
             <!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->

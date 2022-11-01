@@ -11279,3 +11279,52 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
+
+/* 해시태그 */
+/*.hash-tag *:not[input]{*/
+/*  margin: 0;*/
+/*  padding: 0;*/
+/*  list-style: none;*/
+/*}*/
+
+.hash-tag ul {
+  padding: 16px 0;
+}
+
+.hash-tag ul li {
+  display: inline-block;
+  margin: 0 5px;
+  font-size: 14px;
+  letter-spacing: -.5px;
+}
+
+.hash-tag form {
+  padding-top: 16px;
+}
+
+.hash-tag ul li.tag-item {
+  padding: 4px 8px;
+  background-color: #d3d3d3;
+  color: white;
+  border-radius: 3px;
+}
+
+.hash-tag .tag-item:hover {
+  background-color: #262626;
+  color: #fff;
+}
+
+.hash-tag .del-btn {
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 8px;
+}
+/* 해시태그 */
+
+/* 지도 */
+.map-size {
+  width: 500px;
+  height: 700px;
+}
+/* 지도 */
