@@ -72,7 +72,13 @@ public class MemberController {
             int result = memberService.registerMember(memberDTO);
 
             if (result > 0) {
-                fileService.saveFile(file, memberDTO.getId());
+
+                if (file.isEmpty()) { // 파일 없는 경우
+                    fileService.saveDefaultFile(memberDTO.getId());
+                } else {
+                    fileService.saveFile(file, memberDTO.getId());
+                }
+
                 model.addAttribute("message", "가입이 완료되었습니다.");
                 model.addAttribute("url", "/");
                 return "member/index";
