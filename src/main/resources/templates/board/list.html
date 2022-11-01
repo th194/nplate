@@ -121,9 +121,6 @@
                 amount : 10
             }
             console.log(page);
-            if(page == null || page != '') {
-                return;
-            }
             $.ajax({
                 type   : 'GET',
                 url    : "/board/search.do",
