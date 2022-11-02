@@ -27,10 +27,6 @@
 
 <th:block layout:fragment="content">
 
-    <div class="col mb-5">
-
-    </div>
-
 </th:block>
 
 <th:block layout:fragment="paging">
@@ -195,7 +191,7 @@
 
         /* 게시글 상세페이지 이동 */
         function goViewPage(idx) {
-            var queryString = (location.search) ? location.search + `$idx=${idx}` : `?idx=${idx}`;
+            var queryString = (location.search) ? location.search + `&idx=${idx}` : `?idx=${idx}`;
             location.href = '/board/view.do' + queryString;
         }
         /* 게시글 상세페이지 이동 */

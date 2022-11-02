@@ -192,9 +192,9 @@ public class BoardController {
 				// 디렉토리 설정 및 업로드
 				// 파일경로
 
-				// 서버 재부팅하면 이미지 사라짐..
-				String defaultPath = request.getSession().getServletContext().getRealPath("/");
-				String path = defaultPath + "img" + File.separator;
+//				String defaultPath = request.getSession().getServletContext().getRealPath("/");
+//				String path = defaultPath + "img" + File.separator;
+				String path = "/nplateImage/post/";
 
 				File file = new File(path);
 
@@ -229,7 +229,7 @@ public class BoardController {
 				// img 태그의 title 속성을 원본파일명으로 적용시켜주기 위함
 				sFileInfo += "&sFileName=" + sFileName;
 //				sFileInfo += "&sFileURL=D:/images/" + sRealFileName;
-				sFileInfo += "&sFileURL=/img/" + sRealFileName;
+				sFileInfo += "&sFileURL=/nplateImage/post/" + sRealFileName;
 
 				System.out.println("sFileInfo = " + sFileInfo);
 
