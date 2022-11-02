@@ -18,8 +18,8 @@ public class WebConfiguration implements WebMvcConfigurer {
         return multipartResolver;
     }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoggerInterceptor()).excludePathPatterns("/parsley/**", "smarteditor/**", "/startbootstrap-sb-admin-2-gh-pages/**", "startbootstrap-shop-homepage-gh-pages/**");
-    }
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(new LoggerInterceptor()).excludePathPatterns("/parsley/**", "/smarteditor/**", "/startbootstrap-sb-admin-2-gh-pages/**", "/startbootstrap-shop-homepage-gh-pages/**");
+//    }
 }

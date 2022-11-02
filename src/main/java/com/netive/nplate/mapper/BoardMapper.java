@@ -9,14 +9,6 @@ import com.netive.nplate.domain.BoardDTO;
 
 @Mapper
 public interface BoardMapper {
-//	public int insertBoard(BoardDTO params);
-//	public BoardDTO selectBoardDetail(Long idx);
-//	public int updateBoard(BoardDTO params);
-//	public int deleteBoard(Long idx);
-//	public List<BoardDTO> selectBoardList(Criteria cri);
-//	public int selectBoardTotalCount(Criteria cri);
-//	public boolean cntPlus(Long idx);
-//	public List<BoardDTO> selectBoardSearchList(Criteria cri);
 	// 게시글 저장
 	public void insertBoard(BoardDTO board);
 	// 게시글 상세보기

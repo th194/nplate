@@ -5,16 +5,6 @@ import com.netive.nplate.domain.SearchDTO;
 import com.netive.nplate.paging.PagingResponse;
 
 public interface BoardService {
-//	public boolean registerBoard(BoardDTO board);
-//	public boolean registerBoard(BoardDTO board, MultipartFile[] files, String path);
-//	public BoardDTO getBoardDetail(Long idx);
-//	public Long updateBoard(BoardDTO board);
-//	public boolean deleteBoard(Long idx);
-//	public List<BoardDTO> getBordList(Criteria cri);
-//	public int selectBoardTotalCount(Criteria cri);
-//	public boolean cntPlus(Long idx);
-//	public List<BoardFileDTO> getFileList(Long idx);
-//	public List<BoardDTO> getSearchList(Criteria cri);
 	// 게시글 저장
 	public Long registerBoard(BoardDTO board);
 	// 게시글 상세보기

@@ -29,22 +29,15 @@ public class BoardController {
 
 	/**
 	 * 게시글 작성
-	 * @param bbscttNo
+	 * @param idx
 	 * @param model
 	 * @return
 	 */
 	@GetMapping("/board/write.do")
-	public String openBoardWrite(@RequestParam(value = "bbscttNo", required = false) final Long bbscttNo, Model model) {
-//		if (bbscttNo == null) {
-//			model.addAttribute("board", new BoardDTO());
-//		} else {
-//			BoardDTO boardDTO = boardSerive.getBoardDetail(bbscttNo);
-//
-//			System.out.println("boardDTO >>>>>>>>>>>>>>>>> " + boardDTO);
-//			model.addAttribute("board", boardDTO);
-//		}
-		if (bbscttNo != null) {
-			BoardDTO board = boardSerive.getBoardDetail(bbscttNo);
+	public String openBoardWrite(@RequestParam(value = "idx", required = false) final Long idx, Model model) {
+		log.info("수정 bbscttNo = " + idx);
+		if (idx != null) {
+			BoardDTO board = boardSerive.getBoardDetail(idx);
 			model.addAttribute("board", board);
 		}
 		
@@ -57,25 +50,9 @@ public class BoardController {
 	 * @return
 	 */
 	@PostMapping("/board/register.do")
+	@ResponseBody
 	public String openBoardRegister(final BoardDTO board, Model model) {
-
-//		try {
-//			String path = request.getSession().getServletContext().getRealPath("/img");
-//
-//			boolean isRegistered = boardSerive.registerBoard(boardDTO, files, path);
-//
-//			if (isRegistered == false) {
-//				System.out.println("등록 실패");
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return "board/list";
 		boardSerive.registerBoard(board);
-//		MessageDTO message = new MessageDTO("게시글 생성이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
-//		log.info("message = " + message);
-
-//		return showMessageAndRedirect(message, model);
 		return "board/list";
 	}
 
@@ -86,16 +63,6 @@ public class BoardController {
 	 */
 	@GetMapping("/board/list.do")
 	public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model) {
-//		List<BoardDTO> boardList = boardSerive.getBordList(cri);
-//		model.addAttribute("boardList", boardList);
-//
-//		int total = boardSerive.selectBoardTotalCount(cri);
-//
-//		PageMaker pageMaker = new PageMaker(cri, total);
-//
-//		model.addAttribute("pageMaker", pageMaker);
-
-//		return "board/list";
 
 		PagingResponse<BoardDTO> response = boardSerive.getBoardList(params);
 		model.addAttribute("response", response);
@@ -112,20 +79,6 @@ public class BoardController {
 	@GetMapping("/board/view.do")
 	public String openBoardDetail(@RequestParam final Long idx, Model model) {
 
-//		if(idx == null) {
-//			// 올바르지 않은 접근
-//			return "redirect:/board/list.do";
-//		}
-//
-//		BoardDTO boardDTO = boardSerive.getBoardDetail(idx);
-//		model.addAttribute("board", boardDTO);
-//
-//		List<BoardFileDTO> fileList = boardSerive.getFileList(idx);
-//		model.addAttribute("fileList", fileList);
-//
-//
-//		boardSerive.cntPlus(idx); // 게시글 조회수 증가
-//		return "board/view";
 		BoardDTO board = boardSerive.getBoardDetail(idx);
 		model.addAttribute("board", board);
 		return "board/view";
@@ -171,8 +124,8 @@ public class BoardController {
 	@PostMapping("/board/update.do")
 	public String updateBoard(final BoardDTO board, Model model) {
 		boardSerive.updateBoard(board);
-		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
-		return showMessageAndRedirect(message, model);
+//		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
+		return "board/list";
 	}
 
 	/**
@@ -182,26 +135,10 @@ public class BoardController {
 	 */
 	@PostMapping("/board/delete.do")
 	public String deleteBoard(@RequestParam final Long idx, @RequestParam final Map<String, Object> queryParams, Model model) {
-//		if(idx == null) {
-//			return "redirect:/board/list.do";
-//		}
-//
-//		try {
-//			boolean isDelete = boardSerive.deleteBoard(idx);
-//			if(isDelete == false) {
-//
-//			}
-//		} catch (DataAccessException daex) { // DB 처리과정 문제 발생
-//			daex.printStackTrace();
-//		} catch (Exception e) { // 시스템 에러
-//			e.printStackTrace();
-//		}
-//
-//		return "redirect:/board/list.do";
 
 		boardSerive.deleteBoard(idx);
-		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/board/list.do", RequestMethod.GET, queryParams);
-		return showMessageAndRedirect(message, model);
+//		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/board/list.do", RequestMethod.GET, queryParams);
+		return "board/list";
 	}
 
 
