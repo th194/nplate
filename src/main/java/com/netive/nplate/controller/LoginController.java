@@ -149,12 +149,21 @@ public class LoginController {
             try {
                 MemberDTO dto = (MemberDTO) session.getAttribute("member");
                 String id = dto.getId();
+                params.setMemberId(id);
 
-                List<BoardDTO> boardList = loginService.getBordListById(id); // 특정 아이디로 조회 글목록
-                // int count = loginService.countPostsById(id);
-                int count = boardList.size(); // 글 개수
+
+
+                int count = loginService.countPostsById(id);
+//                int count = boardList.size(); // 글 개수
 
                 Pagination pagination = new Pagination(count, params);
+                params.setPagination(pagination);
+
+
+                System.out.println("params ========================" + params.toString());
+
+                List<BoardDTO> boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
+
                 PagingResponse<BoardDTO> response = new PagingResponse<>(boardList, pagination);
 
                 model.addAttribute("response", response);
