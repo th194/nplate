@@ -10,4 +10,10 @@
         ]]>
     </select>
 
+    <select id="countPostsById" parameterType="String" resultType="int">
+        <![CDATA[
+        select count(*) from NETIVE_PROJECT01_BOARD where BBSCTT_WRTER = #{id}
+        ]]>
+    </select>
+
 </mapper>

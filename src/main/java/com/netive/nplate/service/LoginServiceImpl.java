@@ -17,4 +17,9 @@ public class LoginServiceImpl implements LoginService {
     public List<BoardDTO> getBordListById(String id) {
         return loginMapper.getBordListById(id);
     }
+
+    @Override
+    public int countPostsById(String id) {
+        return loginMapper.countPostsById(id);
+    }
 }

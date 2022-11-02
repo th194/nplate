@@ -4,6 +4,9 @@ import com.netive.nplate.configuration.SessionConfig;
 import com.netive.nplate.domain.Area;
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.domain.MemberDTO;
+import com.netive.nplate.domain.SearchDTO;
+import com.netive.nplate.paging.Pagination;
+import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.BoardService;
 import com.netive.nplate.service.FileService;
 import com.netive.nplate.service.LoginService;
@@ -138,16 +141,29 @@ public class LoginController {
     
     // 내가 쓴 게시글 목록
     @GetMapping("/member/board/list")
-    public String openBoardList(Model model, HttpServletRequest request) {
+    public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model, HttpServletRequest request) {
+        System.out.println("내가 쓴 게시글 목록========");
         HttpSession session = request.getSession();
 
         if ((boolean) session.getAttribute("isLogOn")) {
             try {
                 MemberDTO dto = (MemberDTO) session.getAttribute("member");
-                List<BoardDTO> boardList = loginService.getBordListById(dto.getId());
-                model.addAttribute("boardList", boardList);
+                String id = dto.getId();
+
+                List<BoardDTO> boardList = loginService.getBordListById(id); // 특정 아이디로 조회 글목록
+                // int count = loginService.countPostsById(id);
+                int count = boardList.size(); // 글 개수
+
+                Pagination pagination = new Pagination(count, params);
+                PagingResponse<BoardDTO> response = new PagingResponse<>(boardList, pagination);
+
+                model.addAttribute("response", response);
                 return "board/list";
+
             } catch (Exception e) {
+                // todo 에러 발생시 처리 추가
+                System.out.println("에러=======");
+                e.printStackTrace();
                 return "member/index";
             }
         } else {
