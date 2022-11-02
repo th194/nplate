@@ -194,7 +194,7 @@ public class BoardController {
 
 //				String defaultPath = request.getSession().getServletContext().getRealPath("/");
 //				String path = defaultPath + "img" + File.separator;
-				String path = "/nplateImage/post/";
+				String path = "/home/ec2-user/nplate/src/main/resources";
 
 				File file = new File(path);
 
@@ -230,8 +230,8 @@ public class BoardController {
 				sFileInfo += "&sFileName=" + sFileName;
 //				sFileInfo += "&sFileURL=D:/images/" + sRealFileName;
 				sFileInfo += "&sFileURL=/nplateImage/post/" + sRealFileName;
-
 				System.out.println("sFileInfo = " + sFileInfo);
+
 
 				PrintWriter printWriter = response.getWriter();
 				printWriter.print(sFileInfo);
