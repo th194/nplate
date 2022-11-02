@@ -1,33 +1,35 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">-->
-<!--<head th:replace="bootstrap-template/layout/header :: main-head"></head>-->
-<!--<body>-->
-<!--<form th:if="${not #maps.isEmpty( params.data )}" id="redirectForm" th:action="${params.redirectUri}" th:method="${params.method}" style="display: none;">-->
-<!--  <input th:each="key, status : ${params.data.keySet()}" type="hidden" th:name="${key}" th:value="${params.data.get(key)}" />-->
-<!--</form>-->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:replace="bootstrap-template/layout/header :: main-head"></head>
+<body>
+<form th:if="${not #maps.isEmpty( params.data )}" id="redirectForm" th:action="${params.redirectUri}"
+      th:method="${params.method}" style="display: none;">
+    <input th:each="key, status : ${params.data.keySet()}" type="hidden" th:name="${key}"
+           th:value="${params.data.get(key)}"/>
+</form>
 
-<!--<th:block layout:fragment="script">-->
-<!--  <script th:inline="javascript">-->
-<!--    /* <![CDATA[ */-->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /* <![CDATA[ */
 
-<!--    window.onload = () => {-->
-<!--      var message = [[ ${params.message} ]];-->
-<!--      if (message) {-->
-<!--        alert(message);-->
-<!--      }-->
+        window.onload = () => {
+            var message = [[ ${params.message}]];
+            if (message) {
+                alert(message);
+            }
 
-<!--      var form = document.getElementById('redirectForm');-->
-<!--      if (form) {-->
-<!--        form.submit();-->
-<!--        return false;-->
-<!--      }-->
+            var form = document.getElementById('redirectForm');
+            if (form) {
+                form.submit();
+                return false;
+            }
 
-<!--      var redirectUri = [[ ${params.redirectUri} ]];-->
-<!--      location.href = redirectUri;-->
-<!--    }-->
+            var redirectUri = [[ ${params.redirectUri}]];
+            location.href = redirectUri;
+        }
 
-<!--    /* ]]> */-->
-<!--  </script>-->
-<!--</th:block>-->
-<!--</body>-->
-<!--</html>-->
+        /* ]]> */
+    </script>
+</th:block>
+</body>
+</html>

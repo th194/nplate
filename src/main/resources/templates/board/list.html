@@ -59,8 +59,8 @@
         }
 
         function findAllPost() {
-            var list = [[${response.list}]];
-            if (!list.length) {
+            var response = [[${response}]];
+            if (!response.list.length) {
                 document.getElementById('list').innerHTML = '<div>검색 결과가 없습니다.</div>';
                 drawPage();
                 return false;
@@ -70,7 +70,7 @@
             var params = [[${params}]];
             var num = pagination.totalRecordCount - ((params.page - 1) * params.recordSize);
 
-            drawList(list, num);
+            drawList(response.list, num);
             drawPage(pagination, params);
         }
 

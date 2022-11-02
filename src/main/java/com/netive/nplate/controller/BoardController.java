@@ -35,7 +35,6 @@ public class BoardController {
 	 */
 	@GetMapping("/board/write.do")
 	public String openBoardWrite(@RequestParam(value = "idx", required = false) final Long idx, Model model) {
-		log.info("수정 bbscttNo = " + idx);
 		if (idx != null) {
 			BoardDTO board = boardSerive.getBoardDetail(idx);
 			model.addAttribute("board", board);
@@ -50,10 +49,10 @@ public class BoardController {
 	 * @return
 	 */
 	@PostMapping("/board/register.do")
-	@ResponseBody
 	public String openBoardRegister(final BoardDTO board, Model model) {
 		boardSerive.registerBoard(board);
-		return "board/list";
+		MessageDTO message = new MessageDTO("게시글 등록이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
+		return showMessageAndRedirect(message, model);
 	}
 
 	/**
@@ -84,37 +83,6 @@ public class BoardController {
 		return "board/view";
 	}
 
-	/**
-	 * 게시글 검색
-	 * @param keyword
-	 * @return
-	 */
-//	@GetMapping("/board/search.do")
-//	@ResponseBody
-//	private Map<String, Object> getSearchList(@RequestParam("type") String type, @RequestParam("keyword") String keyword, Criteria cri) throws Exception {
-//		Map<String, Object> resMap = new HashMap<>();
-//		BoardDTO boardDTO = new BoardDTO();
-//		boardDTO.setType(type);
-//		boardDTO.setKeyword(keyword);
-//
-//
-//		int total = boardSerive.selectBoardTotalCount(cri);
-//
-//		List<BoardDTO> searchList = boardSerive.getSearchList(cri);
-//
-//		System.out.println("total = " + total);
-//		System.out.println("cri = " + cri);
-//
-//		PageMaker pageMaker = new PageMaker(cri, total);
-//		System.out.println("pageMaker = " + pageMaker);
-//
-//		resMap.put("searchList", searchList);
-//		resMap.put("searchPageMaker", pageMaker);
-//
-//		return resMap;
-//	}
-	
-
 
 	/**
 	 * 게시글 수정
@@ -124,8 +92,8 @@ public class BoardController {
 	@PostMapping("/board/update.do")
 	public String updateBoard(final BoardDTO board, Model model) {
 		boardSerive.updateBoard(board);
-//		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
-		return "board/list";
+		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
+		return showMessageAndRedirect(message, model);
 	}
 
 	/**
@@ -137,8 +105,8 @@ public class BoardController {
 	public String deleteBoard(@RequestParam final Long idx, @RequestParam final Map<String, Object> queryParams, Model model) {
 
 		boardSerive.deleteBoard(idx);
-//		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/board/list.do", RequestMethod.GET, queryParams);
-		return "board/list";
+		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/board/list.do", RequestMethod.GET, queryParams);
+		return showMessageAndRedirect(message, model);
 	}
 
 

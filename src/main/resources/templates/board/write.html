@@ -131,6 +131,7 @@
         function submitPost() {
             oEditors.getById['bbscttCn'].exec('UPDATE_CONTENTS_FIELD', []);
 
+            var form = document.getElementById('saveForm');
             // textarea 값 가져오기
             var content = document.getElementById('bbscttCn').value;
 
@@ -158,9 +159,6 @@
                     return;
                 }
 
-
-                console.log(srcArr);
-
                 var src = img.attr('src');
                 var srcReplace = src.replace('/img/', '');
 
@@ -170,36 +168,15 @@
                 var bbscttHashTag = marginTag();
                 $('#bbscttHashtag').val(bbscttHashTag);
 
-                var bbscttGrade = $('input:radio[name=bbscttGrade]:checked').val();
-
-                var formData = {
-                    bbscttNo     : $('#bbscttNo').val(),
-                    bbscttSj     : $('#bbscttSj').val(),
-                    bbscttCn     : content,
-                    // bbscttWrter  : $('#bbscttWrter').val(),
-                    bbscttImage  : $('#bbscttImage').val(),
-                    bbscttGrade  : bbscttGrade,
-                    bbscttHashtag: $('#bbscttHashtag').val(),
-                    bbscttStore  : $('input[name=bbscttStore]').val(),
-                    bbscttCchLa  : $('input[name=bbscttCchLa]').val(),
-                    bbscttCchLo  : $('input[name=bbscttCchLo]').val()
+                // 글 등록/수정 action 변경
+                var board = [[${board}]];
+                $('#bbscttWrter').val(board.bbscttWrter);
+                if(board.bbscttNo == null) {
+                    form.action = '/board/register.do';
+                } else {
+                    form.action = '/board/update.do';
                 }
-
-                var url = [[${board}]] == null ? '/board/register.do' : '/board/update.do';
-
-                $.ajax({
-                    url    : url,
-                    data   : formData,
-                    method : 'POST',
-                    success: function (data) {
-                        alert('저장');
-                        // location.href = '/board/list.do';
-                    },
-                    error  : function (err) {
-                        console.log('err data > ' +  JSON.stringify(err));
-                        alert('실패');
-                    }
-                });
+                form.submit();
             }
         }
 
@@ -285,7 +262,7 @@
             console.log('스토어 = ' + $('input[name=bbscttCchLo]').val());
 
             console.log('해시태그 값 = ' + board.bbscttHashtag);
-            if(board.bbscttHashtag != null && !isEmpty(board.bbscttHashtag)) {
+            if(board.bbscttHashtag != null && board.bbscttHashtag == '') {
                 $("#tag-list").append("<li class='tag-item'>" + board.bbscttHashtag + "<span class='del-btn' idx='" + 0 + "'>x</span></li>");
             }
 
