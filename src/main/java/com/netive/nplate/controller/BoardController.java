@@ -1,6 +1,7 @@
 package com.netive.nplate.controller;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -18,6 +19,7 @@ import com.netive.nplate.service.BoardService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class BoardController {
 			model.addAttribute("board", board);
 		}
 		
-		return "board/write";
+		return "bootstrpa-template/write";
 	}
 
 	/**
@@ -51,7 +53,7 @@ public class BoardController {
 	@PostMapping("/board/register.do")
 	public String openBoardRegister(final BoardDTO board, Model model) {
 		boardSerive.registerBoard(board);
-		MessageDTO message = new MessageDTO("게시글 등록이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
+		MessageDTO message = new MessageDTO("게시글 등록이 완료되었습니다.", "/member/board/list", RequestMethod.GET, null);
 		return showMessageAndRedirect(message, model);
 	}
 
@@ -76,11 +78,15 @@ public class BoardController {
 	 * @return
 	 */
 	@GetMapping("/board/view.do")
-	public String openBoardDetail(@RequestParam final Long idx, Model model) {
+	public String openBoardDetail(@RequestParam final Long idx, Model model, HttpServletRequest request) {
+
+		HttpSession session = request.getSession();
+		MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
+		model.addAttribute("memberInfo", memberDTO);
 
 		BoardDTO board = boardSerive.getBoardDetail(idx);
 		model.addAttribute("board", board);
-		return "board/view";
+		return "bootstrap-template/view";
 	}
 
 
@@ -92,7 +98,7 @@ public class BoardController {
 	@PostMapping("/board/update.do")
 	public String updateBoard(final BoardDTO board, Model model) {
 		boardSerive.updateBoard(board);
-		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/board/list.do", RequestMethod.GET, null);
+		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/member/board/list", RequestMethod.GET, null);
 		return showMessageAndRedirect(message, model);
 	}
 
@@ -105,7 +111,7 @@ public class BoardController {
 	public String deleteBoard(@RequestParam final Long idx, @RequestParam final Map<String, Object> queryParams, Model model) {
 
 		boardSerive.deleteBoard(idx);
-		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/board/list.do", RequestMethod.GET, queryParams);
+		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/member/board/list", RequestMethod.GET, queryParams);
 		return showMessageAndRedirect(message, model);
 	}
 
@@ -194,7 +200,9 @@ public class BoardController {
 
 //				String defaultPath = request.getSession().getServletContext().getRealPath("/");
 //				String path = defaultPath + "img" + File.separator;
-				String path = "/home/ec2-user/nplate/src/main/resources";
+				String path = "D:/home/ec2-user/nplateImage/";
+//				String path = "/home/ec2-user/nplateImage/";
+
 
 				File file = new File(path);
 
@@ -228,8 +236,8 @@ public class BoardController {
 				sFileInfo += "&bNewLine=true";
 				// img 태그의 title 속성을 원본파일명으로 적용시켜주기 위함
 				sFileInfo += "&sFileName=" + sFileName;
-//				sFileInfo += "&sFileURL=D:/images/" + sRealFileName;
-				sFileInfo += "&sFileURL=/nplateImage/post/" + sRealFileName;
+//				sFileInfo += "&sFileURL=/nplateImage/" + sRealFileName;
+				sFileInfo += "&sFileURL=/nplateImage/" + sRealFileName;
 				System.out.println("sFileInfo = " + sFileInfo);
 
 

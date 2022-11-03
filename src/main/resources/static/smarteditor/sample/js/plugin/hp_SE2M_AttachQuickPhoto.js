@@ -77,7 +77,7 @@ nhn.husky.SE2M_AttachQuickPhoto = jindo.$Class({
 				
 				aPhotoInfo = {
 				    sName : htData.sFileName || "",
-				    sOriginalImageURL : htData.sFileURL,
+				    sOriginalImageURL : htData.sFileURL.replace(/^https?:\/\/(\w*:\w*@)?[-\w.]+(:\d+)?/i, ''), // 업로드 되는 파일의 domain 부분을 제거 : https와 http간의 혼합컨텐츠 오류 수정
 					bNewLine : htData.bNewLine || false 
 				};
 				

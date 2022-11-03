@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="bootstrap-template/layout/basic">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="bootstrap-template/layout/basic">
 <th:block layout:fragment="title">
     <title>게시글 목록</title>
 </th:block>
 
 <th:block layout:fragment="main-content">
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center" id="post-container">
-        </div>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center item" id="post-container"></div>
+        <ul class="pagination"></ul>
 </th:block>
 
 
@@ -18,6 +19,7 @@
         /* 게시글 리스트 조회 S */
         window.onload = () => {
             console.log("게시글 리스트 조회====================");
+            setQueryStringParams();
             findAllPost();
         }
 
@@ -28,8 +30,10 @@
                 return false;
             }
             var params = [[${params}]];
+            var pagination = [[${response.pagination}]];
 
             drawList(list);
+            drawPage(pagination, params);
         }
 
         // 조회 목록
@@ -43,16 +47,18 @@
                 console.log('해시태그');
                 console.log(tag);
 
-                posting += '<div class="col mb-5">' +
-                    '<div class="card h-100">' +
-                    '<img class="card-img-top" src="'+
-                    obj.bbscttImage +
-                    '" alt="..." />' +
-                    '<div class="card-body">' +
-                    '<div class="text-center">' +
-                    '<h6 class="fw-bolder">' +
-                    obj.bbscttSj +
-                    '</h6>';
+                posting += `<div class="col mb-5">
+                    <div class="card h-100">
+                    <img class="card-img-top" src="
+                    ${obj.bbscttImage}" alt="..." />
+                    <div class="card-body">
+                    <div class="text-center">
+                    <a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
+                    <h6 class="fw-bolder">
+                    ${obj.bbscttSj}
+                    </h6>
+                    </a>
+                `;
 
                 // 별점
                 posting += '<div class="d-flex justify-content-center small text-warning mb-2">';
@@ -81,12 +87,87 @@
                     '</div>' +
                     '</div>';
 
+
+
             });
             document.getElementById('post-container').innerHTML = posting;
         }
 
+        // 페이지 조회 목록
+        function drawPage(pagination, params) {
+            if (!pagination || !params) {
+                document.querySelector('.pagination').innerHTML = '';
+                return false;
+            }
+
+            var html = '';
+
+            if (pagination.existNextPage) {
+                html += `
+                <li class="paginate_button page-item">
+                    <a href="javascript:movePage(${pagination.endPage + 1})" aria-controls="dataTable" class="page-link next" aria-label="Next">                    </a>
+                </li>
+                `;
+            }
+
+            document.querySelector('.pagination').innerHTML = html;
+        }
+
         /* 게시글 리스트 조회 E */
 
+        /* 페이지 이동 S */
+        function movePage(page) {
+            var form = document.getElementById('searchForm');
+            var queryParams = {
+                page: (page) ? page : 1,
+                recordSize : 10,
+                pageSize : 10,
+                keyword : form.keyword.value,
+                searchType : form.searchType.value
+            }
+            location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+        }
+        /* 페이지 이동 E */
+
+        /* 게시글 상세페이지 이동 */
+        function goViewPage(idx) {
+            var queryString = (location.search) ? location.search + `&idx=${idx}` : `?idx=${idx}`;
+            location.href = '/board/view.do' + queryString;
+        }
+        /* 게시글 상세페이지 이동 */
+
+        /* 인피니트 스크롤 (무한 스크롤) S */
+        infiniteScroll({
+            container: "#post-container",
+            item : ".item",
+            next : ".next",
+            nextCallback: function() {
+                console.log('다음페이지 이동했습니다.');
+            }
+        });
+        /* 인피니트 스크롤 (무한 스크롤) E */
+
+
+        /* 게시글 리스트 조회 S */
+
+        // 쿼리스트링 파라미터 세팅
+        function setQueryStringParams() {
+            // location 객체의 search를 이용해서 쿼리 스트링 파라미터를 조회할 수 있다.
+            if (!location.search) {
+                return false;
+            }
+
+            var form = document.getElementById('searchForm');
+
+            new URLSearchParams(location.search).forEach((value, key) => {
+                if (form[key]) {
+                    form[key].value = value;
+                }
+            });
+
+            document.getElementById('keyword').value = form.keyword.value;
+        }
+        /* 게시글 리스트 조회 E */
     </script>
 
 </th:block>

@@ -184,6 +184,8 @@ public class LoginController {
         HttpSession session = request.getSession();
         MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
 
+        model.addAttribute("memberInfo", memberDTO);
+
         if (idx == null) {
             model.addAttribute("board", new BoardDTO(memberDTO.getId()));
 
@@ -195,7 +197,7 @@ public class LoginController {
             model.addAttribute("board", boardDTO);
         }
 
-        return "board/write";
+        return "bootstrap-template/write";
     }
 
 

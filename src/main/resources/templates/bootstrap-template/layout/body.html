@@ -98,13 +98,19 @@
 							</button>
 
 							<!-- Topbar Search -->
-							<form
+							<form id="searchForm" name="searchForm" onsubmit="return false;"
 									class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
 								<div class="input-group">
-									<input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+									<select id="searchType" name="searchType">
+										<option value="">선택</option>
+										<option value="bbscttSj">제목</option>
+										<option value="bbscttCn">내용</option>
+										<option value="bbscttWrter">작성자</option>
+									</select>
+									<input type="text" class="form-control bg-light border-0 small" id="keyword" placeholder="Search for..."
 										   aria-label="Search" aria-describedby="basic-addon2">
 									<div class="input-group-append">
-										<button class="btn btn-primary" type="button">
+										<button class="btn btn-primary" type="button" onclick="movePage(1)">
 											<i class="fas fa-search fa-sm"></i>
 										</button>
 									</div>
@@ -297,6 +303,18 @@
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery-easing/jquery.easing.min.js}"></script>
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js}"></script>
+
+		<!-- 무한스크롤 플러그인 -->
+		<script th:src="@{/js/infiniteScroll.js}" />
+		<!-- 무한스크롤 플러그인 -->
+
+		<!-- kakao map api -->
+		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=326897593e49c2218efe8c3613445f46"></script>
+		<!-- kakao map api -->
+
+		<!-- smartEditor -->
+		<script th:src="@{/smarteditor/js/HuskyEZCreator.js}"></script>
+		<!-- smartEditor -->
 
 		<th:block layout:fragment="script"></th:block>
 	</body>
