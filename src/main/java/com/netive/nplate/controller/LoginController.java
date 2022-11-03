@@ -139,7 +139,7 @@ public class LoginController {
     }
     
     
-    // 내가 쓴 게시글 목록
+    // 내가 쓴 게시글 목록 todo 리스트 임시 적용(페이징, 검색 추가해야함)
     @GetMapping("/member/board/list")
     public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model, HttpServletRequest request) {
         System.out.println("내가 쓴 게시글 목록========");
@@ -151,23 +151,19 @@ public class LoginController {
                 String id = dto.getId();
                 params.setMemberId(id);
 
-
-
-                int count = loginService.countPostsById(id);
-//                int count = boardList.size(); // 글 개수
+                int count = loginService.countPostsById(id); // 글 개수
 
                 Pagination pagination = new Pagination(count, params);
                 params.setPagination(pagination);
 
-
                 System.out.println("params ========================" + params.toString());
 
                 List<BoardDTO> boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
-
                 PagingResponse<BoardDTO> response = new PagingResponse<>(boardList, pagination);
 
+                model.addAttribute("memberInfo", dto);
                 model.addAttribute("response", response);
-                return "board/list";
+                return "bootstrap-template/list";
 
             } catch (Exception e) {
                 // todo 에러 발생시 처리 추가

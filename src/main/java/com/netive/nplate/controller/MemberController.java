@@ -119,7 +119,9 @@ public class MemberController {
         FileDTO fileDTO = fileService.getFileInfo(id);
         String res = fileDTO.getSavedPath();
         InputStream inputStream = Files.newInputStream(Paths.get(res));
-        return IOUtils.toByteArray(inputStream);
+        byte[] image = IOUtils.toByteArray(inputStream);
+        inputStream.close();
+        return image;
     }
 
 
