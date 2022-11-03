@@ -6,7 +6,7 @@
 </th:block>
 
 <th:block layout:fragment="main-content">
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center item" id="post-container"></div>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center infinite" id="post-container"></div>
         <ul class="pagination"></ul>
 </th:block>
 
@@ -43,11 +43,7 @@
                 console.log('오브젝트============');
                 console.log(obj);
 
-                var tag = obj.bbscttHashtag.split(',');
-                console.log('해시태그');
-                console.log(tag);
-
-                posting += `<div class="col mb-5">
+                posting += `<div class="col mb-5 list">
                     <div class="card h-100">
                     <img class="card-img-top" src="
                     ${obj.bbscttImage}" alt="..." />
@@ -72,13 +68,21 @@
                 posting += '</div>';
 
 
-                // 해시태그(3개까지만 보이게 처리)
-                posting += '<div class="text-xs">';
-                var showSize = tag.length > 3? 3 : tag.length;
-                for (var k = 0; k < showSize; k++) {
-                    posting += '<span class="text-primary">#' + tag[k] +' </span>';
+                // 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
+                if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
+                    var tag = obj.bbscttHashtag.split(',');
+                    console.log('해시태그');
+                    console.log(tag);
+
+                    posting += '<div class="text-xs">';
+                    var showSize = tag.length > 3? 3 : tag.length;
+                    for (var k = 0; k < showSize; k++) {
+                        posting += '<span class="text-primary">#' + tag[k] +' </span>';
+                    }
+                    posting += '</div>';
                 }
-                posting += '</div>';
+
+
 
 
                 posting +=
@@ -137,14 +141,46 @@
         /* 게시글 상세페이지 이동 */
 
         /* 인피니트 스크롤 (무한 스크롤) S */
-        infiniteScroll({
-            container: "#post-container",
-            item : ".item",
-            next : ".next",
-            nextCallback: function() {
-                console.log('다음페이지 이동했습니다.');
+
+        // infiniteScroll({
+        //     container: "#post-container",
+        //     item : ".item",
+        //     next : ".next",
+        //     nextCallback: function() {
+        //         console.log('다음페이지 이동했습니다.');
+        //     }
+        // });
+
+
+        function YesScroll () {
+            const pagination = document.querySelector('.paginaiton');
+            const fullContent = document.querySelector('.infinite');
+            const screenHeight = screen.height;
+            let oneTime = false;
+            document.addEventListener('scroll',OnScroll,{passive:true})
+            function OnScroll () {
+                const fullHeight = fullContent.clientHeight;
+                const scrollPosition = pageYOffset;
+                if (fullHeight-screenHeight/2 <= scrollPosition && !oneTime) {
+                    oneTime = true;
+                    madeBox();
+                }
             }
-        });
+            function madeBox() {
+                const list = document.createElement('div');
+                const box = list.cloneNode('false');
+                box.className="box";
+
+                for (var i=0; i<5; i++){
+                    list.appendChild(box.cloneNode('true'));
+                }
+                list.className = "list";
+                fullContent.appendChild(list);
+                oneTime = false;
+            }
+        }
+        YesScroll()
+
         /* 인피니트 스크롤 (무한 스크롤) E */
 
 
