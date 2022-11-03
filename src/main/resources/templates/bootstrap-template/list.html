@@ -51,15 +51,57 @@
                     '<h6 class="fw-bolder">' +
                     obj.bbscttSj +
                     '</h6>' +
-                    '<div class="d-flex justify-content-center small text-warning mb-2">' +
-                    '<div class="bi-star-fill"></div>' +
-                    '<div class="bi-star-fill"></div>' +
-                    '<div class="bi-star-fill"></div>' +
-                    '<div class="bi-star"></div>' +
-                    '<div class="bi-star"></div>' +
+                    '<div class="d-flex justify-content-center small text-warning mb-2">';
+
+                // 별점
+                switch (obj.bbscttGrade) {
+                    case 1:
+                        posting +=
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star"></div>' +
+                            '<div class="bi-star"></div>' +
+                            '<div class="bi-star"></div>' +
+                            '<div class="bi-star"></div>';
+                        break;
+                    case 2:
+                        posting +=
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star"></div>' +
+                            '<div class="bi-star"></div>' +
+                            '<div class="bi-star"></div>';
+                        break;
+                    case 3:
+                        posting +=
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star"></div>' +
+                            '<div class="bi-star"></div>';
+                        break;
+                    case 4:
+                        posting +=
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star"></div>';
+                        break;
+                    case 5:
+                        posting +=
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>' +
+                            '<div class="bi-star-fill"></div>';
+                        break;
+                }
+
+                posting +=
                     '</div>' +
                     '<div class="text-xs">' +
                     '<span class="text-primary">#' + tag[0] +'</span>';
+
                 if (tag.length > 1) {
                     posting +=
                         '<span class="text-primary">#' + tag[1] +'</span>';
@@ -70,7 +112,6 @@
                     '</div>' +
                     '</div>' +
                     '</div>';
-
 
             });
             document.getElementById('post-container').innerHTML = posting;
