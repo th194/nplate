@@ -3,6 +3,7 @@ package com.netive.nplate.service;
 import com.netive.nplate.domain.FileDTO;
 import com.netive.nplate.mapper.FileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +17,8 @@ import java.util.UUID;
 @Service
 public class FileServiceImpl implements FileService {
 
-    private final String fileDir = "D:/images/";
+    @Value("${nplate.upload.path}")
+    private String fileDir;
 
     @Autowired
     private FileMapper fileMapper;
