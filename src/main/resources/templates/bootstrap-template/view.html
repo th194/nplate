@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="bootstrap-template/layout/basic">
+	<th:block layout:fragment="title">
+		<title>this is view page</title>
+	</th:block>
+
+	<th:block layout:fragment="main-content">
+		<div class="card-content">
+			<form class="form-horizontal form-view form-grade" th:object="${board}">
+				<div class="form-group">
+					<label for="bbscttSj" class="col-sm-2 control-label">제목</label>
+					<div class="col-sm-10">
+						<p class="form-control" th:text="*{bbscttSj}"></p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>
+					<div class="col-sm-10">
+						<p class="form-control" th:text="*{bbscttWrter}"></p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="inp-type-5" class="col-sm-2 control-label">위치</label>
+					<div class="map-size" id="map"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="bbscttCn" class="col-sm-2 control-label">내용</label>
+					<div class="col-sm-10">
+						<textarea id="bbscttCn" class="form-control" th:text="*{bbscttCn}"></textarea>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="rate1" class="col-sm-2 control-label">평점</label>
+					<fieldset>
+						<input type="radio" name="bbscttGrade" value="5" id="rate1">
+						<label for="rate1" class="grade">⭐</label>
+						<input type="radio" name="bbscttGrade" value="4" id="rate2">
+						<label for="rate2" class="grade">⭐</label>
+						<input type="radio" name="bbscttGrade" value="3" id="rate3">
+						<label for="rate3" class="grade">⭐</label>
+						<input type="radio" name="bbscttGrade" value="2" id="rate4">
+						<label for="rate4" class="grade">⭐</label>
+						<input type="radio" name="bbscttGrade" value="1" id="rate5">
+						<label for="rate5" class="grade">⭐</label>
+					</fieldset>
+				</div>
+
+
+				<div class="form-group">
+					<label for="bbscttHashtag" class="col-sm-2 control-label">해시태그</label>
+					<div class="col-sm-10">
+						<p class="form-control" th:text="*{bbscttHashtag}"></p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="bbscttRgsde" class="col-sm-2 control-label">등록일</label>
+					<div class="col-sm-10">
+						<p class="form-control" th:text="*{bbscttRgsde}"></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="bbscttRdcnt" class="col-sm-2 control-label">조회 수</label>
+					<div class="col-sm-10">
+						<p class="form-control" th:text="*{bbscttRdcnt}"></p>
+					</div>
+				</div>
+			</form>
+
+			<div class="btn_wrap text-center">
+				<a href="javascript:void(0)" onclick="goListPage()" class="btn btn-default waves-effect waves-light">뒤로가기</a>
+				<a href="javascript:void(0)" onclick="goWritePage()" class="btn btn-primary waves-effect waves-light">수정하기</a>
+				<button type="button" class="btn btn-danger waves-effect waves-light" th:onclick="deleteBoard()">삭제하기</button>
+			</div>
+		</div>
+		<!-- /.card-content -->
+	</th:block>
+
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+
+			var board = [[${board}]];
+			console.log('board = ' + JSON.stringify(board));
+
+			/* 평점 렌더링 */
+			$('input[name=bbscttGrade]').attr('disabled', true);
+
+			console.log('별점 점수 ============================== ' + board.bbscttGrade);
+			switch (board.bbscttGrade) {
+				case 1 :
+					$('#rate5').attr('checked', true);
+					break;
+				case 2 :
+					$('#rate4').attr('checked', true);
+					break;
+				case 3 :
+					$('#rate3').attr('checked', true);
+					break;
+				case 4 :
+					$('#rate2').attr('checked', true);
+					break;
+				case 5 :
+					$('#rate1').attr('checked', true);
+					break;
+			}
+			/* 평점 렌더링 */
+
+			/*게시글 삭제 함수*/
+			function deleteBoard() {
+				var idx = board.bbscttNo;
+				if (!confirm(idx + "번 게시글을 삭제할까요?")) {
+					return false;
+				}
+
+				var inputHtml = "";
+				new URLSearchParams(location.search).forEach((value, key) => {
+					inputHtml += `<input type="hidden" name="${key}" value="${value}" />`;
+				});
+
+				var formHtml = `<form id="deleteForm" action="/board/delete.do" method="post">
+									${inputHtml}
+								</form>`;
+
+				var doc = new DOMParser().parseFromString(formHtml, 'text/html');
+				var form = doc.body.firstChild;
+				document.body.append(form);
+				document.getElementById('deleteForm').submit();
+			}
+			/*게시글 삭제 함수*/
+
+			var $map = document.getElementById('map');
+
+			var options = {
+				center : new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo),
+				level : 3
+			}
+
+			// 지도 생성
+			var map = new kakao.maps.Map($map, options);
+
+			// 마커가 표시될 위치
+			var markerPosition = new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo);
+
+			// 마커 생성
+			var marker = new kakao.maps.Marker({
+				position : markerPosition
+			});
+
+			// 마커생성
+			marker.setMap(map);
+
+			$map.append(map);
+
+
+			/* smartEditor */
+			var oEditors = [];
+
+			smartEditor = function() {
+				nhn.husky.EZCreator.createInIFrame({
+					oAppRef : oEditors,
+					elPlaceHolder : 'bbscttCn',
+					sSkinURI: '/smarteditor/SmartEditor2Skin.html',
+					fCreator: 'createSEditor2',
+					htParams: {
+						bUseToolbar : false,					// 툴바 사용 여부 (true : 사용 / false : 사용하지 않음)
+						bUseVerticalResizer : false,			// 입력창 크기 조절바 사용 여부 ( true : 사용 / false : 사용하지 않음)
+						bUseModeChanger : false				// 모드 탭 (Editor | HTML | TEXT ) 사용 여부 (true : 사용 / false : 사용하지 않음)
+					},
+					fOnAppLoad : function() {
+						var editor = oEditors.getById['bbscttCn'];
+						// editor.exec('PASTE_HTML', [board.bbscttCn]);
+						editor.exec('DISABLE_WYSIWYG');
+						editor.exec('DISABLE_ALL_UI');
+					}
+				});
+			}
+			smartEditor();
+			/* smartEditor */
+
+			/* 수정하기 */
+			function goWritePage() {
+				location.href = '/board/write.do' + location.search;
+			}
+			/* 수정하기 */
+
+			/* 뒤로가기 */
+			function goListPage() {
+				var queryString = new URLSearchParams(location.search);
+				queryString.delete('idx');
+				location.href = '/board/list.do?' + queryString.toString();
+			}
+			/* 뒤로가기 */
+
+			/*[- end of function -]*/
+			/*]]>*/
+		</script>
+	</th:block>
+</html>
