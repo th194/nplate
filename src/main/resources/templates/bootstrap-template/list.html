@@ -54,47 +54,12 @@
                     '<div class="d-flex justify-content-center small text-warning mb-2">';
 
                 // 별점
-                switch (obj.bbscttGrade) {
-                    case 1:
-                        posting +=
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star"></div>' +
-                            '<div class="bi-star"></div>' +
-                            '<div class="bi-star"></div>' +
-                            '<div class="bi-star"></div>';
-                        break;
-                    case 2:
-                        posting +=
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star"></div>' +
-                            '<div class="bi-star"></div>' +
-                            '<div class="bi-star"></div>';
-                        break;
-                    case 3:
-                        posting +=
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star"></div>' +
-                            '<div class="bi-star"></div>';
-                        break;
-                    case 4:
-                        posting +=
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star"></div>';
-                        break;
-                    case 5:
-                        posting +=
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>' +
-                            '<div class="bi-star-fill"></div>';
-                        break;
+                for (var i = 0; i < obj.bbscttGrade; i++) {
+                    posting += '<div class="bi-star-fill"></div>';
+                }
+
+                for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
+                    posting += '<div class="bi-star"></div>';
                 }
 
                 posting +=
