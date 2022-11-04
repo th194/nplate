@@ -18,7 +18,7 @@ public class SearchDTO {
 
     public SearchDTO() {
         this.page = 1;
-        this.recordSize = 10;
+        this.recordSize = 30;
         this.pageSize = 10;
     }
 }

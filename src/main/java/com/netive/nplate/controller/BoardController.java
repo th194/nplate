@@ -1,10 +1,10 @@
 package com.netive.nplate.controller;
 
 import java.io.*;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.google.gson.Gson;
 import com.netive.nplate.common.MessageDTO;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.paging.PagingResponse;
@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import com.netive.nplate.service.BoardService;
@@ -46,7 +47,7 @@ public class BoardController {
 			model.addAttribute("board", board);
 		}
 		
-		return "bootstrpa-template/write";
+		return "bootstrap-template/write";
 	}
 
 	/**
@@ -73,6 +74,27 @@ public class BoardController {
 		model.addAttribute("response", response);
 
 		return "board/list";
+	}
+
+	/**
+	 * 스크롤 페이징 ajax
+	 * @param params
+	 * @return
+	 */
+	@PostMapping("/board/scrollList.do")
+	@ResponseBody
+	public Map<String, Object> openBoardScrollList(@ModelAttribute("params") final SearchDTO params) {
+
+		Map<String , Object> resMap = new HashMap<>();
+
+		PagingResponse<BoardDTO> response = boardSerive.getBoardList(params);
+		log.debug("response = " + response.toString());
+
+//		model.addAttribute("response", response);
+
+		resMap.put("response", response);
+
+		return resMap;
 	}
 
 	/**
@@ -264,9 +286,9 @@ public class BoardController {
 	/**
 	 * 지도 팝업 추가
 	 */
-	@GetMapping("/board/mapPopup")
+	@GetMapping("/mapPopup")
 	public String openmapPopup() {
-		return "board/mapPopup";
+		return "bootstrap-template/popup/mapPopup";
 	}
 
 

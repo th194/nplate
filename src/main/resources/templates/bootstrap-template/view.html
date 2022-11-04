@@ -185,7 +185,7 @@
 
 			/* 수정하기 */
 			function goWritePage() {
-				location.href = '/board/write.do' + location.search;
+				location.href = '/member/board/write' + location.search;
 			}
 			/* 수정하기 */
 
@@ -193,7 +193,7 @@
 			function goListPage() {
 				var queryString = new URLSearchParams(location.search);
 				queryString.delete('idx');
-				location.href = '/board/list.do?' + queryString.toString();
+				location.href = '/member/board/list?' + queryString.toString();
 			}
 			/* 뒤로가기 */
 

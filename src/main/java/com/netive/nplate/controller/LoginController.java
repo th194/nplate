@@ -195,16 +195,21 @@ public class LoginController {
 
         model.addAttribute("memberInfo", memberDTO);
 
-        if (idx == null) {
-            model.addAttribute("board", new BoardDTO(memberDTO.getId()));
-
-        } else {
-            BoardDTO boardDTO = boardSerive.getBoardDetail(idx);
-            if(boardDTO == null) {
-                return "redirect:member/board/list";
-            }
-            model.addAttribute("board", boardDTO);
+        if (idx != null) {
+            BoardDTO board = boardSerive.getBoardDetail(idx);
+            model.addAttribute("board", board);
         }
+
+//        if (idx == null) {
+//            model.addAttribute("board", new BoardDTO(memberDTO.getId()));
+//
+//        } else {
+//            BoardDTO boardDTO = boardSerive.getBoardDetail(idx);
+//            if(boardDTO == null) {
+//                return "redirect:member/board/list";
+//            }
+//            model.addAttribute("board", boardDTO);
+//        }
 
         return "bootstrap-template/write";
     }

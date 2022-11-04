@@ -6,7 +6,9 @@
 </th:block>
 
 <th:block layout:fragment="main-content">
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center infinite" id="post-container"></div>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center infinite" id="post-container">
+
+        </div>
         <ul class="pagination"></ul>
 </th:block>
 
@@ -16,6 +18,23 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
 
+        /* 무한 스크롤 위한 페이지 작업 S */
+        var page = 1;
+        var isFetching = false;
+
+        $(function() {
+            drawList(page);
+            page++;
+        });
+        $(window).scroll(function() {
+            if ($(window).scrollTop() >= $(document).height() - $(window).height()) { // 스크롤 감지
+                drawList(page);
+                page++;
+            }
+        });
+        /* 무한 스크롤 위한 페이지 작업 E */
+
+
         /* 게시글 리스트 조회 S */
         window.onload = () => {
             console.log("게시글 리스트 조회====================");
@@ -24,112 +43,119 @@
         }
 
         function findAllPost() {
-            var list = [[${response.list}]];
-            if (!list.length) {
+            var response = [[${response}]];
+            if (!response.list.length) {
                 document.getElementById('post-container').innerHTML = '<div>검색 결과가 없습니다.</div>';
                 return false;
             }
-            var params = [[${params}]];
-            var pagination = [[${response.pagination}]];
-
-            drawList(list);
-            drawPage(pagination, params);
         }
 
         // 조회 목록
         function drawList(list) {
+
             var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
 
-            var posting = '';
-            list.forEach(obj => {
-                console.log('오브젝트============');
-                console.log(obj);
+            var keyword = $('#keyword').val() ? $('#keyword').val() : '';
+            var searchType = $('#searchType option:selected').val() ? $('#searchType option:selected').val() : '';
 
-                posting += `<div class="col mb-5 list">
-                    <div class="card h-100">
-                    <img class="card-img-top" src="${obj.bbscttImage}" alt="..."
-                    onError="javascript:this.src='https://dummyimage.com/450x450/dee2e6/6c757d.jpg'"/>`;
+            var post = {
+                page : page,
+                keyword : keyword,
+                searchType: searchType
+            }
 
-                // 좋아요 버튼
-                posting += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
+            $.ajax({
+                type : 'POST',
+                dataType : 'json',
+                data : post,
+                url : '/board/scrollList.do',
+                success : function(result) {
 
-                if (likes.includes(obj.bbscttNo)) {
-                    posting += `<i class="bi bi-heart-fill"></i>`;
-                } else {
-                    posting += `<i class="bi bi-heart"></i>`;
-                }
-
-                posting += `</span>
-                    <div class="card-body">
-                    <div class="text-center">
-                    <a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
-                    <h6 class="fw-bolder">
-                    ${obj.bbscttSj}
-                    </h6>
-                    </a>
-                `;
-
-                // 별점
-                posting += '<div class="d-flex justify-content-center small text-warning mb-2">';
-                for (var i = 0; i < obj.bbscttGrade; i++) {
-                    posting += '<div class="bi-star-fill"></div>';
-                }
-
-                for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
-                    posting += '<div class="bi-star"></div>';
-                }
-                posting += '</div>';
-
-
-                // 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
-                if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
-                    var tag = obj.bbscttHashtag.split(',');
-                    console.log('해시태그');
-                    console.log(tag);
-
-                    posting += '<div class="text-xs">';
-                    var showSize = tag.length > 3? 3 : tag.length;
-                    for (var k = 0; k < showSize; k++) {
-                        posting += '<span class="text-primary">#' + tag[k] +' </span>';
+                    var list = result.response.list;
+                    var pagination = result.response.pagination;
+                    console.log('list 길이 = ' + list.length);
+                    var html = '';
+                    if (page == 1) {                // 페이지가 1 일 경우 list 비움
+                        $('#post-container').html("");
                     }
-                    posting += '</div>';
+                    if (page <= pagination.totalPageCount) {
+                        if (list.length > 0) {
+                            list.forEach(obj => {
+
+                                html += `
+                                <div class="col mb-5 list">
+                                    <div class="card h-100">
+                                        <img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
+
+                                // 좋아요 버튼
+                                html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
+
+                                if (likes.includes(obj.bbscttNo)) {
+                                    html += `<i class="bi bi-heart-fill"></i>`;
+                                } else {
+                                    html += `<i class="bi bi-heart"></i>`;
+                                }
+
+
+                                html += `
+                                    </span>
+                                        <div class="card-body">
+                                            <div class="text-center">
+                                                <a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
+                                                    <h6 class="fw-bolder">
+                                                        ${obj.bbscttSj}
+                                                    </h6>
+                                                </a>
+                            `;
+
+
+                                // 별점
+                                html += `<div class="d-flex justify-content-center small text-warning mb-2">`;
+                                for (var i = 0; i < obj.bbscttGrade; i++) {
+                                    html += '<div class="bi-star-fill"></div>';
+                                }
+
+                                for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
+                                    html += `<div class="bi-star"></div>`;
+                                }
+                                html += `</div>`;
+
+
+                                // 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
+                                if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
+                                    var tag = obj.bbscttHashtag.split(',');
+
+                                    html += `<div class="text-xs">`;
+                                    var showSize = tag.length > 3? 3 : tag.length;
+                                    for (var k = 0; k < showSize; k++) {
+                                        html += `<span class="text-primary">#` + tag[k] +' </span>';
+                                    }
+                                    html += `</div>`;
+                                }
+
+                                html +=
+                                    `</div></div></div></div>`;
+                            });
+                        } else {
+                            alert('데이터가 없습니다.');
+                        }
+                        $('#post-container').append(html);
+                    }
+
+                },
+                error : function(err) {
+                    console.log('err = ' + JSON.stringify(err));
+                    if (err.status == 300) {
+                        alert('데이터 로드 실패');
+                    }
                 }
-
-
-                posting +=
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
             });
-
-            document.getElementById('post-container').innerHTML = posting;
 
             // 좋아요 클릭 이벤트 추가
             var likeBtns = document.querySelectorAll('.like-btn');
             likeBtns.forEach( (btn) => {
                 btn.onclick = likePost;
             });
-        }
-
-        // 페이지 조회 목록
-        function drawPage(pagination, params) {
-            if (!pagination || !params) {
-                document.querySelector('.pagination').innerHTML = '';
-                return false;
-            }
-
-            var html = '';
-
-            if (pagination.existNextPage) {
-                html += `
-                <li class="paginate_button page-item">
-                    <a href="javascript:movePage(${pagination.endPage + 1})" aria-controls="dataTable" class="page-link next" aria-label="Next">                    </a>
-                </li>
-                `;
-            }
-
-            document.querySelector('.pagination').innerHTML = html;
         }
 
         /* 게시글 리스트 조회 E */
@@ -213,50 +239,6 @@
             location.href = '/board/view.do' + queryString;
         }
         /* 게시글 상세페이지 이동 */
-
-        /* 인피니트 스크롤 (무한 스크롤) S */
-
-        // infiniteScroll({
-        //     container: "#post-container",
-        //     item : ".item",
-        //     next : ".next",
-        //     nextCallback: function() {
-        //         console.log('다음페이지 이동했습니다.');
-        //     }
-        // });
-
-
-        function YesScroll () {
-            const pagination = document.querySelector('.paginaiton');
-            const fullContent = document.querySelector('.infinite');
-            const screenHeight = screen.height;
-            let oneTime = false;
-            document.addEventListener('scroll',OnScroll,{passive:true})
-            function OnScroll () {
-                const fullHeight = fullContent.clientHeight;
-                const scrollPosition = pageYOffset;
-                if (fullHeight-screenHeight/2 <= scrollPosition && !oneTime) {
-                    oneTime = true;
-                    madeBox();
-                }
-            }
-            function madeBox() {
-                const list = document.createElement('div');
-                const box = list.cloneNode('false');
-                box.className="box";
-
-                for (var i=0; i<5; i++){
-                    list.appendChild(box.cloneNode('true'));
-                }
-                list.className = "list";
-                fullContent.appendChild(list);
-                oneTime = false;
-            }
-        }
-        YesScroll()
-
-        /* 인피니트 스크롤 (무한 스크롤) E */
-
 
         /* 게시글 리스트 조회 S */
 
