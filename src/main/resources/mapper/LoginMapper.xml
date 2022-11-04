@@ -47,4 +47,11 @@
         ]]>
     </select>
 
+    <select id="getLikes" parameterType="hashmap" resultType="BoardDTO">
+        select * from NETIVE_PROJECT01_BOARD where BBSCTT_NO in
+        <foreach item="item" collection="likeNumbers" open="(" close=")" separator=",">
+            #{item.value}
+        </foreach>
+    </select>
+
 </mapper>

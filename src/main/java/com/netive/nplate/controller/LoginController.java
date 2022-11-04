@@ -1,16 +1,10 @@
 package com.netive.nplate.controller;
 
 import com.netive.nplate.configuration.SessionConfig;
-import com.netive.nplate.domain.Area;
-import com.netive.nplate.domain.BoardDTO;
-import com.netive.nplate.domain.MemberDTO;
-import com.netive.nplate.domain.SearchDTO;
+import com.netive.nplate.domain.*;
 import com.netive.nplate.paging.Pagination;
 import com.netive.nplate.paging.PagingResponse;
-import com.netive.nplate.service.BoardService;
-import com.netive.nplate.service.FileService;
-import com.netive.nplate.service.LoginService;
-import com.netive.nplate.service.MemberService;
+import com.netive.nplate.service.*;
 import com.netive.nplate.util.MemberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,8 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Controller
 public class LoginController {
@@ -43,6 +36,9 @@ public class LoginController {
 
     @Autowired
     private MemberUtils memberUtils;
+
+    @Autowired
+    private LikesService likesService;
 
 
     // 첫페이지
@@ -161,6 +157,19 @@ public class LoginController {
                 List<BoardDTO> boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
                 PagingResponse<BoardDTO> response = new PagingResponse<>(boardList, pagination);
 
+
+                // 좋아요 추가
+                List<LikesDTO> likes = likesService.getLikes(id);
+                List<Long> likeNumbers = new ArrayList<Long>();
+                for (LikesDTO likesDTO : likes) {
+                    System.out.println("like 디티오 프린트====");
+                    System.out.println(likesDTO);
+                    System.out.println("넘버===" + likesDTO.getBbscttNo());
+
+                    likeNumbers.add(likesDTO.getBbscttNo());
+                }
+
+                model.addAttribute("likeNumbers", likeNumbers);
                 model.addAttribute("memberInfo", dto);
                 model.addAttribute("response", response);
                 return "bootstrap-template/list";
@@ -313,5 +322,48 @@ public class LoginController {
         memberService.updateInfo(memberDTO);
 
         return "redirect:/member/myInfo"; // 처리 수정해야함
+    }
+
+
+    // 좋아한 게시글 목록(북마크)
+    @GetMapping("/member/board/likePosts")
+    public String lisePosts(Model model, HttpServletRequest request) {
+        System.out.println("좋아한 게시글 목록========");
+        HttpSession session = request.getSession();
+
+        if ((boolean) session.getAttribute("isLogOn")) {
+            try {
+                MemberDTO dto = (MemberDTO) session.getAttribute("member");
+                String id = dto.getId();
+
+                List<LikesDTO> likes = likesService.getLikes(id);
+
+                Map <String, Object> map = new HashMap<>();
+                List<Long> likeNumbers = new ArrayList<Long>();
+
+                for (LikesDTO likesDTO : likes) {
+                    likeNumbers.add(likesDTO.getBbscttNo());
+                }
+
+                map.put("likeNumbers", likeNumbers);
+
+                List<BoardDTO> likePosts = loginService.getLikes(map);
+                System.out.println("글목록 크기:" + likePosts.size());
+                // todo likePosts 좋아요 누른 순서대로 정렬되게 처리 추가
+
+                model.addAttribute("likePosts", likePosts);
+                model.addAttribute("memberInfo", dto);
+
+                return "bootstrap-template/likes";
+
+            } catch (Exception e) {
+                // todo 에러 발생시 처리 추가
+                System.out.println("에러=======");
+                e.printStackTrace();
+                return "member/index";
+            }
+        } else {
+            return "member/index";
+        }
     }
 }

@@ -38,6 +38,8 @@
 
         // 조회 목록
         function drawList(list) {
+            var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
+
             var posting = '';
             list.forEach(obj => {
                 console.log('오브젝트============');
@@ -45,8 +47,19 @@
 
                 posting += `<div class="col mb-5 list">
                     <div class="card h-100">
-                    <img class="card-img-top" src="
-                    ${obj.bbscttImage}" alt="..." />
+                    <img class="card-img-top" src="${obj.bbscttImage}" alt="..."
+                    onError="javascript:this.src='https://dummyimage.com/450x450/dee2e6/6c757d.jpg'"/>`;
+
+                // 좋아요 버튼
+                posting += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
+
+                if (likes.includes(obj.bbscttNo)) {
+                    posting += `<i class="bi bi-heart-fill"></i>`;
+                } else {
+                    posting += `<i class="bi bi-heart"></i>`;
+                }
+
+                posting += `</span>
                     <div class="card-body">
                     <div class="text-center">
                     <a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
@@ -83,18 +96,20 @@
                 }
 
 
-
-
                 posting +=
                     '</div>' +
                     '</div>' +
                     '</div>' +
                     '</div>';
-
-
-
             });
+
             document.getElementById('post-container').innerHTML = posting;
+
+            // 좋아요 클릭 이벤트 추가
+            var likeBtns = document.querySelectorAll('.like-btn');
+            likeBtns.forEach( (btn) => {
+                btn.onclick = likePost;
+            });
         }
 
         // 페이지 조회 목록
@@ -118,6 +133,65 @@
         }
 
         /* 게시글 리스트 조회 E */
+
+
+        /* 좋아요 처리 S */
+        function likePost() {
+            var testId = [[${memberInfo.id}]]; // 로그인 멤버아이디
+            var likeId = $(this).attr('id'); // 좋아요버튼 아이디
+            var index = + likeId.substring(likeId.indexOf('_')+1); // 게시물아이디(index)
+            var $heart = $(this).find('i'); // 하트 아이콘
+
+            if ( $heart.hasClass('bi-heart-fill') ) { // 이걸로 해도 되고.... 글번호 포함하고 있는지 여부로 해도되고...
+                // 좋아요 취소 ajax
+                $.ajax({
+                    type: "get",
+                    dataType: "text",
+                    async: false,
+                    url: "/board/deleteLike",
+                    data: { id: testId, idx: index },
+                    success: function (data) {
+                        if (data === 'success') {
+                            alert('좋아요 취소 성공');
+                            $heart.removeClass('bi-heart-fill');
+                            $heart.addClass('bi-heart');
+
+                        } else {
+                            alert('좋아요 취소 실패');
+                        }
+                    },
+                    error: function () {
+                        alert('좋아요 취소 실패');
+                    }
+                });
+
+
+            } else {
+                // 좋아요 추가 ajax
+                $.ajax({
+                    type: "get",
+                    dataType: "text",
+                    async: false,
+                    url: "/board/addLike",
+                    data: { id: testId, idx: index },
+                    success: function (data) {
+                        if (data === 'success') {
+                            alert('좋아요 추가 성공');
+                            $heart.removeClass('bi-heart');
+                            $heart.addClass('bi-heart-fill');
+
+                        } else {
+                            alert('좋아요 추가 실패');
+                        }
+                    },
+                    error: function () {
+                        alert('좋아요 추가 실패');
+                    }
+                });
+            }
+        }
+        /* 좋아요 처리 E */
+
 
         /* 페이지 이동 S */
         function movePage(page) {

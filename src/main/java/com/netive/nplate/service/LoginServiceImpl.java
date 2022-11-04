@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -22,5 +23,10 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public int countPostsById(String id) {
         return loginMapper.countPostsById(id);
+    }
+
+    @Override
+    public List<BoardDTO> getLikes(Map map) {
+        return loginMapper.getLikes(map);
     }
 }

@@ -8,6 +8,7 @@ import java.util.*;
 import com.netive.nplate.common.MessageDTO;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.paging.PagingResponse;
+import com.netive.nplate.service.LikesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class BoardController {
 	
 	@Autowired
 	private BoardService boardSerive;
+
+	@Autowired
+	private LikesService likesService;
 
 	/**
 	 * 게시글 작성
@@ -264,4 +268,43 @@ public class BoardController {
 	public String openmapPopup() {
 		return "board/mapPopup";
 	}
+
+
+	// 게시물 좋아요 추가
+	@GetMapping("/board/addLike")
+	public @ResponseBody String likePost(String id, Long idx) {
+		System.out.println("좋아요 추가 컨트롤러 시작=========");
+		System.out.println("아이디" + id);
+		System.out.println("글번호" + idx);
+
+		LikesDTO likesDTO = new LikesDTO(id, idx);
+		int result = likesService.addLike(likesDTO);
+		if (result > 0) {
+			System.out.println("좋아요 추가 성공=========");
+			return "success";
+		} else {
+			System.out.println("좋아요 추가 실패=========");
+			return "fail";
+		}
+	}
+
+
+	// 게시물 좋아요 취소
+	@GetMapping("/board/deleteLike")
+	public @ResponseBody String deleteLike(String id, Long idx) {
+		System.out.println("좋아요 취소 컨트롤러 시작=========");
+		System.out.println("아이디" + id);
+		System.out.println("글번호" + idx);
+
+		LikesDTO likesDTO = new LikesDTO(id, idx);
+		int result = likesService.deleteLike(likesDTO);
+		if (result > 0) {
+			System.out.println("좋아요 취소 성공=========");
+			return "success";
+		} else {
+			System.out.println("좋아요 취소 실패=========");
+			return "fail";
+		}
+	}
+
 }

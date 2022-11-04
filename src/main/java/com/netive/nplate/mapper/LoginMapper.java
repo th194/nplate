@@ -5,12 +5,16 @@ import com.netive.nplate.domain.SearchDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface LoginMapper {
 
     List<BoardDTO> getBordListById(SearchDTO params);
 
-    // 글 개수 세기 todo 필요 없으면 지움
+    // 글 개수 세기
     int countPostsById(String id);
+
+    // 좋아요 누른 게시글 목록
+    List<BoardDTO> getLikes(Map map);
 }

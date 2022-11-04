@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netive.nplate.mapper.LikesMapper">
+    <resultMap id="likeResult" type="LikesDTO">
+        <result property="index" column="LIKE_NO"/>
+        <result property="id" column="MBER_ID"/>
+        <result property="bbscttNo" column="BBSCTT_NO"/>
+    </resultMap>
+
+    <insert id="addLike" parameterType="LikesDTO">
+        <![CDATA[
+        INSERT INTO NETIVE_PROJECT01_LIKES
+        (MBER_ID, BBSCTT_NO)
+        VALUES ( #{id}, #{bbscttNo})
+        ]]>
+    </insert>
+
+    <select id="getLikes" parameterType="String" resultMap="likeResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_LIKES where MBER_ID = #{id}
+        ]]>
+    </select>
+
+    <delete id="deleteLike" parameterType="LikesDTO">
+        <![CDATA[
+        delete from NETIVE_PROJECT01_LIKES where MBER_ID = #{id} and BBSCTT_NO = #{bbscttNo}
+        ]]>
+    </delete>
+
+</mapper>
