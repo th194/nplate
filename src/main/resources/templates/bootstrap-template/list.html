@@ -140,8 +140,13 @@
                             alert('데이터가 없습니다.');
                         }
                         $('#post-container').append(html);
-                    }
 
+                        // 좋아요 클릭 이벤트 추가
+                        var likeBtns = document.querySelectorAll('.like-btn');
+                        likeBtns.forEach( (btn) => {
+                            btn.onclick = likePost;
+                        });
+                    }
                 },
                 error : function(err) {
                     console.log('err = ' + JSON.stringify(err));
@@ -149,12 +154,6 @@
                         alert('데이터 로드 실패');
                     }
                 }
-            });
-
-            // 좋아요 클릭 이벤트 추가
-            var likeBtns = document.querySelectorAll('.like-btn');
-            likeBtns.forEach( (btn) => {
-                btn.onclick = likePost;
             });
         }
 
