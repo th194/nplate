@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netive.nplate.mapper.ReplyMapper">
+    <sql id="replyColumns">
+        ANSWER_NO,
+        BBSCTT_NO,
+        ANSWER_CN,
+        ANSWER_WRTER,
+        ANSWER_RGSDE,
+        ANSWER_UPDDE
+    </sql>
+
+    <!-- 댓글 등록 -->
+    <insert id="insertReply" parameterType="ReplyDTO">
+        INSERT INTO NETIVE_PROJECT01_REPLY
+        (<include refid="replyColumns"></include>)
+        VALUES (
+            #{answerNo},
+            #{bbscttNo},
+            #{answerCn},
+            #{answerWrter},
+            NOW(),
+            NULL
+        )
+    </insert>
+
+    <!-- 댓글 상세 조회 -->
+    <select id="selectReplyDetail" parameterType="long" resultType="ReplyDTO">
+        SELECT
+        <include refid="replyColumns"></include>
+        WHERE
+        ANSWER_NO = #{answerNo}
+    </select>
+
+    <!-- 댓글 수정 -->
+    <update id="updateReply" parameterType="ReplyDTO">
+        UPDATE NETIVE_PROJECT01_REPLY
+        SET
+            ANSWER_UPDDE = NOW(),
+            ANSWER_CN = #{answerCn},
+            ANSWER_WRTER = #{answerWrter}
+        WHERE ANSWER_NO = #{answerNo}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteReply" parameterType="long">
+        DELETE
+        FROM
+            NETIVE_PROJECT01_REPLY
+        WHERE ANSWER_NO = #{answerNo}
+    </delete>
+
+    <!-- 댓글 리스트 조회 -->
+    <select id="selectReplyList" parameterType="ReplyDTO" resultType="ReplyDTO">
+        SELECT
+            <include refid="replyColumns"></include>
+        FROM
+            NETIVE_PROJECT01_REPLY
+        WHERE
+            BBSCTT_NO = #{bbscttNo}
+        ORDER BY
+            ANSWER_NO DESC,
+            ANSWER_RGSDE DESC
+    </select>
+
+    <!-- 댓글 총 갯수 -->
+    <select id="selectReplyTotalCount" parameterType="ReplyDTO" resultType="int">
+        SELECT COUNT(*) FROM NETIVE_PROJECT01_REPLY WHERE BBSCTT_NO = #{bbscttNo}
+    </select>
+
+</mapper>
