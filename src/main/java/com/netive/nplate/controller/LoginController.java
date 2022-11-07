@@ -332,7 +332,7 @@ public class LoginController {
 
     // 좋아한 게시글 목록(북마크)
     @GetMapping("/member/board/likePosts")
-    public String lisePosts(Model model, HttpServletRequest request) {
+    public String lisePosts(Model model, HttpServletRequest request, String keyword) {
         System.out.println("좋아한 게시글 목록========");
         HttpSession session = request.getSession();
 
@@ -350,6 +350,12 @@ public class LoginController {
                     likeNumbers.add(likesDTO.getBbscttNo());
                 }
 
+                String tag = "";
+                if (keyword != null) {
+                    tag = keyword;
+                }
+
+                map.put("keyword", tag);
                 map.put("likeNumbers", likeNumbers);
 
                 List<BoardDTO> likePosts = loginService.getLikes(map);

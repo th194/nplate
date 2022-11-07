@@ -52,6 +52,9 @@
         <foreach item="item" collection="likeNumbers" open="(" close=")" separator=",">
             #{item.value}
         </foreach>
+        <if test="keyword != null">
+            and BBSCTT_HASHTAG like concat('%',#{keyword},'%')
+        </if>
     </select>
 
 </mapper>
