@@ -167,7 +167,8 @@
 
 				$.get(uri, function(response) {
 					loginMember = response.member;
-					if (response.replyList != '' && response.replyList != null) {
+					console.log('replyList = ' + response.replyList);
+					if (response.replyList !== undefined) {
 						console.log('로그인 사용자 = ' + loginMember);
 						$(response.replyList).each(function(idx, reply) {
 							replyHtml += `
