@@ -116,7 +116,7 @@
 			<include refid="boardColumns"/>
 		FROM
 			NETIVE_PROJECT01_BOARD
-		WHERE BBSCTT_NO
+		WHERE BBSCTT_WRTER = #{memberId}
 			<include refid="search"></include>
 		ORDER BY
 			BBSCTT_NO DESC
@@ -144,6 +144,7 @@
 			COUNT(*)
 		FROM
 			NETIVE_PROJECT01_BOARD
+		WHERE BBSCTT_WRTER = #{memberId}
 <!--			WHERE BBSCTT_NO-->
 <!--		<include refid="search"></include>-->
 	</select>

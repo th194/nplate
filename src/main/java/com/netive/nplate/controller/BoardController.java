@@ -4,17 +4,17 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.google.gson.Gson;
 import com.netive.nplate.common.MessageDTO;
 import com.netive.nplate.domain.*;
+import com.netive.nplate.paging.Pagination;
 import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.LikesService;
+import com.netive.nplate.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import com.netive.nplate.service.BoardService;
@@ -30,6 +30,9 @@ public class BoardController {
 	
 	@Autowired
 	private BoardService boardSerive;
+
+	@Autowired
+	private LoginService loginService;
 
 	@Autowired
 	private LikesService likesService;
@@ -83,16 +86,37 @@ public class BoardController {
 	 */
 	@PostMapping("/board/scrollList.do")
 	@ResponseBody
-	public Map<String, Object> openBoardScrollList(@ModelAttribute("params") final SearchDTO params) {
+	public Map<String, Object> openBoardScrollList(@ModelAttribute("params") final SearchDTO params, HttpServletRequest request) {
 
 		Map<String , Object> resMap = new HashMap<>();
+		HttpSession session = request.getSession();
 
-		PagingResponse<BoardDTO> response = boardSerive.getBoardList(params);
-		log.debug("response = " + response.toString());
+		if ((boolean) session.getAttribute("isLogOn")) {
+			try {
+				MemberDTO dto = (MemberDTO) session.getAttribute("member");
+				String id = dto.getId();
+				params.setMemberId(id);
 
-//		model.addAttribute("response", response);
 
-		resMap.put("response", response);
+				int count = loginService.countPostsById(id); // 글 개수
+
+				Pagination pagination = new Pagination(count, params);
+				params.setPagination(pagination);
+
+				System.out.println("params ========================" + params.toString());
+
+				List<BoardDTO> boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
+				PagingResponse<BoardDTO> response = new PagingResponse<>(boardList, pagination);
+				resMap.put("response", response);
+//				return resMap;
+			} catch (Exception e) {
+				System.out.println("에러=======");
+				e.printStackTrace();
+				resMap.put("error", e);
+
+				return resMap;
+			}
+		}
 
 		return resMap;
 	}

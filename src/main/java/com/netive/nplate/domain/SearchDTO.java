@@ -16,9 +16,10 @@ public class SearchDTO {
     private String memberId;            // 회원아이디
     private Pagination pagination;      // 페이지네이션 정보
 
-    public SearchDTO() {
+    public SearchDTO(String memberId) {
         this.page = 1;
         this.recordSize = 30;
         this.pageSize = 10;
+        this.memberId = memberId;
     }
 }
