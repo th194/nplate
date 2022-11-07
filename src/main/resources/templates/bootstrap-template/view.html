@@ -5,6 +5,37 @@
 		<title>this is view page</title>
 	</th:block>
 
+	<th:block layout:fragment="modal">
+		<div id="replyModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="replyModal" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label for="modalAnswerWrter" class="col-form-label">작성자</label>
+								<input type="text" id="modalAnswerWrter" class="form-control" placeholder="작성자를 입력해 주세요." />
+							</div>
+							<div class="form-group">
+								<label for="modalAnswerCn" class="col-form-label">내용</label>
+								<textarea id="modalAnswerCn" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" id="btnModalCancel" class="btn btn-default waves-effect waves-light" data-dismiss="modal">취소하기</button>
+						<button type="button" id="btnReplyUpdate" class="btn btn-primary waves-effect waves-light">수정하기</button>
+						<button type="button" id="btnReplyDelete" class="btn btn-danger waves-effect waves-light">삭제하기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+
 	<th:block layout:fragment="main-content">
 		<div class="card-content">
 			<form class="form-horizontal form-view form-grade" th:object="${board}">
@@ -79,11 +110,101 @@
 			</div>
 		</div>
 		<!-- /.card-content -->
+		<hr>
+
+		<!-- 댓글 등록 영역 -->
+		<form class="form-horizontal form-view form-grade" th:object="${board}">
+			<div class="form-group">
+				<input type="text" id="answerCn" name="answerCn" class="form-control" style="width: 700px"/>
+				<div class="input-group" style="display: inline-block; padding-left: 5px">
+					<a class="btn btn-success btn-circle btn-sm" th:onclick="insertReply()">
+						<i class="fas fa-check" aria-hidden="true"></i>
+					</a>
+				</div>
+			</div>
+		</form>
+		<!-- 댓글 등록 영역 -->
+
+		<!-- 댓글 목록 영역 -->
+		<div class="card shadow mb-4">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+						<thead>
+						<tr>
+							<th>번호</th>
+							<th>내용</th>
+							<th>작성자</th>
+							<th>등록일</th>
+							<th>수정/삭제</th>
+						</tr>
+						</thead>
+						<tbody id="replyList">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- 댓글 목록 영역 -->
 	</th:block>
 
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			/*<![CDATA[*/
+
+			var loginMember;
+
+			$(function(){
+				replyList();
+			});
+
+			/* 댓글 목록 S */
+			function replyList() {
+				var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
+				var replyHtml = '';
+
+				console.log('목록 uri = ' + uri);
+
+				$.get(uri, function(response) {
+					loginMember = response.member;
+					if (response.replyList != '' && response.replyList != null) {
+						console.log('로그인 사용자 = ' + loginMember);
+						$(response.replyList).each(function(idx, reply) {
+							replyHtml += `
+							<tr>
+							<td>${reply.answerNo}</td>
+							<td>${reply.answerCn}</td>
+							<td>${reply.answerWrter}</td>
+							<td>${moment(reply.answerRgsde).format('YYYY-MM-DD HH:mm:ss')}</td>
+							<td>`;
+
+							// 세션의 로그인한 사용자와 댓글 작성자가 같을 경우만 수정/삭제 버튼 생성
+							if(loginMember == reply.answerWrter) {
+
+								replyHtml +=`
+										<a class="btn btn-info btn-circle btn-sm" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
+											<i class="fas fa-info-circle" aria-hidden="true"></i>
+										</a>
+									</td>
+								</tr>
+								`;
+							} else {
+								replyHtml += `
+								</td>
+								</tr>
+								`;
+							}
+						});
+						$('#replyList').html(replyHtml);
+					} else {
+						replyHtml += `
+								<tr>아직 댓글이 없습니다.</tr>
+								`;
+					}
+				}, 'json');
+			}
+			/* 댓글 목록 S */
+
 
 			var board = [[${board}]];
 			console.log('board = ' + JSON.stringify(board));
@@ -196,6 +317,134 @@
 				location.href = '/member/board/list?' + queryString.toString();
 			}
 			/* 뒤로가기 */
+
+			/* 댓글 등록 S */
+			function insertReply() {
+				var answerCn = document.getElementById('answerCn');
+				if ( answerCn.value == null || answerCn.value == '') {
+					answerCn.setAttribute("placeholder", '댓글을 입력해주세요.');
+					answerCn.focus();
+					return false;
+				}
+
+				var uri = /*[[@{/reply}]]*/"";
+				var headers = {
+					'Content-type' : 'application/json',
+					'X-HTTP-Method-Override' : 'POST'
+				};
+				var params = {
+					bbscttNo : board.bbscttNo,
+					answerCn : answerCn.value,
+					answerWrter : loginMember
+				}
+
+				$.ajax({
+					url : uri,
+					type : 'POST',
+					headers : headers,
+					dataType : 'json',
+					data : JSON.stringify(params),
+					success : function(result) {
+						if (result.result == false) {
+							alert('댓글 등록 실패');
+							return false;
+						}
+						replyList();
+						answerCn.value = '';
+					},
+					error : function(err) {
+						console.log(JSON.stringify(err));
+						return false;
+					}
+				});
+
+			}
+			/* 댓글 등록 E */
+
+			/* 댓글 수정/삭제 모달 오픈 S */
+			function openModal(idx, writer, content) {
+				$('#replyModal').modal('show');
+
+				$('#modalAnswerWrter').val(writer);
+				$('#modalAnswerCn').val(content);
+
+				document.getElementById('btnReplyUpdate').setAttribute('onclick', 'updateReply('+ idx + ')');
+				document.getElementById('btnReplyDelete').setAttribute('onclick', 'deleteReply('+ idx + ')');
+			}
+			/* 댓글 수정/삭제 모달 오픈 S */
+
+			/* 댓글 수정 S */
+			function updateReply(idx) {
+				var writer = $('#modalAnswerWrter').val();
+				var content = $('#modalAnswerCn').val();
+
+				var uri = '/reply/' + idx;
+				console.log('수정 uri = ' + uri);
+				var headers = {
+					'Content-Type': 'application/json',
+					'X-HTTP-Method-Override' : 'PATCH'
+				};
+				var params = {
+					answerNo : idx,
+					answerCn : content,
+					answerWrter: writer
+				}
+
+				$.ajax({
+					url : uri,
+					type : 'PATCH',
+					headers : headers,
+					dataType: 'json',
+					data : JSON.stringify(params),
+					success : function(result) {
+						if (result.result == false) {
+							alert('수정 실패');
+							return false;
+						}
+						replyList();
+						$('#replyModal').modal('hide');
+
+					},
+					error : function(err) {
+						console.log('err = ' + JSON.stringify(err));
+						return;
+					}
+				});
+			}
+			/* 댓글 수정 E */
+
+			/* 댓글 삭제 S */
+			function deleteReply(idx) {
+				if (!confirm('댓글을 삭제 하시겠습니까?')) {
+					return false;
+				}
+
+				var uri = '/reply/' + idx;
+				console.log('삭제 uri = ' + uri);
+				var headers = {
+					'Content-Type' : 'application/json',
+					'X-HTTP-Method-Override' : 'DELETE'
+				};
+				$.ajax({
+					url : uri,
+					type : 'DELETE',
+					headers : headers,
+					dataType : 'json',
+					success : function(result) {
+						if (result.result == false) {
+							alert('댓글 삭제 실패');
+							return false;
+						}
+						replyList();
+						$('#replyModal').modal('hide');
+					},
+					error : function(err) {
+						console.log('err = ' + JSON.stringify(err));
+						return false;
+					}
+				});
+			}
+			/* 댓글 삭제 E */
 
 			/*[- end of function -]*/
 			/*]]>*/
