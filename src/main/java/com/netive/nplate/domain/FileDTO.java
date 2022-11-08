@@ -12,6 +12,7 @@ public class FileDTO {
     private String orgNm;       // 원래파일이름
     private String savedNm;     // 파일임시이름
     private String savedPath;   // 파일저장경로
+    private Long bbscttNo;           // 게시글 번호
 
     @Override
     public String toString() {
@@ -29,5 +30,13 @@ public class FileDTO {
         this.orgNm = orgNm;
         this.savedNm = savedNm;
         this.savedPath = savedPath;
+    }
+
+    public FileDTO(String fileCode, String orgNm, String savedNm, String savedPath, Long bbscttNo) {
+        this.fileCode = fileCode;
+        this.orgNm = orgNm;
+        this.savedNm = savedNm;
+        this.savedPath = savedPath;
+        this.bbscttNo = bbscttNo;
     }
 }

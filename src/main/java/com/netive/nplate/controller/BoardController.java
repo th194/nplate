@@ -73,6 +73,7 @@ public class BoardController {
 	@PostMapping("/board/register.do")
 	public String openBoardRegister(final BoardDTO board, Model model, HttpServletRequest request) {
 		HttpSession session = request.getSession();
+		Long idx = board.getBbscttNo();
 
 		if ((boolean) session.getAttribute("isLogOn")) {
 			System.out.println("jsonArray 길이 =================> "+jsonArray.size());
@@ -87,7 +88,7 @@ public class BoardController {
 					String fileCours = _jsonData.get("FILE_COURS").getAsString();			// 경로
 
 					System.out.println("=============================파일 업로드 시작");
-					fileService.saveBoardFile(fileCode, fileNm, fileNmTemp, fileCours);
+					fileService.saveBoardFile(fileCode, fileNm, fileNmTemp, fileCours, idx);
 
 				}
 			}

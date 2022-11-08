@@ -17,4 +17,6 @@ public interface FileMapper {
     int deleteFile(String cd);
 
     List<FileDTO> selectBoardFile(Long idx);
+
+    int registerBoardFile(FileDTO dto);
 }
