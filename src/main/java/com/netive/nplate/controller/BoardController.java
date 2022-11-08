@@ -17,9 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -50,10 +47,7 @@ public class BoardController {
 	@Value("${nplate.upload.path}")
 	private String filePath;
 
-	// 이미지 정보 담을 Json 배열
 	private JsonArray jsonArray = new JsonArray();
-
-
 
 	/**
 	 * 게시글 작성
@@ -79,7 +73,9 @@ public class BoardController {
 	@PostMapping("/board/register.do")
 	public String openBoardRegister(final BoardDTO board, Model model, HttpServletRequest request) {
 		HttpSession session = request.getSession();
+
 		if ((boolean) session.getAttribute("isLogOn")) {
+			System.out.println("jsonArray 길이 =================> "+jsonArray.size());
 			if(jsonArray.size() > 0) {
 				for (int i = 0; i < jsonArray.size(); i ++) {
 
@@ -92,10 +88,11 @@ public class BoardController {
 
 					System.out.println("=============================파일 업로드 시작");
 					fileService.saveBoardFile(fileCode, fileNm, fileNmTemp, fileCours);
+
 				}
 			}
 			boardSerive.registerBoard(board);
-
+			jsonArray = new JsonArray();
 		}
 
 		MessageDTO message = new MessageDTO("게시글 등록이 완료되었습니다.", "/member/board/list", RequestMethod.GET, null);
@@ -258,7 +255,8 @@ public class BoardController {
 	@PostMapping("/smarteditorMultiImageUpload.do")
 	public void smarteditorMultiImageUpload(HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession();
-
+//		JsonArray jsonArray = new JsonArray();
+		JsonObject jsonObject = new JsonObject();
 		if ((boolean) session.getAttribute("isLogOn")) {
 			MemberDTO member = (MemberDTO) session.getAttribute("member");
 			String id = member.getId();
@@ -308,7 +306,7 @@ public class BoardController {
 					while ((numRead = inputStream.read(bytes, 0, bytes.length)) != -1) {
 						outputStream.write(bytes, 0, numRead);
 
-						JsonObject jsonObject = new JsonObject();
+
 						// 업로드된 파일을 테이블에 저장하기 위한 json 오브젝트
 						jsonObject.addProperty("FILE_IMAGE_CODE", id);
 						jsonObject.addProperty("FILE_NM", sFileName);
