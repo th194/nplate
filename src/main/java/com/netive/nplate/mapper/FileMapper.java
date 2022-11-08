@@ -3,6 +3,8 @@ package com.netive.nplate.mapper;
 import com.netive.nplate.domain.FileDTO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface FileMapper {
 
@@ -13,4 +15,6 @@ public interface FileMapper {
     int updateFile(FileDTO dto);
 
     int deleteFile(String cd);
+
+    List<FileDTO> selectBoardFile(Long idx);
 }

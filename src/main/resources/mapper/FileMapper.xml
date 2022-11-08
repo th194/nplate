@@ -36,4 +36,12 @@
         ]]>
     </delete>
 
+    <!-- 게시글 파일 테이블 S -->
+
+    <!-- 게시글 번호로 파일테이블 조회 -->
+    <select id="selectBoardFile" parameterType="long" resultType="FileDTO">
+        select * from NETIVE_PROJECT01_FILE_IMAGE where BBSCTT_NO = #{bbscttNo}
+    </select>
+    <!-- 게시글 파일 테이블 E -->
+
 </mapper>
