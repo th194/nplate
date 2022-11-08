@@ -113,6 +113,7 @@
 		<hr>
 
 		<!-- 댓글 등록 영역 -->
+		<h3> 댓 글 </h3>
 		<form class="form-horizontal form-view form-grade" th:object="${board}">
 			<div class="form-group">
 				<input type="text" id="answerCn" name="answerCn" class="form-control" style="width: 700px"/>
@@ -196,12 +197,12 @@
 								`;
 							}
 						});
-						$('#replyList').html(replyHtml);
 					} else {
 						replyHtml += `
-								<tr>아직 댓글이 없습니다.</tr>
+								<tr><td colspan="5">아직 댓글이 없습니다.</td></tr>
 								`;
 					}
+					$('#replyList').html(replyHtml);
 				}, 'json');
 			}
 			/* 댓글 목록 S */

@@ -20,7 +20,7 @@
 
         /* 무한 스크롤 위한 페이지 작업 S */
         var page = 1;
-
+        var isFlag = true;
         $(function() {
             drawList(page);
             page++;
@@ -50,115 +50,132 @@
         }
 
         // 조회 목록
-        function drawList(list) {
+        function drawList(page) {
+            console.log('isFlag = ' + isFlag);
 
             var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
+            var memberInfo = [[${memberInfo}]];
 
             var keyword = $('#keyword').val() ? $('#keyword').val() : '';
             // var searchType = $('#searchType option:selected').val() ? $('#searchType option:selected').val() : '';
 
             var post = {
-                page : page,
-                keyword : keyword
+                page    : page,
+                keyword : keyword,
+                memberId: memberInfo.id
                 // searchType: searchType
             }
+            if (isFlag) { // pagination.totalPageCount 가 1이 아닐경우와 마지막페이지까지 다 불러왔을때.. 다시 ajax 통신하도록..
+                $.ajax({
+                    type    : 'POST',
+                    dataType: 'json',
+                    data    : post,
+                    url     : '/board/scrollList.do',
+                    success : function (result) {
 
-            $.ajax({
-                type : 'POST',
-                dataType : 'json',
-                data : post,
-                url : '/board/scrollList.do',
-                success : function(result) {
-
-                    var list = result.response.list;                // 목록
-                    var pagination = result.response.pagination;    // 페이지네이션 정보
-                    var html = '';
-
-                    // pagination.totalpageCount = 전체 페이지 수 ( 현재 SearchDTO 에 목록 불러올 때 게시글 30개씩 불러옴 )
-                    // page = 스크롤 페이징을 위한 변수 초기값 1
-                    // 브라우저 스크롤이 바닥에 닿았을 때 Ajax drawList 호출
-                    // drawList 호출 시 page++ 로 page값 1씩 증가시켜줌
-                    // 리스트 초기화면 진입시 이미 drawList 한번 호출 하므로 page 값은 2로 되어있음
-                    // 사용자 게시글이 30개가 안 될 경우 전체 페이지 수가 1로 오는데
-                    // page <= pagination.totalPageCount 조건에 의해 ( 2 <= 1 ) 목록 생성이 안되는 문제가 있어서
-                    // pagination.totalPageCount == 1 조건 추가해줌
-                    if (pagination.totalPageCount == 1 || page <= pagination.totalPageCount) {
-                        if (list.length > 0) {
-                            list.forEach(obj => {
-
-                                html += `
-                                <div class="col mb-5 list">
-                                    <div class="card h-100">
-                                        <img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
-
-                                // 좋아요 버튼
-                                html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
-
-                                if (likes.includes(obj.bbscttNo)) {
-                                    html += `<i class="bi bi-heart-fill"></i>`;
-                                } else {
-                                    html += `<i class="bi bi-heart"></i>`;
-                                }
+                        var list = result.response.list;                // 목록
+                        var pagination = result.response.pagination;    // 페이지네이션 정보
+                        var html = '';
 
 
-                                html += `
-                                    </span>
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
-                                                    <h6 class="fw-bolder">
-                                                        ${obj.bbscttSj}
-                                                    </h6>
-                                                </a>
-                            `;
+                        // pagination.totalpageCount = 전체 페이지 수 ( 현재 SearchDTO 에 목록 불러올 때 게시글 30개씩 불러옴 )
+                        // page = 스크롤 페이징을 위한 변수 초기값 1
+                        // 브라우저 스크롤이 바닥에 닿았을 때 Ajax drawList 호출
+                        // drawList 호출 시 page++ 로 page값 1씩 증가시켜줌
+                        // 리스트 초기화면 진입시 이미 drawList 한번 호출 하므로 page 값은 2로 되어있음
+                        // 사용자 게시글이 30개가 안 될 경우 전체 페이지 수가 1로 옴
+                        // page <= pagination.totalPageCount 조건에 의해 ( 2 <= 1 ) 목록 생성이 안되는 문제 발생
+                        // pagination.totalPageCount == 1 조건 추가해서 처리했으나 이번엔 totalPageCount가 1일 경우
+                        // ajax 무한 통신을 하게 됐다..
+                        // 그래서 전역 변수 isFlag = true 선언 후 67 라인 if(isFlag) 조건 주고
+                        // pagination.totalPageCount가 1이면 isFlag false로 바꾼다..
+                        // 추가.. 게시글 목록 끝까지 다 불러왔을때(pagination.totalPageCount의 마지막 페이지)
+                        // ajax통신 못하게 isFlag 값 false로 변경..
+
+                        if (page <= pagination.totalPageCount) {
+                            if (pagination.totalPageCount == 1 || page == pagination.totalPageCount) {
+                                isFlag = false;
+                            }
+                            if (list.length > 0) {
+                                list.forEach(obj=> {
 
 
-                                // 별점
-                                html += `<div class="d-flex justify-content-center small text-warning mb-2">`;
-                                for (var i = 0; i < obj.bbscttGrade; i++) {
-                                    html += '<div class="bi-star-fill"></div>';
-                                }
 
-                                for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
-                                    html += `<div class="bi-star"></div>`;
-                                }
-                                html += `</div>`;
+                                    html += `
+                                    <div class="col mb-5 list">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
+
+                                    // 좋아요 버튼
+                                    html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
+
+                                    if (likes.includes(obj.bbscttNo)) {
+                                        html += `<i class="bi bi-heart-fill"></i>`;
+                                    } else {
+                                        html += `<i class="bi bi-heart"></i>`;
+                                    }
 
 
-                                // 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
-                                if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
-                                    var tag = obj.bbscttHashtag.split(',');
+                                    html += `
+                                        </span>
+                                            <div class="card-body">
+                                                <div class="text-center">
+                                                    <a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
+                                                        <h6 class="fw-bolder">
+                                                            ${obj.bbscttSj}
+                                                        </h6>
+                                                    </a>
+                                    `;
 
-                                    html += `<div class="text-xs">`;
-                                    var showSize = tag.length > 3? 3 : tag.length;
-                                    for (var k = 0; k < showSize; k++) {
-                                        html += `<span class="text-primary">#` + tag[k] +' </span>';
+
+                                    // 별점
+                                    html += `<div class="d-flex justify-content-center small text-warning mb-2">`;
+                                    for (var i = 0; i < obj.bbscttGrade; i++) {
+                                        html += '<div class="bi-star-fill"></div>';
+                                    }
+
+                                    for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
+                                        html += `<div class="bi-star"></div>`;
                                     }
                                     html += `</div>`;
-                                }
 
-                                html +=
-                                    `</div></div></div></div>`;
+
+                                    // 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
+                                    if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
+                                        var tag = obj.bbscttHashtag.split(',');
+
+                                        html += `<div class="text-xs">`;
+                                        var showSize = tag.length > 3 ? 3 : tag.length;
+                                        for (var k = 0; k < showSize; k++) {
+                                            html += `<span class="text-primary">#` + tag[k] + ' </span>';
+                                        }
+                                        html += `</div>`;
+                                    }
+
+                                    html +=
+                                        `</div></div></div></div>`;
+                                });
+                            } else {
+                                alert('데이터가 없습니다.');
+                            }
+
+                            $('#post-container').append(html);
+
+                            // 좋아요 클릭 이벤트 추가
+                            var likeBtns = document.querySelectorAll('.like-btn');
+                            likeBtns.forEach((btn) => {
+                                btn.onclick = likePost;
                             });
-                        } else {
-                            alert('데이터가 없습니다.');
                         }
-                        $('#post-container').append(html);
-
-                        // 좋아요 클릭 이벤트 추가
-                        var likeBtns = document.querySelectorAll('.like-btn');
-                        likeBtns.forEach( (btn) => {
-                            btn.onclick = likePost;
-                        });
+                    },
+                    error   : function (err) {
+                        console.log('err = ' + JSON.stringify(err));
+                        if (err.status == 300) {
+                            alert('데이터 로드 실패');
+                        }
                     }
-                },
-                error : function(err) {
-                    console.log('err = ' + JSON.stringify(err));
-                    if (err.status == 300) {
-                        alert('데이터 로드 실패');
-                    }
-                }
-            });
+                });
+            }
         }
 
         /* 게시글 리스트 조회 E */

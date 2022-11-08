@@ -170,10 +170,12 @@
 
                 // 글 등록/수정 action 변경
                 var board = [[${board}]];
-                $('#bbscttWrter').val(board.bbscttWrter);
-                if(board.bbscttNo == null) {
+                var memberInfo = [[${memberInfo}]]
+                $('#bbscttWrter').val(memberInfo.id);
+                if(board == null) {
                     form.action = '/board/register.do';
                 } else {
+
                     form.action = '/board/update.do';
                 }
                 form.submit();
