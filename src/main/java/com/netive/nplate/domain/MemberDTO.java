@@ -2,9 +2,11 @@ package com.netive.nplate.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class MemberDTO {
     private String id;          // 아이디
     private String name;        // 이름
@@ -17,21 +19,4 @@ public class MemberDTO {
     private String srbde;       // 가입일
     private String nickName;    // 닉네임
     private String profileImg;  // 프로필사진
-
-    @Override
-    public String toString() {
-        return "MemberDTO{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", sexCd='" + sexCd + '\'' +
-                ", birthday='" + birthday + '\'' +
-                ", tel='" + tel + '\'' +
-                ", pwd='" + pwd + '\'' +
-                ", email='" + email + '\'' +
-                ", area='" + area + '\'' +
-                ", srbde='" + srbde + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", profileImg='" + profileImg + '\'' +
-                '}';
-    }
 }

@@ -2,9 +2,11 @@ package com.netive.nplate.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class LikesDTO {
 
     int index; // 좋아요 번호(PK) 추가 순서 관리
@@ -19,12 +21,4 @@ public class LikesDTO {
         this.bbscttNo = bbscttNo;
     }
 
-    @Override
-    public String toString() {
-        return "LikesDTO{" +
-                "index=" + index +
-                ", id='" + id + '\'' +
-                ", bbscttNo=" + bbscttNo +
-                '}';
-    }
 }

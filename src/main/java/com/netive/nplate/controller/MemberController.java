@@ -1,9 +1,10 @@
 package com.netive.nplate.controller;
 
-import com.netive.nplate.domain.Area;
-import com.netive.nplate.domain.FileDTO;
-import com.netive.nplate.domain.MemberDTO;
+import com.netive.nplate.domain.*;
+import com.netive.nplate.paging.PagingResponse;
+import com.netive.nplate.service.BoardService;
 import com.netive.nplate.service.FileService;
+import com.netive.nplate.service.LikesService;
 import com.netive.nplate.service.MemberService;
 
 import com.netive.nplate.util.MemberUtils;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +34,12 @@ public class MemberController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private BoardService boardService;
+
+    @Autowired
+    private LikesService likesService;
 
     @Autowired
     private MemberUtils memberUtils;
@@ -189,6 +198,48 @@ public class MemberController {
         // todo 처리변경(임시 에러 처리)
         model.addAttribute("message", null);
         model.addAttribute("url", null);
+        return "member/error";
+    }
+
+
+    // 다른사람 정보 보기
+    @GetMapping("/member/userInfo")
+    public String userPage(Model model, HttpServletRequest request, String id) {
+        HttpSession session = request.getSession();
+
+        try {
+            if ((boolean) session.getAttribute("isLogOn")) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
+                model.addAttribute("memberInfo", memberDTO);
+
+                // 좋아요 추가
+                List<LikesDTO> likes = likesService.getLikes(memberDTO.getId());
+                List<Long> likeNumbers = new ArrayList<Long>();
+                for (LikesDTO likesDTO : likes) {
+                    System.out.println("like 디티오 프린트====");
+                    System.out.println(likesDTO);
+                    System.out.println("넘버===" + likesDTO.getBbscttNo());
+
+                    likeNumbers.add(likesDTO.getBbscttNo());
+                }
+
+                model.addAttribute("likeNumbers", likeNumbers);
+
+
+                // 아이디로 멤버 정보, 게시판 정보 조회해옴
+                MemberDTO userDTO = memberService.getMemberInfo(id);
+                SearchDTO searchDTO = new SearchDTO(id);
+                PagingResponse<BoardDTO> userBoardList = boardService.getBoardList(searchDTO);
+                model.addAttribute("userInfo", userDTO);
+                model.addAttribute("response", userBoardList);
+
+                return "bootstrap-template/userInfo";
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "member/error";
     }
 
