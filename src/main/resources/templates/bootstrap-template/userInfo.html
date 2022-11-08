@@ -64,14 +64,13 @@
 
         /* 무한 스크롤 위한 페이지 작업 S */
         var page = 1;
+        var isFlag = true;
 
         $(function() {
-            console.log('페이지======');
             drawList(page);
             page++;
         });
         $(window).scroll(function() {
-            console.log('스크롤페이지======');
             if ($(window).scrollTop() >= $(document).height() - $(window).height()) { // 스크롤 감지
                 drawList(page);
                 page++;
@@ -95,105 +94,111 @@
         }
 
         // 조회 목록
-        function drawList(list) {
+        function drawList(page) {
+            console.log('isFlag = ' + isFlag);
+
             var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
             var userInfo = [[${userInfo}]];
 
+
             var post = {
-                page : page,
+                page    : page,
                 memberId: userInfo.id
             }
+            if (isFlag) { // pagination.totalPageCount 가 1이 아닐경우와 마지막페이지까지 다 불러왔을때.. 다시 ajax 통신하도록..
+                $.ajax({
+                    type    : 'POST',
+                    dataType: 'json',
+                    data    : post,
+                    url     : '/board/scrollList.do',
+                    success : function (result) {
 
-            $.ajax({
-                type : 'POST',
-                dataType : 'json',
-                data : post,
-                url : '/board/scrollList.do',
-                success : function(result) {
+                        var list = result.response.list;                // 목록
+                        var pagination = result.response.pagination;    // 페이지네이션 정보
+                        var html = '';
 
-                    var list = result.response.list;                // 목록
-                    var pagination = result.response.pagination;    // 페이지네이션 정보
-                    var html = '';
+                        if (page <= pagination.totalPageCount) {
+                            if (pagination.totalPageCount == 1 || page == pagination.totalPageCount) {
+                                isFlag = false;
+                            }
+                            if (list.length > 0) {
+                                list.forEach(obj=> {
 
-                    if (pagination.totalPageCount == 1 || page <= pagination.totalPageCount) {
-                        if (list.length > 0) {
-                            list.forEach(obj => {
-                                console.log('오브젝트=============');
-                                console.log(obj);
+                                    html += `
+                                    <div class="col mb-5 list">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
 
-                                html += `
-                                <div class="col mb-5 list">
-                                    <div class="card h-100">
-                                        <img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
+                                    // 좋아요 버튼
+                                    html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
 
-                                // 좋아요 버튼
-                                html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
-
-                                if (likes.includes(obj.bbscttNo)) {
-                                    html += `<i class="bi bi-heart-fill"></i>`;
-                                } else {
-                                    html += `<i class="bi bi-heart"></i>`;
-                                }
-
-
-                                html += `
-                                    </span>
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
-                                                    <h6 class="fw-bolder">
-                                                        ${obj.bbscttSj}
-                                                    </h6>
-                                                </a>
-                            `;
+                                    if (likes.includes(obj.bbscttNo)) {
+                                        html += `<i class="bi bi-heart-fill"></i>`;
+                                    } else {
+                                        html += `<i class="bi bi-heart"></i>`;
+                                    }
 
 
-                                // 별점
-                                html += `<div class="d-flex justify-content-center small text-warning mb-2">`;
-                                for (var i = 0; i < obj.bbscttGrade; i++) {
-                                    html += '<div class="bi-star-fill"></div>';
-                                }
+                                    html += `
+                                        </span>
+                                            <div class="card-body">
+                                                <div class="text-center">
+                                                    <a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
+                                                        <h6 class="fw-bolder">
+                                                            ${obj.bbscttSj}
+                                                        </h6>
+                                                    </a>
+                                    `;
 
-                                for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
-                                    html += `<div class="bi-star"></div>`;
-                                }
-                                html += `</div>`;
 
+                                    // 별점
+                                    html += `<div class="d-flex justify-content-center small text-warning mb-2">`;
+                                    for (var i = 0; i < obj.bbscttGrade; i++) {
+                                        html += '<div class="bi-star-fill"></div>';
+                                    }
 
-                                // 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
-                                if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
-                                    var tag = obj.bbscttHashtag.split(',');
-
-                                    html += `<div class="text-xs">`;
-                                    var showSize = tag.length > 3? 3 : tag.length;
-                                    for (var k = 0; k < showSize; k++) {
-                                        html += `<span class="text-primary">#` + tag[k] +' </span>';
+                                    for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
+                                        html += `<div class="bi-star"></div>`;
                                     }
                                     html += `</div>`;
-                                }
 
-                                html +=
-                                    `</div></div></div></div>`;
+
+                                    // 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
+                                    if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
+                                        var tag = obj.bbscttHashtag.split(',');
+
+                                        html += `<div class="text-xs">`;
+                                        var showSize = tag.length > 3 ? 3 : tag.length;
+                                        for (var k = 0; k < showSize; k++) {
+                                            html += `<span class="text-primary">#` + tag[k] + ' </span>';
+                                        }
+                                        html += `</div>`;
+                                    }
+
+                                    html +=
+                                        `</div></div></div></div>`;
+                                });
+                            } else {
+                                alert('데이터가 없습니다.');
+                            }
+
+                            $('#post-container').append(html);
+
+                            // 좋아요 클릭 이벤트 추가
+                            var likeBtns = document.querySelectorAll('.like-btn');
+                            likeBtns.forEach((btn) => {
+                                btn.onclick = likePost;
                             });
-                        } else {
-                            alert('데이터가 없습니다.');
                         }
-                        $('#post-container').append(html);
-
-                        // 좋아요 클릭 이벤트 추가
-                        var likeBtns = document.querySelectorAll('.like-btn');
-                        likeBtns.forEach( (btn) => {
-                            btn.onclick = likePost;
-                        });
+                    },
+                    error   : function (err) {
+                        console.log('err = ' + JSON.stringify(err));
+                        if (err.status == 300) {
+                            alert('데이터 로드 실패');
+                        }
                     }
-                },
-                error : function(err) {
-                    console.log('err = ' + JSON.stringify(err));
-                    if (err.status == 300) {
-                        alert('데이터 로드 실패');
-                    }
-                }
-            });
+                });
+            }
         }
 
         /* 게시글 리스트 조회 E */

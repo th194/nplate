@@ -360,7 +360,11 @@ public class LoginController {
                 map.put("keyword", tag);
                 map.put("likeNumbers", likeNumbers);
 
-                List<BoardDTO> likePosts = loginService.getLikes(map);
+
+                List<BoardDTO> likePosts = new ArrayList<>();
+                if (likeNumbers.size() != 0) {
+                    likePosts = loginService.getLikes(map);
+                }
                 System.out.println("글목록 크기:" + likePosts.size());
                 // todo likePosts 좋아요 누른 순서대로 정렬되게 처리 추가
 
