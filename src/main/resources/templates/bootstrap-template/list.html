@@ -55,12 +55,12 @@
             var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
 
             var keyword = $('#keyword').val() ? $('#keyword').val() : '';
-            var searchType = $('#searchType option:selected').val() ? $('#searchType option:selected').val() : '';
+            // var searchType = $('#searchType option:selected').val() ? $('#searchType option:selected').val() : '';
 
             var post = {
                 page : page,
-                keyword : keyword,
-                searchType: searchType
+                keyword : keyword
+                // searchType: searchType
             }
 
             $.ajax({
@@ -225,12 +225,13 @@
         /* 페이지 이동 S */
         function movePage(page) {
             var form = document.getElementById('searchForm');
+            console.log('keyword = ' + form.keyword.value);
             var queryParams = {
                 page: (page) ? page : 1,
                 recordSize : 10,
                 pageSize : 10,
-                keyword : form.keyword.value,
-                searchType : form.searchType.value
+                keyword : form.keyword.value
+                // searchType : form.searchType.value
             }
             location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
         }

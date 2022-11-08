@@ -22,21 +22,22 @@
 	<sql id="search">
 		<!-- 검색 키워드가 있을 때 -->
 		<if test="keyword != null and keyword != ''">
-			<choose>
+<!--			<choose>-->
 				<!-- 검색 유형이 있을 때 -->
-				<when test="searchType != null and searchType != ''">
-					<choose>
-						<when test="searchType.equals( 'bbscttSj' )">
-							AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
-						</when>
-						<when test="searchType.equals( 'bbscttCn' )">
-							AND BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')
-						</when>
-						<when test="searchType.equals( 'bbscttWrter' )">
-							AND BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')
-						</when>
-					</choose>
-				</when>
+<!--				<when test="searchType != null and searchType != ''">-->
+					AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
+<!--					<choose>-->
+<!--						<when test="searchType.equals( 'bbscttSj' )">-->
+<!--							AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')-->
+<!--						</when>-->
+<!--						<when test="searchType.equals( 'bbscttCn' )">-->
+<!--							AND BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')-->
+<!--						</when>-->
+<!--						<when test="searchType.equals( 'bbscttWrter' )">-->
+<!--							AND BBSCTT_WRTER LIKE CONCAT('%', #{keyword}, '%')-->
+<!--						</when>-->
+<!--					</choose>-->
+<!--				</when>-->
 				<!-- 전체 검색일 때 때 -->
 <!--				<otherwise>-->
 <!--					AND (-->
@@ -45,7 +46,7 @@
 <!--					OR BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')-->
 <!--					)-->
 <!--				</otherwise>-->
-			</choose>
+<!--			</choose>-->
 		</if>
 	</sql>
 
@@ -125,18 +126,18 @@
 
 
 	<!-- 게시글 검색 -->
-	<select id="selectBoardSearchList" parameterType="SearchDTO" resultType="BoardDTO">
-		SELECT
-		<include refid="boardColumns"/>
-		FROM NETIVE_PROJECT01_BOARD
-		WHERE BBSCTT_NO
-		<if test="type != null">
-			<include refid="search"></include>
-		</if>
-		ORDER BY
-		BBSCTT_NO DESC
-		LIMIT #{skip}, #{amount}
-	</select>
+<!--	<select id="selectBoardSearchList" parameterType="SearchDTO" resultType="BoardDTO">-->
+<!--		SELECT-->
+<!--		<include refid="boardColumns"/>-->
+<!--		FROM NETIVE_PROJECT01_BOARD-->
+<!--		WHERE BBSCTT_NO-->
+<!--		<if test="type != null">-->
+<!--			<include refid="search"></include>-->
+<!--		</if>-->
+<!--		ORDER BY-->
+<!--		BBSCTT_NO DESC-->
+<!--		LIMIT #{skip}, #{amount}-->
+<!--	</select>-->
 
 	<!-- 게시글 수 카운트 -->
 	<select id ="count" parameterType="SearchDTO" resultType="int">
