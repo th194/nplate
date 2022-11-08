@@ -61,4 +61,11 @@
         ]]>
     </select>
 
+    <update id="updatePwd" parameterType="MemberDTO">
+        <![CDATA[
+        update NETIVE_PROJECT01_MEMBER
+        set MBER_PASSWORD = #{pwd} where MBER_ID = #{id}
+        ]]>
+    </update>
+
 </mapper>

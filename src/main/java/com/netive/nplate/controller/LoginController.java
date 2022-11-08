@@ -7,6 +7,8 @@ import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.*;
 import com.netive.nplate.util.MemberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -377,4 +379,55 @@ public class LoginController {
             return "member/index";
         }
     }
+
+
+    // 비밀번호 수정
+    @PostMapping("/member/changePwd")
+    public @ResponseBody ResponseEntity<String> updatePwd(MemberDTO dto, String changePwd, HttpServletRequest request) throws NoSuchAlgorithmException {
+        // 리턴 값 처리
+        ResponseEntity<String> resEnt = null;
+        String msg = "<script>";
+        msg += " alert('에러가 발생하였습니다. 잠시 후 다시 시도해주세요.');";
+        msg += " location.replace('/'); ";
+        msg += " </script>";
+
+        // 세션
+        HttpSession session = request.getSession();
+
+        // 비밀번호 암호화 처리
+        String encPwd = memberUtils.encrypt(dto.getPwd());
+
+        try {
+            if (session.getAttribute("member") != null) {
+                MemberDTO sessionDto = (MemberDTO) session.getAttribute("member");
+
+                if (Objects.equals(sessionDto.getId(), dto.getId()) && Objects.equals(sessionDto.getPwd(), encPwd)) {
+                    dto.setPwd(memberUtils.encrypt(changePwd));
+                    memberService.updatePwd(dto);
+
+                    session.invalidate();
+
+                    msg = "<script>";
+                    msg += " alert('비밀번호 변경이 완료되었습니다. 다시 로그인해주세요.');";
+                    msg += " location.replace('/'); ";
+                    msg += " </script>";
+
+                } else {
+                    // 비밀번호 틀린 경우의 처리
+                    System.out.println("아이디, 비밀번호 틀림");
+
+                    msg = "<script>";
+                    msg += " alert('아이디와 비밀번호를 확인 후 다시 입력해주세요.');";
+                    msg += " location.replace('/'); ";
+                    msg += " </script>";
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        resEnt = new ResponseEntity<>(msg, HttpStatus.CREATED);
+        return resEnt;
+    }
+
 }

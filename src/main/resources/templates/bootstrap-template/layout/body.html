@@ -43,7 +43,7 @@
 					<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
 						<div class="bg-white py-2 collapse-inner rounded">
 							<h6 class="collapse-header">나의 설정</h6>
-							<a class="collapse-item" href="/">비밀번호 변경</a>
+							<a class="collapse-item" href="#" data-toggle="modal" data-target="#changePwdModal">비밀번호 변경</a>
 							<a class="collapse-item" href="/member/myInfoUpdateForm">개인정보 수정</a>
 							<a class="collapse-item" href="#" data-toggle="modal" data-target="#deleteModal">회원 탈퇴</a>
 						</div>
@@ -265,12 +265,12 @@
 
 
 			<!-- 회원 탈퇴 버튼 -->
-			<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
 				 aria-hidden="true">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLabel">계정을 삭제하시겠습니까?</h5>
+							<h5 class="modal-title" id="deleteModalLabel">계정을 삭제하시겠습니까?</h5>
 							<button class="close" type="button" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true">×</span>
 							</button>
@@ -296,6 +296,44 @@
 					</div>
 				</div>
 			</div>
+
+
+			<!-- 비밀번호 변경 버튼 -->
+			<div class="modal fade" id="changePwdModal" tabindex="-1" role="dialog" aria-labelledby="changePwdModalLabel"
+				 aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="changePwdModalLabel">비밀번호 변경</h5>
+							<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">×</span>
+							</button>
+						</div>
+						<form class="user" th:action="@{/member/changePwd}" method="post">
+							<div class="modal-body">
+								<div class="form-group">
+									비밀번호를 변경하시려면 아이디, 기존 비밀번호, 변경할 비밀번호를 입력해주세요.
+								</div>
+								<div class="form-group">
+									<input type="text" class="form-control form-control-user" id="id2" name="id" placeholder="ID">
+								</div>
+								<div class="form-group">
+									<input type="password" class="form-control form-control-user" id="pwd2" name="pwd" placeholder="기존 비밀번호">
+								</div>
+								<div class="form-group">
+									<input type="password" class="form-control form-control-user" id="changePwd" name="changePwd" placeholder="변경할 비밀번호">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+								<button type="submit" class="btn btn-primary">변경하기</button>
+							</div>
+
+						</form>
+					</div>
+				</div>
+			</div>
+
 		</div>
 
 

@@ -50,4 +50,9 @@ public class MemberServiceImpl implements MemberService {
     public int checkOverlappedId(String id) {
         return memberMapper.checkOverlappedId(id);
     }
+
+    @Override
+    public int updatePwd(MemberDTO memberDTO) {
+        return memberMapper.updatePwd(memberDTO);
+    }
 }
