@@ -1,5 +1,7 @@
 package com.netive.nplate.service;
 
+import com.google.gson.JsonArray;
+import com.netive.nplate.domain.BoardFileDTO;
 import com.netive.nplate.domain.FileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,8 +25,14 @@ public interface FileService {
     int saveDefaultFile(String id);
 
     // 게시글 번호로 파일 조회
-    List<FileDTO> selectBoardFile(Long idx);
+    List<BoardFileDTO> selectBoardFile(Long idx);
 
-    // 파일명 등록
-    int saveBoardFile(String fileCode, String fileNm, String fileNmTemp, String fileCours);
+    // 게시글 번호로 파일 조회 JsonArray
+    JsonArray boardFileList(Long idx);
+
+    // 게시판 파일명 등록
+    int saveBoardFile(String fileNm, String fileNmTemp, String fileCours, Long idx);
+
+    // 게시판 파일명 수정
+    int updateBoardFile(String fileNm, String fileNmTemp, String fileCours, Long idx);
 }

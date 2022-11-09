@@ -1,6 +1,10 @@
 package com.netive.nplate.service;
 
+import com.google.gson.JsonArray;
+import com.netive.nplate.domain.BoardFileDTO;
 import com.netive.nplate.domain.FileDTO;
+import com.netive.nplate.mapper.BoardFileMapper;
+import com.netive.nplate.mapper.BoardMapper;
 import com.netive.nplate.mapper.FileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +27,12 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     private FileMapper fileMapper;
+
+    @Autowired
+    private BoardFileMapper boardFileMapper;
+
+    @Autowired
+    private BoardMapper boardMapper;
 
     @Override
     public int saveFile(MultipartFile file, String id) throws IOException {
@@ -111,19 +121,33 @@ public class FileServiceImpl implements FileService {
         return fileMapper.registerFile(dto);
     }
 
+    // 게시글 파일 목록 조회
     @Override
-    public List<FileDTO> selectBoardFile(Long idx) {
-        return fileMapper.selectBoardFile(idx);
+    public List<BoardFileDTO> selectBoardFile(Long idx) {
+        return boardFileMapper.selectBoardFile(idx);
+    }
+
+    // 게시글 파일 목록 조회 JsonArray
+    @Override
+    public JsonArray boardFileList(Long idx) {
+        return boardFileMapper.selectBoardFileJson(idx);
     }
 
     // 게시글 다중이미지 파일테이블 저장
     @Override
-    public int saveBoardFile(String fileCode, String fileNm, String fileNmTemp, String fileCours) {
+    public int saveBoardFile(String fileNm, String fileNmTemp, String fileCours, Long idx) {
 
         // 파일 dto 생성
-        FileDTO fileDTO = new FileDTO(fileCode, fileNm, fileNmTemp, fileCours);
+        BoardFileDTO boardFileDTO = new BoardFileDTO(fileNm, fileNmTemp, fileCours, idx);
         System.out.println("이미지 테이블 저장 실행중==========================");
         // 데이터베이스에 파일 이름 저장
-        return fileMapper.registerBoardFile(fileDTO);
+        return boardFileMapper.registerBoardFile(boardFileDTO);
+    }
+
+    @Override
+    public int updateBoardFile(String fileNm, String fileNmTemp, String fileCours, Long idx) {
+
+
+        return 0;
     }
 }
