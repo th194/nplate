@@ -118,10 +118,10 @@ public class FileServiceImpl implements FileService {
 
     // 게시글 다중이미지 파일테이블 저장
     @Override
-    public int saveBoardFile(String fileCode, String fileNm, String fileNmTemp, String fileCours, Long idx) {
+    public int saveBoardFile(String fileCode, String fileNm, String fileNmTemp, String fileCours) {
 
         // 파일 dto 생성
-        FileDTO fileDTO = new FileDTO(fileCode, fileNm, fileNmTemp, fileCours, idx);
+        FileDTO fileDTO = new FileDTO(fileCode, fileNm, fileNmTemp, fileCours);
         System.out.println("이미지 테이블 저장 실행중==========================");
         // 데이터베이스에 파일 이름 저장
         return fileMapper.registerBoardFile(fileDTO);

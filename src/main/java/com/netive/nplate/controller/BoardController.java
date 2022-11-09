@@ -88,7 +88,7 @@ public class BoardController {
 					String fileCours = _jsonData.get("FILE_COURS").getAsString();			// 경로
 
 					System.out.println("=============================파일 업로드 시작");
-					fileService.saveBoardFile(fileCode, fileNm, fileNmTemp, fileCours, idx);
+					fileService.saveBoardFile(fileCode, fileNm, fileNmTemp, fileCours);
 
 				}
 			}

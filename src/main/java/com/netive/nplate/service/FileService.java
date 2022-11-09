@@ -26,5 +26,5 @@ public interface FileService {
     List<FileDTO> selectBoardFile(Long idx);
 
     // 파일명 등록
-    int saveBoardFile(String fileCode, String fileNm, String fileNmTemp, String fileCours, Long idx);
+    int saveBoardFile(String fileCode, String fileNm, String fileNmTemp, String fileCours);
 }

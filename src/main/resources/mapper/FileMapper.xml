@@ -7,7 +7,6 @@
         <result property="orgNm" column="FILE_NM"/>
         <result property="savedNm" column="FILE_NM_TEMP"/>
         <result property="savedPath" column="FILE_COURS"/>
-        <result property="bbscttNo" column="BBSCTT_NO"/>
     </resultMap>
 
     <insert id="registerFile" parameterType="FileDTO">
@@ -40,12 +39,10 @@
     <!-- 게시글 파일 테이블 S -->
 
     <!-- 게시판 파일 저장 -->
-    <insert id="registerBoardFile" parameterType="list">
-        insert into NETIVE_PROJECT01_FILE_IMAGE (FILE_IMAGE_CODE, FILE_NM, FILE_NM_TEMP, FILE_COURS, BBSCTT_NO)
+    <insert id="registerBoardFile" parameterType="FileDTO">
+        insert into NETIVE_PROJECT01_FILE_IMAGE (FILE_IMAGE_CODE, FILE_NM, FILE_NM_TEMP, FILE_COURS)
         values (
-                <foreach collection="list" item="item" separator=",">
-                    #{fileCode}, #{orgNm}, #{savedNm}, #{savedPath}, #{bbscttNo}
-                </foreach>
+                #{fileCode}, #{orgNm}, #{savedNm}, #{savedPath}
                )
     </insert>
 
