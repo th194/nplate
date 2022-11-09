@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netive.nplate.mapper.BoardFileMapper">
+
+    <resultMap id="boardFileResult" type="BoardFileDTO">
+        <result property="fileNo" column="FILE_NO"/>
+        <result property="fileNm" column="FILE_NM"/>
+        <result property="fileNmTemp" column="FILE_NM_TEMP"/>
+        <result property="fileCours" column="FILE_COURS"/>
+        <result property="bbscttNo" column="BBSCTT_NO"/>
+    </resultMap>
+
+    <!-- 게시판 파일 저장 -->
+    <insert id="registerBoardFile" parameterType="BoardFileDTO">
+        insert into NETIVE_PROJECT01_BOARD_IMAGE (FILE_NM, FILE_NM_TEMP, FILE_COURS, BBSCTT_NO)
+        values (
+                   #{fileNm}, #{fileNmTemp}, #{fileCours}, #{bbscttNo}
+               )
+    </insert>
+
+
+    <!-- 게시글 번호로 파일테이블 조회 -->
+    <select id="selectBoardFile" parameterType="long" resultMap="boardFileResult">
+        select * from NETIVE_PROJECT01_BOARD_IMAGE where BBSCTT_NO = #{bbscttNo}
+    </select>
+
+    <select id="selectBoardFileJson" parameterType="long" resultType="BoardFileDTO">
+        select * from NETIVE_PROJECT01_BOARD_IMAGE where BBSCTT_NO = #{bbscttNo}
+    </select>
+
+    <!-- 게시판 파일 삭제-->
+    <delete id="deleteBoardFile" parameterType="long">
+        DELETE FROM NETIVE_PROJECT01_BOARD_IMAGE
+        WHERE
+            BBSCTT_NO = #{bbscttNo}
+    </delete>
+</mapper>
