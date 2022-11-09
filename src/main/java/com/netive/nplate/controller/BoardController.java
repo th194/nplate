@@ -221,22 +221,36 @@ public class BoardController {
 
 		Long idx = board.getBbscttNo();
 
+		// 새로운 이미지 정보 담을 빈 배열 선언
+		List<String> newFileList = new ArrayList<>();
+
+
 
 		// 아직 저장 전
 		// 게시글 번호로 원래 게시글 번호에 저장되어 있던 파일 리스트 가져오고
 //		List<BoardFileDTO> boardFileList = fileService.selectBoardFile(board.getBbscttNo());
 		System.out.println("파일 저장 목록 불러오기 ===============================");
-//		JsonArray fileList = fileService.boardFileList(board.getBbscttNo());
 		List<BoardFileDTO> fileList = fileService.selectBoardFile(idx);
 		System.out.println("fileList==================================");
 		System.out.println(fileList);
 
+		for ( int i = 0; i < jsonArray.size(); i++) {
+			newFileList.add(jsonArray.get(i).toString());
+
+			System.out.println(newFileList);
+		}
+
+		System.out.println("합친 jsonArray==================================");
+		System.out.println(jsonArray);
 
 
 		// 이미 저장되어있던 게시글 내용을 가져오기 위함
-		// boardContent에 게시글 테이블 bbscttCn(내용) 컬럼을 담아서
-		// 해당 데이터의 img태그의 src를 분리해서
-		//
+		// boardContent에 게시글 테이블 bbscttCn(내용) 컬럼 데이터를 담아서
+		// 해당 데이터의 img태그의 src랑
+		// jsonArray에 담겨있는 newFileNm이랑 비교해서
+		// 신규면 추가하자..
+		// 근데 기존에 있던 이미지를 지우면..
+		// 좀 생각해보기..
 		BoardDTO boardDetail = boardSerive.getBoardDetail(idx);
 		String boardContent = boardDetail.getBbscttCn();
 
@@ -252,10 +266,28 @@ public class BoardController {
 				newFileNmTemp = _jsonData.get("FILE_NM_TEMP").getAsString();		// 임시 파일명
 				newFileCours = _jsonData.get("FILE_COURS").getAsString();			// 경로
 
-				System.out.println("=============================파일 업로드 시작");
+				// 수정한 게시글 내용 가져와서
+				// 새로 등록한 사진 이미지 정보가 boardContent에 포함되어 있으면
+				// 디비에 저장하자
+				if(boardContent.contains(newFileNmTemp)) {
+					fileService.saveBoardFile(newFileNm, newFileNmTemp, newFileCours, idx);
+				} else {
 
+					// 에디터에서 사진 업로드해서 올린 파일을
+					// 글내용 수정해서 지우면
+					// 서버에서도 파일 삭제
+					File rmFile = new File(filePath + newFileNmTemp);
+					if(rmFile.exists()) {
+						rmFile.delete();
+					}
+				}
+
+				System.out.println("=============================파일 업로드 시작");
 			}
 		}
+
+		// 기존 파일 내용이랑 다시 비교
+
 
 		System.out.println("================= boardFileList =====================");
 		System.out.println(fileList);
@@ -276,12 +308,6 @@ public class BoardController {
 //			}
 //
 //		}
-
-
-		if(jsonArray.size() > 0) {
-
-		}
-
 
 
 		boardSerive.updateBoard(board);
@@ -362,7 +388,6 @@ public class BoardController {
 	@PostMapping("/smarteditorMultiImageUpload.do")
 	public void smarteditorMultiImageUpload(HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession();
-//		JsonArray jsonArray = new JsonArray();
 		JsonObject jsonObject = new JsonObject();
 		if ((boolean) session.getAttribute("isLogOn")) {
 			MemberDTO member = (MemberDTO) session.getAttribute("member");
@@ -415,7 +440,6 @@ public class BoardController {
 
 
 						// 업로드된 파일을 테이블에 저장하기 위한 json 오브젝트
-						jsonObject.addProperty("FILE_IMAGE_CODE", id);
 						jsonObject.addProperty("FILE_NM", sFileName);
 						jsonObject.addProperty("FILE_NM_TEMP", sRealFileName);
 						jsonObject.addProperty("FILE_COURS", path);

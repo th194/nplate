@@ -9,6 +9,7 @@ import com.netive.nplate.mapper.FileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -125,12 +126,6 @@ public class FileServiceImpl implements FileService {
     @Override
     public List<BoardFileDTO> selectBoardFile(Long idx) {
         return boardFileMapper.selectBoardFile(idx);
-    }
-
-    // 게시글 파일 목록 조회 JsonArray
-    @Override
-    public JsonArray boardFileList(Long idx) {
-        return boardFileMapper.selectBoardFileJson(idx);
     }
 
     // 게시글 다중이미지 파일테이블 저장

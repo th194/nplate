@@ -20,11 +20,7 @@
 
 
     <!-- 게시글 번호로 파일테이블 조회 -->
-    <select id="selectBoardFile" parameterType="long" resultMap="boardFileResult">
-        select * from NETIVE_PROJECT01_BOARD_IMAGE where BBSCTT_NO = #{bbscttNo}
-    </select>
-
-    <select id="selectBoardFileJson" parameterType="long" resultType="BoardFileDTO">
+    <select id="selectBoardFile" parameterType="long" resultType="hashmap">
         select * from NETIVE_PROJECT01_BOARD_IMAGE where BBSCTT_NO = #{bbscttNo}
     </select>
 

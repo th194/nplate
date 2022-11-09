@@ -15,8 +15,6 @@ public interface BoardFileMapper {
     // 게시판 파일 목록
     public List<BoardFileDTO> selectBoardFile(Long idx);
 
-    public JsonArray selectBoardFileJson(Long idx);
-
     // 게시판 파일 수정
     public int updateBoardFile(BoardFileDTO dto);
 
