@@ -49,7 +49,29 @@
 				<div class="form-group">
 					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>
 					<div class="col-sm-10">
-						<p class="form-control" th:text="*{bbscttWrter}"></p>
+						<div class="form-control dropdown no-arrow">
+							<a class="dropdown-toggle" href="#" id="userDropdown1" role="button"
+							   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<span class="text-dark" th:text="*{bbscttWrter}"></span>
+							</a>
+							<div class="dropdown-menu" aria-labelledby="userDropdown1">
+								<a class="dropdown-item" th:href="'/member/userInfo?id=' + *{bbscttWrter}">
+									<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+									개인 페이지
+								</a>
+								<div class="dropdown-divider" th:if="${memberInfo.id} != *{bbscttWrter}"></div>
+								<a class="dropdown-item following-btn" href="#" th:if="!${isFollowing} and ${memberInfo.id} != *{bbscttWrter}"
+								   th:following="*{bbscttWrter}" th:onclick="following(this.getAttribute('following'))">
+									<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+									팔로잉
+								</a>
+								<a class="dropdown-item" href="#" th:if="${isFollowing} and ${memberInfo.id} != *{bbscttWrter}"
+								   th:following="*{bbscttWrter}" th:onclick="unfollowing(this.getAttribute('following'))">
+									<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+									언팔로잉
+								</a>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -447,6 +469,61 @@
 				});
 			}
 			/* 댓글 삭제 E */
+
+
+			/* 팔로잉하기 S */
+			function following(id) {
+				console.log('팔로잉 함수=================');
+				console.log('id===========');
+				console.log(id);
+
+				$.ajax({
+					type: "get",
+					dataType: "text",
+					async: false,
+					url: "/member/following",
+					data: { id: id },
+					success: function (data) {
+						if (data === 'success') {
+							alert('팔로잉 성공');
+							location.reload(); // 버튼 바꾸기 위해 새로고침 해줌
+						} else {
+							alert('팔로잉 실패');
+						}
+					},
+					error: function () {
+						alert('팔로잉 실패');
+					}
+				});
+			}
+
+			function unfollowing(id) {
+				console.log('언팔로잉 함수=================');
+				console.log('id===========');
+				console.log(id);
+
+				$.ajax({
+					type: "get",
+					dataType: "text",
+					async: false,
+					url: "/member/unfollowing",
+					data: { id: id },
+					success: function (data) {
+						if (data === 'success') {
+							alert('언팔로잉 성공');
+							location.reload();
+						} else {
+							alert('언팔로잉 실패');
+						}
+					},
+					error: function () {
+						alert('언팔로잉 실패');
+					}
+				});
+			}
+			/* 팔로잉하기 E */
+
+
 
 			/*[- end of function -]*/
 			/*]]>*/

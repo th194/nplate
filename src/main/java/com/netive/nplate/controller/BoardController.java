@@ -13,6 +13,7 @@ import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.FileService;
 import com.netive.nplate.service.LikesService;
 import com.netive.nplate.service.LoginService;
+import com.netive.nplate.util.MemberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ public class BoardController {
 
 	@Autowired
 	private LikesService likesService;
+
+	@Autowired
+	private MemberUtils memberUtils;
 
 	@Value("${nplate.upload.path}")
 	private String filePath;
@@ -167,6 +171,14 @@ public class BoardController {
 
 		BoardDTO board = boardSerive.getBoardDetail(idx);
 		model.addAttribute("board", board);
+
+		// todo 매번 글 불러올때마다 하지말고 한번만 하는걸로 처리 수정
+		String memberId = String.valueOf( session.getAttribute("memberID") ) ;
+		List<String> following = memberUtils.getFollowingMember(memberId);
+		boolean isFollowing = following.contains(board.getBbscttWrter());
+		System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
+		model.addAttribute("isFollowing", isFollowing);
+		
 		return "bootstrap-template/view";
 	}
 

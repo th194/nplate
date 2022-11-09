@@ -2,10 +2,7 @@ package com.netive.nplate.controller;
 
 import com.netive.nplate.domain.*;
 import com.netive.nplate.paging.PagingResponse;
-import com.netive.nplate.service.BoardService;
-import com.netive.nplate.service.FileService;
-import com.netive.nplate.service.LikesService;
-import com.netive.nplate.service.MemberService;
+import com.netive.nplate.service.*;
 
 import com.netive.nplate.util.MemberUtils;
 import org.apache.commons.io.IOUtils;
@@ -17,14 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Controller
 public class MemberController {
@@ -40,6 +34,9 @@ public class MemberController {
 
     @Autowired
     private LikesService likesService;
+
+    @Autowired
+    private FollowingService followingService;
 
     @Autowired
     private MemberUtils memberUtils;
@@ -233,6 +230,12 @@ public class MemberController {
                 model.addAttribute("userInfo", userDTO);
                 model.addAttribute("response", userBoardList);
 
+                // 팔로잉 여부
+                String memberId = String.valueOf( session.getAttribute("memberID") ) ;
+                List<String> following = memberUtils.getFollowingMember(memberId);
+                boolean isFollowing = following.contains(id);
+                model.addAttribute("isFollowing", isFollowing);
+
                 return "bootstrap-template/userInfo";
 
             }
@@ -244,4 +247,52 @@ public class MemberController {
     }
 
 
+    // 회원 팔로잉
+    @GetMapping("/member/following")
+    public @ResponseBody String followingMember(HttpServletRequest request, String id) {
+        System.out.println("회원 팔로잉 컨트롤러 시작=========");
+        System.out.println("팔로잉 할 아이디" + id);
+
+        HttpSession session = request.getSession();
+        if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("memberID") != null) {
+            String memberId = String.valueOf( session.getAttribute("memberID") ) ;
+            FollowingDTO followingDTO = new FollowingDTO(memberId, id);
+
+            int result = followingService.followMember(followingDTO);
+
+            if (result > 0) {
+                System.out.println("팔로잉 성공=========");
+                return "success";
+            } else {
+                System.out.println("팔로잉 실패=========");
+            }
+        }
+        System.out.println("팔로잉 실패=========");
+        return "fail";
+    }
+
+
+    // 팔로잉 취소
+    @GetMapping("/member/unfollowing")
+    public @ResponseBody String unfollowingMember(HttpServletRequest request, String id) {
+        System.out.println("회원 언팔로잉 컨트롤러 시작=========");
+        System.out.println("언팔로잉 할 아이디" + id);
+
+        HttpSession session = request.getSession();
+        if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("memberID") != null) {
+            String memberId = String.valueOf( session.getAttribute("memberID") ) ;
+            FollowingDTO followingDTO = new FollowingDTO(memberId, id);
+
+            int result = followingService.unfollowMember(followingDTO);
+
+            if (result > 0) {
+                System.out.println("언팔로잉 성공=========");
+                return "success";
+            } else {
+                System.out.println("언팔로잉 실패=========");
+            }
+        }
+        System.out.println("언팔로잉 실패=========");
+        return "fail";
+    }
 }

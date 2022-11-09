@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netive.nplate.mapper.FollowingMapper">
+    <resultMap id="followingResult" type="FollowingDTO">
+        <result property="index" column="FOLLOWING_NO"/>
+        <result property="memberId" column="MBER_ID"/>
+        <result property="followingId" column="FOLLOWING_ID"/>
+    </resultMap>
+
+    <insert id="followMember" parameterType="FollowingDTO">
+        <![CDATA[
+        INSERT INTO NETIVE_PROJECT01_FOLLOWING (MBER_ID, FOLLOWING_ID)
+        VALUES (#{memberId}, #{followingId})
+        ]]>
+    </insert>
+
+    <delete id="unfollowMember" parameterType="FollowingDTO">
+        <![CDATA[
+        delete from NETIVE_PROJECT01_FOLLOWING where MBER_ID = #{memberId} and FOLLOWING_ID = #{followingId}
+        ]]>
+    </delete>
+
+    <select id="getFollowingMember" parameterType="String" resultMap="followingResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_FOLLOWING where MBER_ID = #{id}
+        ]]>
+    </select>
+
+
+</mapper>
