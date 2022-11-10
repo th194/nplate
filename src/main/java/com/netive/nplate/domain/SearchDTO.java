@@ -1,6 +1,5 @@
 package com.netive.nplate.domain;
 
-import com.netive.nplate.paging.Pagination;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

@@ -2,7 +2,6 @@ package com.netive.nplate.service;
 
 import com.netive.nplate.domain.BoardDTO;
 import com.netive.nplate.domain.SearchDTO;
-import com.netive.nplate.paging.PagingResponse;
 
 public interface BoardService {
 	// 게시글 저장

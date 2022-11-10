@@ -3,8 +3,6 @@ package com.netive.nplate.service;
 import java.util.List;
 
 import com.netive.nplate.domain.SearchDTO;
-import com.netive.nplate.paging.Pagination;
-import com.netive.nplate.paging.PagingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

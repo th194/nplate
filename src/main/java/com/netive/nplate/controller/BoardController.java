@@ -8,8 +8,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.netive.nplate.common.MessageDTO;
 import com.netive.nplate.domain.*;
-import com.netive.nplate.paging.Pagination;
-import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.FileService;
 import com.netive.nplate.service.LikesService;
 import com.netive.nplate.service.LoginService;
