@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 	<body id="page-top" th:fragment="main-body" class="bg-gradient-light">
-
 		<div id="wrapper">
-
 			<!-- 메뉴 사이드바 -->
 			<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -82,12 +80,9 @@
 				<div class="text-center d-none d-md-inline">
 					<button class="rounded-circle border-0" id="sidebarToggle"></button>
 				</div>
-
 			</ul>
 
-
 			<div id="content-wrapper" class="d-flex flex-column">
-
 				<div id="content">
 					<!-- 탑 메뉴 -->
 					<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
@@ -101,12 +96,6 @@
 							<form id="searchForm" name="searchForm" onsubmit="return false;"
 									class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
 								<div class="input-group">
-<!--									<select id="searchType" name="searchType">-->
-<!--										<option value="">선택</option>-->
-<!--										<option value="bbscttSj">제목</option>-->
-<!--										<option value="bbscttCn">내용</option>-->
-<!--										<option value="bbscttWrter">작성자</option>-->
-<!--									</select>-->
 									<input type="text" class="form-control bg-light border-0 small" id="keyword" placeholder="Search for..."
 										   aria-label="Search" aria-describedby="basic-addon2">
 									<div class="input-group-append">
@@ -220,21 +209,13 @@
 											Activity Log
 										</a>
 										<div class="dropdown-divider"></div>
-										<!--
-										<a class="dropdown-item" href="/member/logout" data-toggle="modal" data-target="#logoutModal">
-											<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-											Logout
-										</a>
-										-->
 										<a class="dropdown-item" href="/member/logout">
 											<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
 											Logout
 										</a>
 									</div>
 								</li>
-
 							</ul>
-
 						</nav>
 
 					<th:block layout:fragment="modal"></th:block>
@@ -263,7 +244,6 @@
 				<i class="fas fa-angle-up"></i>
 			</a>
 
-
 			<!-- 회원 탈퇴 버튼 -->
 			<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
 				 aria-hidden="true">
@@ -291,12 +271,10 @@
 								<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
 								<button type="submit" class="btn btn-danger">계정삭제</button>
 							</div>
-
 						</form>
 					</div>
 				</div>
 			</div>
-
 
 			<!-- 비밀번호 변경 버튼 -->
 			<div class="modal fade" id="changePwdModal" tabindex="-1" role="dialog" aria-labelledby="changePwdModalLabel"
@@ -336,8 +314,7 @@
 
 		</div>
 
-
-
+		<!-- 부트스트랩 스크립트 -->
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery/jquery.min.js}"></script>
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery-easing/jquery.easing.min.js}"></script>
@@ -346,12 +323,14 @@
 
 		<!-- kakao map api -->
 		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=326897593e49c2218efe8c3613445f46"></script>
-		<!-- kakao map api -->
 
 		<!-- smartEditor -->
 		<script th:src="@{/smarteditor/js/HuskyEZCreator.js}"></script>
-		<!-- smartEditor -->
 
+		<!-- 리스트에서만 쓰는 스크립트 -->
+		<th:block layout:fragment="template-list-script"></th:block>
+
+		<!-- 필요시 추가 스크립트 -->
 		<th:block layout:fragment="script"></th:block>
 	</body>
 </html>

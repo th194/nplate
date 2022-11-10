@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<th:block th:fragment="list-script">
+	<script th:inline="javascript">
+		/* 무한 스크롤 위한 페이지 작업 S */
+		var page = 1;
+		var isFlag = true;
+		$(function() {
+		drawList(page);
+		page++;
+	});
+		$(window).scroll(function() {
+		if ($(window).scrollTop() >= $(document).height() - $(window).height()) { // 스크롤 감지
+		drawList(page);
+		page++;
+	}
+	});
+		/* 무한 스크롤 위한 페이지 작업 E */
+
+
+		/* 게시글 리스트 조회 S */
+		window.onload = () => {
+		console.log("게시글 리스트 조회====================");
+		setQueryStringParams();
+		findAllPost();
+	}
+
+		function findAllPost() {
+		var response = [[${response}]];
+		if (!response.list.length) {
+		document.getElementById('post-container').innerHTML = '<div>검색 결과가 없습니다.</div>';
+		return false;
+	}
+	}
+
+		// 조회 목록
+		function drawList(page) {
+		console.log('isFlag = ' + isFlag);
+
+		var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
+		var memberInfo = [[${memberInfo}]];
+
+		var keyword = $('#keyword').val() ? $('#keyword').val() : '';
+		// var searchType = $('#searchType option:selected').val() ? $('#searchType option:selected').val() : '';
+
+		var post = {
+		page    : page,
+		keyword : keyword,
+		memberId: memberInfo.id
+		// searchType: searchType
+	}
+		if (isFlag) { // pagination.totalPageCount 가 1이 아닐경우와 마지막페이지까지 다 불러왔을때.. 다시 ajax 통신하도록..
+		$.ajax({
+		type    : 'POST',
+		dataType: 'json',
+		data    : post,
+		url     : '/board/scrollList.do',
+		success : function (result) {
+
+		var list = result.response.list;                // 목록
+		var pagination = result.response.pagination;    // 페이지네이션 정보
+		var html = '';
+
+
+		// pagination.totalpageCount = 전체 페이지 수 ( 현재 SearchDTO 에 목록 불러올 때 게시글 30개씩 불러옴 )
+		// page = 스크롤 페이징을 위한 변수 초기값 1
+		// 브라우저 스크롤이 바닥에 닿았을 때 Ajax drawList 호출
+		// drawList 호출 시 page++ 로 page값 1씩 증가시켜줌
+		// 리스트 초기화면 진입시 이미 drawList 한번 호출 하므로 page 값은 2로 되어있음
+		// 사용자 게시글이 30개가 안 될 경우 전체 페이지 수가 1로 옴
+		// page <= pagination.totalPageCount 조건에 의해 ( 2 <= 1 ) 목록 생성이 안되는 문제 발생
+		// pagination.totalPageCount == 1 조건 추가해서 처리했으나 이번엔 totalPageCount가 1일 경우
+		// ajax 무한 통신을 하게 됐다..
+		// 그래서 전역 변수 isFlag = true 선언 후 67 라인 if(isFlag) 조건 주고
+		// pagination.totalPageCount가 1이면 isFlag false로 바꾼다..
+		// 추가.. 게시글 목록 끝까지 다 불러왔을때(pagination.totalPageCount의 마지막 페이지)
+		// ajax통신 못하게 isFlag 값 false로 변경..
+
+		if (page <= pagination.totalPageCount) {
+		if (pagination.totalPageCount == 1 || page == pagination.totalPageCount) {
+		isFlag = false;
+	}
+		if (list.length > 0) {
+		list.forEach(obj=> {
+
+
+
+		html += `
+								<div class="col mb-5 list">
+									<div class="card h-100">
+										<img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
+
+		// 좋아요 버튼
+		html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
+
+		if (likes.includes(obj.bbscttNo)) {
+		html += `<i class="bi bi-heart-fill"></i>`;
+	} else {
+		html += `<i class="bi bi-heart"></i>`;
+	}
+
+
+		html += `
+									</span>
+										<div class="card-body">
+											<div class="text-center">
+												<a href="javascript:void(0)" onclick="goViewPage(${obj.bbscttNo})">
+													<h6 class="fw-bolder">
+														${obj.bbscttSj}
+													</h6>
+												</a>
+								`;
+
+
+		// 별점
+		html += `<div class="d-flex justify-content-center small text-warning mb-2">`;
+		for (var i = 0; i < obj.bbscttGrade; i++) {
+		html += '<div class="bi-star-fill"></div>';
+	}
+
+		for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
+		html += `<div class="bi-star"></div>`;
+	}
+		html += `</div>`;
+
+
+		// 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
+		if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
+		var tag = obj.bbscttHashtag.split(',');
+
+		html += `<div class="text-xs">`;
+		var showSize = tag.length > 3 ? 3 : tag.length;
+		for (var k = 0; k < showSize; k++) {
+		html += `<span class="text-primary">#` + tag[k] + ' </span>';
+	}
+		html += `</div>`;
+	}
+
+		html +=
+		`</div></div></div></div>`;
+	});
+	} else {
+		alert('데이터가 없습니다.');
+	}
+
+		$('#post-container').append(html);
+
+		// 좋아요 클릭 이벤트 추가
+		var likeBtns = document.querySelectorAll('.like-btn');
+		likeBtns.forEach((btn) => {
+		btn.onclick = likePost;
+	});
+	}
+	},
+		error   : function (err) {
+		console.log('err = ' + JSON.stringify(err));
+		if (err.status == 300) {
+		alert('데이터 로드 실패');
+	}
+	}
+	});
+	}
+	}
+
+		/* 게시글 리스트 조회 E */
+
+
+		/* 좋아요 처리 S */
+		function likePost() {
+		var testId = [[${memberInfo.id}]]; // 로그인 멤버아이디
+		var likeId = $(this).attr('id'); // 좋아요버튼 아이디
+		var index = + likeId.substring(likeId.indexOf('_')+1); // 게시물아이디(index)
+		var $heart = $(this).find('i'); // 하트 아이콘
+
+		if ( $heart.hasClass('bi-heart-fill') ) { // 이걸로 해도 되고.... 글번호 포함하고 있는지 여부로 해도되고...
+		// 좋아요 취소 ajax
+		$.ajax({
+		type: "get",
+		dataType: "text",
+		async: false,
+		url: "/board/deleteLike",
+		data: { id: testId, idx: index },
+		success: function (data) {
+		if (data === 'success') {
+		alert('좋아요 취소 성공');
+		$heart.removeClass('bi-heart-fill');
+		$heart.addClass('bi-heart');
+
+	} else {
+		alert('좋아요 취소 실패');
+	}
+	},
+		error: function () {
+		alert('좋아요 취소 실패');
+	}
+	});
+
+
+	} else {
+		// 좋아요 추가 ajax
+		$.ajax({
+		type: "get",
+		dataType: "text",
+		async: false,
+		url: "/board/addLike",
+		data: { id: testId, idx: index },
+		success: function (data) {
+		if (data === 'success') {
+		alert('좋아요 추가 성공');
+		$heart.removeClass('bi-heart');
+		$heart.addClass('bi-heart-fill');
+
+	} else {
+		alert('좋아요 추가 실패');
+	}
+	},
+		error: function () {
+		alert('좋아요 추가 실패');
+	}
+	});
+	}
+	}
+		/* 좋아요 처리 E */
+
+
+		/* 페이지 이동 S */
+		function movePage(page) {
+		var form = document.getElementById('searchForm');
+		console.log('keyword = ' + form.keyword.value);
+		var queryParams = {
+		page: (page) ? page : 1,
+		recordSize : 10,
+		pageSize : 10,
+		keyword : form.keyword.value
+		// searchType : form.searchType.value
+	}
+		location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+	}
+		/* 페이지 이동 E */
+
+		/* 게시글 상세페이지 이동 */
+		function goViewPage(idx) {
+		var queryString = (location.search) ? location.search + `&idx=${idx}` : `?idx=${idx}`;
+		location.href = '/board/view.do' + queryString;
+	}
+		/* 게시글 상세페이지 이동 */
+
+		/* 게시글 리스트 조회 S */
+
+		// 쿼리스트링 파라미터 세팅
+		function setQueryStringParams() {
+		// location 객체의 search를 이용해서 쿼리 스트링 파라미터를 조회할 수 있다.
+		if (!location.search) {
+		return false;
+	}
+
+		var form = document.getElementById('searchForm');
+
+		new URLSearchParams(location.search).forEach((value, key) => {
+		if (form[key]) {
+		form[key].value = value;
+	}
+	});
+
+		document.getElementById('keyword').value = form.keyword.value;
+	}
+		/* 게시글 리스트 조회 E */
+
+	</script>
+</th:block>
+</html>
