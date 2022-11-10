@@ -147,18 +147,6 @@ public class LoginController {
             try {
                 MemberDTO dto = (MemberDTO) session.getAttribute("member");
                 String id = dto.getId();
-                params.setMemberId(id);
-
-                int count = loginService.countPostsById(id); // 글 개수
-
-                Pagination pagination = new Pagination(count, params);
-                params.setPagination(pagination);
-
-                System.out.println("params ========================" + params.toString());
-
-                List<BoardDTO> boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
-                PagingResponse<BoardDTO> response = new PagingResponse<>(boardList, pagination);
-
 
                 // 좋아요 추가
                 List<LikesDTO> likes = likesService.getLikes(id);
@@ -173,7 +161,6 @@ public class LoginController {
 
                 model.addAttribute("likeNumbers", likeNumbers);
                 model.addAttribute("memberInfo", dto);
-                model.addAttribute("response", response);
                 return "bootstrap-template/list";
 
             } catch (Exception e) {
