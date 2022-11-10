@@ -20,6 +20,8 @@ public interface BoardMapper {
 	public void deleteBoard(Long idx);
 	// 게시글 목록 조회
 	public List<BoardDTO> selectBoardList(SearchDTO params);
+	// 총 게시글 수 조회
+	public int count(SearchDTO params);
 	// 게시글 조회수 증가
 	public boolean cntPlus(Long idx);
 
