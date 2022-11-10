@@ -264,8 +264,16 @@
             console.log('스토어 = ' + $('input[name=bbscttCchLo]').val());
 
             console.log('해시태그 값 = ' + board.bbscttHashtag);
-            if(board.bbscttHashtag != null && board.bbscttHashtag == '') {
-                $("#tag-list").append("<li class='tag-item'>" + board.bbscttHashtag + "<span class='del-btn' idx='" + 0 + "'>x</span></li>");
+            if(board.bbscttHashtag != null && board.bbscttHashtag != '')
+                if((board.bbscttHashtag).indexOf(',') != -1) {
+                    var hashTag = board.bbscttHashtag.split(',');
+                    hashTag.forEach((value, index) => {
+                        $("#tag-list").append("<li class='tag-item'>" + value + "<span class='del-btn' idx='" + (counter + index) + "'>x</span></li>");
+                        addTag(value);
+                    });
+                } else {
+                    $("#tag-list").append("<li class='tag-item'>" + board.bbscttHashtag + "<span class='del-btn' idx='" + counter + "'>x</span></li>");
+                    addTag(board.bbscttHashtag);
             }
 
 

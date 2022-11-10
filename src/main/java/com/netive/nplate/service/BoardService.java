@@ -15,4 +15,6 @@ public interface BoardService {
 	public Long deleteBoard(Long idx);
 	// 게시글 목록 조회
 	public PagingResponse<BoardDTO> getBoardList(SearchDTO params);
+	// 게시글 조회수 증가
+	public boolean cntPlus(Long idx);
 }

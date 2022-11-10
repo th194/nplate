@@ -191,6 +191,7 @@ public class BoardController {
 		List<String> following = memberUtils.getFollowingMember(memberId);
 		boolean isFollowing = following.contains(board.getBbscttWrter());
 		System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
+		boardSerive.cntPlus(idx); // 조회수 증가 추가
 		model.addAttribute("isFollowing", isFollowing);
 		
 		return "bootstrap-template/view";
