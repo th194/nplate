@@ -30,6 +30,7 @@ public interface FileService {
     // 게시판 파일명 등록
     int saveBoardFile(String fileNm, String fileNmTemp, String fileCours, Long idx);
 
-    // 게시판 파일명 수정
-    int updateBoardFile(String fileNm, String fileNmTemp, String fileCours, Long idx);
+
+    // 게시판 파일명 삭제
+    int removeBoardFileByNm(String oldFile);
 }

@@ -15,9 +15,6 @@ public interface BoardFileMapper {
     // 게시판 파일 목록
     public List<BoardFileDTO> selectBoardFile(Long idx);
 
-    // 게시판 파일 수정
-    public int updateBoardFile(BoardFileDTO dto);
-
-    // 게시판 파일 삭제
-    public int deleteBoardFile(Long idx);
+    // 게시판 파일 이름 삭제
+    public int deleteBoardFileByNm(String oldFile);
 }

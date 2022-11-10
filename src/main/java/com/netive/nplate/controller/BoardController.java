@@ -82,13 +82,10 @@ public class BoardController {
 			boardSerive.registerBoard(board);
 			String content = board.getBbscttCn();
 			Long idx = board.getBbscttNo(); // 게시글 저장 후의 게시글 번호
-			System.out.println("=====================board 정보 = " + board.toString());
-			System.out.println("jsonArray 길이 =================> "+jsonArray.size());
 			if(jsonArray.size() > 0) {
 				for (int i = 0; i < jsonArray.size(); i ++) {
 
 					JsonObject _jsonData = (JsonObject) jsonArray.get(i);
-					System.out.println(_jsonData);
 					String fileNm = _jsonData.get("FILE_NM").getAsString();					// 원본 파일명
 					String fileNmTemp = _jsonData.get("FILE_NM_TEMP").getAsString();		// 임시 파일명
 					String fileCours = _jsonData.get("FILE_COURS").getAsString();			// 경로
@@ -101,7 +98,6 @@ public class BoardController {
 					// jsonArray에는 처음에 두 개 올린 파일의 정보가 담겨 있다.
 					// 따라서 해당 게시글 내용에서 fileNm이 포함된 파일만 업로드한다.
 					if(content.contains(fileNm)) {
-						System.out.println("=============================파일 업로드 시작");
 						fileService.saveBoardFile(fileNm, fileNmTemp, fileCours, idx);
 					} else {
 						// smarteditorMultiUpload.do에 의해 에디터에 이미지 올릴경우
@@ -115,9 +111,9 @@ public class BoardController {
 					}
 				}
 			}
-			jsonArray = new JsonArray();
-		}
 
+		}
+		jsonArray = new JsonArray();
 		MessageDTO message = new MessageDTO("게시글 등록이 완료되었습니다.", "/member/board/list", RequestMethod.GET, null);
 		return showMessageAndRedirect(message, model);
 	}
@@ -209,108 +205,64 @@ public class BoardController {
 	@PostMapping("/board/update.do")
 	public String updateBoard(final BoardDTO board, Model model) {
 
-		// 기존 게시글에 저장되어있는 파일 정보 담을 변수
-		String fileNm = "";
-		String fileNmTemp = "";
-		String fileCours = "";
-
-		// 새로운 게시글에 저장될 파일 정보
-		String newFileNm = "";
-		String newFileNmTemp = "";
-		String newFileCours = "";
-
 		Long idx = board.getBbscttNo();
+		String fileNmTemp = ""; // 새로 추가된 사진 임시 저장명 담을 변수
+		String fileNm ="";		// 새로 추가된 사진 원본 파일명
+		String fileCours = "";	// 경로
 
-		// 새로운 이미지 정보 담을 빈 배열 선언
-		List<String> newFileList = new ArrayList<>();
+		// 기존 저장되어있는 파일명 담을 변수
+		String oldFileNmTemp = "";
 
+		// 게시글 번호로 기존에 저장돼 있던 파일 목록 가져오기
+		List<BoardFileDTO> oldFile = fileService.selectBoardFile(idx);
 
+		String content = board.getBbscttCn(); // update 된 게시글 내용
 
-		// 아직 저장 전
-		// 게시글 번호로 원래 게시글 번호에 저장되어 있던 파일 리스트 가져오고
-//		List<BoardFileDTO> boardFileList = fileService.selectBoardFile(board.getBbscttNo());
-		System.out.println("파일 저장 목록 불러오기 ===============================");
-		List<BoardFileDTO> fileList = fileService.selectBoardFile(idx);
-		System.out.println("fileList==================================");
-		System.out.println(fileList);
+		// 기존 게시글의 저장 파일명과 신규로 업데이트 된 게시글 내용의 저장파일명 비교
+		for(int i = 0; i < oldFile.size(); i ++) {
+			oldFileNmTemp = oldFile.get(i).getFileNmTemp();
 
-		for ( int i = 0; i < jsonArray.size(); i++) {
-			newFileList.add(jsonArray.get(i).toString());
+			// 업데이트 된 게시글 내용에 예전에 저장되어있던 파일명이 없으면
+			if(!content.contains(oldFileNmTemp)) {
+				// 서버에서 파일 삭제
+				File removeFile = new File(filePath + oldFileNmTemp);
 
-			System.out.println(newFileList);
-		}
-
-		System.out.println("합친 jsonArray==================================");
-		System.out.println(jsonArray);
-
-
-		// 이미 저장되어있던 게시글 내용을 가져오기 위함
-		// boardContent에 게시글 테이블 bbscttCn(내용) 컬럼 데이터를 담아서
-		// 해당 데이터의 img태그의 src랑
-		// jsonArray에 담겨있는 newFileNm이랑 비교해서
-		// 신규면 추가하자..
-		// 근데 기존에 있던 이미지를 지우면..
-		// 좀 생각해보기..
-		BoardDTO boardDetail = boardSerive.getBoardDetail(idx);
-		String boardContent = boardDetail.getBbscttCn();
-
-		// 새로 사진 올렸으면 JsonArray에 담긴다
-		// 따라서 jsonArray 사이즈가 0보다 크면 새로 추가한 사진이 있다는 뜻
-		if(jsonArray.size() > 0) {
-
-			for (int i = 0; i < jsonArray.size(); i ++) {
-
-				JsonObject _jsonData = (JsonObject) jsonArray.get(i);
-				System.out.println(_jsonData);
-				newFileNm = _jsonData.get("FILE_NM").getAsString();					// 원본 파일명
-				newFileNmTemp = _jsonData.get("FILE_NM_TEMP").getAsString();		// 임시 파일명
-				newFileCours = _jsonData.get("FILE_COURS").getAsString();			// 경로
-
-				// 수정한 게시글 내용 가져와서
-				// 새로 등록한 사진 이미지 정보가 boardContent에 포함되어 있으면
-				// 디비에 저장하자
-				if(boardContent.contains(newFileNmTemp)) {
-					fileService.saveBoardFile(newFileNm, newFileNmTemp, newFileCours, idx);
-				} else {
-
-					// 에디터에서 사진 업로드해서 올린 파일을
-					// 글내용 수정해서 지우면
-					// 서버에서도 파일 삭제
-					File rmFile = new File(filePath + newFileNmTemp);
-					if(rmFile.exists()) {
-						rmFile.delete();
-					}
+				if(removeFile.exists()) {
+					removeFile.delete();
 				}
-
-				System.out.println("=============================파일 업로드 시작");
+				// 업데이트 된 게시글 내용에서 지워진 파일명만 삭제
+				fileService.removeBoardFileByNm(oldFileNmTemp);
 			}
 		}
 
-		// 기존 파일 내용이랑 다시 비교
 
+		// 새로 추가된 사진이 있다면
+		if(jsonArray.size() > 0) {
+			for (int i = 0; i < jsonArray.size(); i ++) {
 
-		System.out.println("================= boardFileList =====================");
-		System.out.println(fileList);
-		System.out.println("================== boardFile Size =======================");
-		System.out.println(fileList.size());
+				JsonObject _jsonData = (JsonObject) jsonArray.get(i);
 
-		// 반복문 돌면서 각각 하나씩 빼서 변수에 담고
-//		for (int i = 0; i < fileList.size(); i++) {
-//			fileNm = fileList.get(i).getAsString();
-//			fileNmTemp = fileList.get(i).getAsString();
-//			fileCours = fileList.get(i).getAsString();
-//
-//
-//
-//			// 저장 할때 기존 파일명이랑 신규 파일명 다르면 파일 업데이트
-//			if(fileNmTemp != fileList.get(i).getAsString()) {
-//				fileService.updateBoardFile(fileNm, fileNmTemp, fileCours, idx);
-//			}
-//
-//		}
+				fileNm = _jsonData.get("FILE_NM").getAsString();					// 원본 파일명
+				fileNmTemp = _jsonData.get("FILE_NM_TEMP").getAsString();		// 임시 파일명
+				fileCours = _jsonData.get("FILE_COURS").getAsString();			// 경로
 
+				// 등록(register.do)과 동일
+				if(content.contains(fileNmTemp)) {
+					fileService.saveBoardFile(fileNm, fileNmTemp, fileCours, idx);
+				} else {
+					File file = new File(filePath + fileNmTemp);
 
+					if(file.exists()) {
+						file.delete();
+					}
+				}
+			}
+		}
+		jsonArray = new JsonArray();
+
+		// 게시글 업데이트
 		boardSerive.updateBoard(board);
+
 		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/member/board/list", RequestMethod.GET, null);
 		return showMessageAndRedirect(message, model);
 	}
@@ -323,8 +275,21 @@ public class BoardController {
 	@PostMapping("/board/delete.do")
 	public String deleteBoard(@RequestParam final Long idx, @RequestParam final Map<String, Object> queryParams, Model model) {
 
+		List<BoardFileDTO> boardFileList = fileService.selectBoardFile(idx);	// 현재 게시글 번호로 저장돼 있는 파일 정보 가져오기
+		String fileNmTemp = "";		// 저장된 파일명 담을 변수
+
+		for (int i = 0; i < boardFileList.size(); i++ ) {
+			fileNmTemp = boardFileList.get(i).getFileNmTemp();
+
+			// 서버에서 파일 삭제
+			File removeFile = new File(filePath + fileNmTemp);
+
+			if (removeFile.exists()) {
+				removeFile.delete();
+			}
+		}
 		boardSerive.deleteBoard(idx);
-		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/member/board/list", RequestMethod.GET, queryParams);
+		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/member/board/list", RequestMethod.GET, null);
 		return showMessageAndRedirect(message, model);
 	}
 
@@ -460,10 +425,6 @@ public class BoardController {
 					sFileInfo += "&sFileName=" + sFileName;
 	//				sFileInfo += "&sFileURL=/nplateImage/" + sRealFileName;
 					sFileInfo += "&sFileURL=/nplateImage/" + sRealFileName;
-					System.out.println("sFileInfo = " + sFileInfo);
-					System.out.println("==========================" + jsonArray);
-
-
 
 					PrintWriter printWriter = response.getWriter();
 					printWriter.print(sFileInfo);

@@ -1,5 +1,6 @@
 package com.netive.nplate.domain;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,10 @@ public class BoardFileDTO {
     private String fileNmTemp;          // 임시파일명
     private String fileCours;               // 파일경로
     private Long bbscttNo;              // 게시글 번호
+
+    public BoardFileDTO() {
+
+    }
 
     public BoardFileDTO(String fileNm, String fileNmTemp, String fileCours, Long bbscttNo) {
         this.fileNm = fileNm;

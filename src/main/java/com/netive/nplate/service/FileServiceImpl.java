@@ -128,7 +128,7 @@ public class FileServiceImpl implements FileService {
         return boardFileMapper.selectBoardFile(idx);
     }
 
-    // 게시글 다중이미지 파일테이블 저장
+    // 게시글 이미지 파일테이블 저장
     @Override
     public int saveBoardFile(String fileNm, String fileNmTemp, String fileCours, Long idx) {
 
@@ -139,10 +139,10 @@ public class FileServiceImpl implements FileService {
         return boardFileMapper.registerBoardFile(boardFileDTO);
     }
 
+    // 게시글 파일 삭제
     @Override
-    public int updateBoardFile(String fileNm, String fileNmTemp, String fileCours, Long idx) {
+    public int removeBoardFileByNm(String oldFile) {
 
-
-        return 0;
+        return boardFileMapper.deleteBoardFileByNm(oldFile);
     }
 }

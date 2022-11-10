@@ -13,21 +13,21 @@
     <!-- 게시판 파일 저장 -->
     <insert id="registerBoardFile" parameterType="BoardFileDTO">
         insert into NETIVE_PROJECT01_BOARD_IMAGE (FILE_NM, FILE_NM_TEMP, FILE_COURS, BBSCTT_NO)
-        values (
-                   #{fileNm}, #{fileNmTemp}, #{fileCours}, #{bbscttNo}
-               )
+        values (#{fileNm}, #{fileNmTemp}, #{fileCours}, #{bbscttNo})
     </insert>
 
 
     <!-- 게시글 번호로 파일테이블 조회 -->
-    <select id="selectBoardFile" parameterType="long" resultType="hashmap">
-        select * from NETIVE_PROJECT01_BOARD_IMAGE where BBSCTT_NO = #{bbscttNo}
+    <select id="selectBoardFile" parameterType="long" resultMap="boardFileResult">
+        select *
+        from NETIVE_PROJECT01_BOARD_IMAGE
+        where BBSCTT_NO = #{bbscttNo}
     </select>
 
-    <!-- 게시판 파일 삭제-->
-    <delete id="deleteBoardFile" parameterType="long">
-        DELETE FROM NETIVE_PROJECT01_BOARD_IMAGE
-        WHERE
-            BBSCTT_NO = #{bbscttNo}
+    <!-- 게시판 파일 이름 삭제-->
+    <delete id="deleteBoardFileByNm" parameterType="String">
+        DELETE
+        FROM NETIVE_PROJECT01_BOARD_IMAGE
+        WHERE FILE_NM_TEMP = #{fileNmTemp}
     </delete>
 </mapper>
