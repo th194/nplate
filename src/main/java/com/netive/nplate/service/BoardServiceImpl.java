@@ -49,16 +49,6 @@ public class BoardServiceImpl implements BoardService {
         return idx;
     }
 
-    // 게시글 목록
-    @Override
-    public PagingResponse<BoardDTO> getBoardList(final SearchDTO params) {
-        int count = boardMapper.count(params);
-        Pagination pagination = new Pagination(count, params);
-        params.setPagination(pagination);
-
-        List<BoardDTO> list = boardMapper.selectBoardList(params);
-        return new PagingResponse<>(list, pagination);
-    }
     // 게시글 조회수 증가
     @Override
     public boolean cntPlus(Long idx) {

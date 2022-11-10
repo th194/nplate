@@ -123,14 +123,14 @@ public class BoardController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping("/board/list.do")
-	public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model) {
-
-		PagingResponse<BoardDTO> response = boardSerive.getBoardList(params);
-		model.addAttribute("response", response);
-
-		return "board/list";
-	}
+//	@GetMapping("/board/list.do")
+//	public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model) {
+//
+//		PagingResponse<BoardDTO> response = boardSerive.getBoardList(params);
+//		model.addAttribute("response", response);
+//
+//		return "board/list";
+//	}
 
 	/**
 	 * 스크롤 페이징 ajax
@@ -141,23 +141,17 @@ public class BoardController {
 	@ResponseBody
 	public Map<String, Object> openBoardScrollList(@ModelAttribute("params") final SearchDTO params, HttpServletRequest request) {
 
+		System.out.println("params===========================");
+		System.out.println(params.toString());
+
 		Map<String , Object> resMap = new HashMap<>();
 		HttpSession session = request.getSession();
 
 		if ((boolean) session.getAttribute("isLogOn")) {
 			try {
 
-				int count = loginService.countPostsById(params.getMemberId()); // 글 개수
-
-				Pagination pagination = new Pagination(count, params);
-				params.setPagination(pagination);
-
-				System.out.println("params ========================" + params.toString());
-
 				List<BoardDTO> boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
-				PagingResponse<BoardDTO> response = new PagingResponse<>(boardList, pagination);
-				resMap.put("response", response);
-//				return resMap;
+				resMap.put("response", boardList);
 			} catch (Exception e) {
 				System.out.println("에러=======");
 				e.printStackTrace();

@@ -40,7 +40,7 @@
         where BBSCTT_WRTER = #{memberId}
         <include refid="search"></include>
         order by BBSCTT_NO desc
-        limit #{pagination.limitStart}, #{recordSize}
+        limit #{limitStart}, #{recordSize}
     </select>
 
     <select id="countPostsById" parameterType="String" resultType="int">

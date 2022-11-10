@@ -161,6 +161,8 @@ public class LoginController {
 
                 model.addAttribute("likeNumbers", likeNumbers);
                 model.addAttribute("memberInfo", dto);
+
+
                 return "bootstrap-template/list";
 
             } catch (Exception e) {
