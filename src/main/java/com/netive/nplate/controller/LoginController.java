@@ -143,6 +143,7 @@ public class LoginController {
             try {
                 MemberDTO dto = (MemberDTO) session.getAttribute("member");
                 String id = dto.getId();
+                params.setMemberId(id); // 내 아이디 세팅
 
                 // 좋아요 추가
                 List<LikesDTO> likes = likesService.getLikes(id);
@@ -158,7 +159,6 @@ public class LoginController {
                 model.addAttribute("likeNumbers", likeNumbers);
                 model.addAttribute("memberInfo", dto);
                 model.addAttribute("search", params);
-
 
                 return "bootstrap-template/list";
 
@@ -305,15 +305,12 @@ public class LoginController {
     // 회원 정보 수정
     @PostMapping("/member/update")
     public String update(MemberDTO memberDTO, @RequestParam MultipartFile file) throws IOException {
-
         // 프로필 사진 수정
         if (!file.isEmpty()) {
             fileService.updateFile(file, memberDTO.getId());
         }
-
         // 그 외 정보 수정
         memberService.updateInfo(memberDTO);
-
         return "redirect:/member/myInfo"; // 처리 수정해야함
     }
 

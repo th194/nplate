@@ -27,7 +27,7 @@
 			console.log('isFlag = ' + isFlag);
 
 			var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
-			var memberInfo = [[${memberInfo}]];
+			var memberInfo = [[${memberInfo}]]; // todo 안쓰면 삭제
 
 			var search = [[${search}]];
 
@@ -35,7 +35,7 @@
 				limitStart : page * 30,
 				keyword : search.keyword || '',
 				searchType: search.searchType || '',
-				memberId: memberInfo.id
+				memberId: search.memberId || ''
 			}
 
 			if (isFlag) {

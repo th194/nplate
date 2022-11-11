@@ -17,6 +17,8 @@ public interface BoardService {
 	public Long deleteBoard(Long idx);
 	// 게시글 조회수 증가
 	public boolean cntPlus(Long idx);
+	// 특정 ID 게시글 조회
+	List<BoardDTO> getBordListById(SearchDTO dto);
 	// 아이디 여러개로 조회(팔로잉)
 	List<BoardDTO> getBordListByIds(Map map);
 	// 서치 키워드로 조회

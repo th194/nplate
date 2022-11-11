@@ -28,7 +28,7 @@ import javax.servlet.http.HttpSession;
 public class BoardController {
 	
 	@Autowired
-	private BoardService boardSerive;
+	private BoardService boardService;
 
 	@Autowired
 	private FileService fileService;
@@ -59,7 +59,7 @@ public class BoardController {
 	@GetMapping("/board/write.do")
 	public String openBoardWrite(@RequestParam(value = "idx", required = false) final Long idx, Model model) {
 		if (idx != null) {
-			BoardDTO board = boardSerive.getBoardDetail(idx);
+			BoardDTO board = boardService.getBoardDetail(idx);
 			model.addAttribute("board", board);
 		}
 		
@@ -76,7 +76,7 @@ public class BoardController {
 		HttpSession session = request.getSession();
 
 		if ((boolean) session.getAttribute("isLogOn")) {
-			boardSerive.registerBoard(board);
+			boardService.registerBoard(board);
 			String content = board.getBbscttCn();
 			Long idx = board.getBbscttNo(); // 게시글 저장 후의 게시글 번호
 			if(jsonArray.size() > 0) {
@@ -140,7 +140,7 @@ public class BoardController {
 
 				if (params.getSearchType() == null || Objects.equals(params.getSearchType(), "")) {
 					System.out.println("특정 아이디로 조회 글목록");
-					boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
+					boardList = boardService.getBordListById(params); // 특정 아이디로 조회 글목록
 
 				} else if (Objects.equals(params.getSearchType(), "following")) {
 					System.out.println("내가 팔로잉하는 사람들 조회(나포함)");
@@ -161,7 +161,7 @@ public class BoardController {
 					map.put("recordSize", params.getRecordSize());
 					
 					if (followingIds.size() != 0) {
-						boardList = boardSerive.getBordListByIds(map);
+						boardList = boardService.getBordListByIds(map);
 					} else {
 						boardList = null;
 					}
@@ -169,7 +169,7 @@ public class BoardController {
 
 				} else {
 					System.out.println("키워드로 조회 목록");
-					boardList = boardSerive.getBordListByKeyword(params); // 키워드로 조회 목록
+					boardList = boardService.getBordListByKeyword(params); // 키워드로 조회 목록
 				}
 				resMap.put("response", boardList);
 				resMap.put("search", params); // 분기처리 위해 넣음
@@ -198,7 +198,7 @@ public class BoardController {
 		MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
 		model.addAttribute("memberInfo", memberDTO);
 
-		BoardDTO board = boardSerive.getBoardDetail(idx);
+		BoardDTO board = boardService.getBoardDetail(idx);
 		model.addAttribute("board", board);
 
 		// todo 매번 글 불러올때마다 하지말고 한번만 하는걸로 처리 수정
@@ -206,7 +206,7 @@ public class BoardController {
 		List<String> following = memberUtils.getFollowingMember(memberId);
 		boolean isFollowing = following.contains(board.getBbscttWrter());
 		System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
-		boardSerive.cntPlus(idx); // 조회수 증가 추가
+		boardService.cntPlus(idx); // 조회수 증가 추가
 		model.addAttribute("isFollowing", isFollowing);
 		
 		return "bootstrap-template/view";
@@ -277,7 +277,7 @@ public class BoardController {
 		jsonArray = new JsonArray();
 
 		// 게시글 업데이트
-		boardSerive.updateBoard(board);
+		boardService.updateBoard(board);
 
 		MessageDTO message = new MessageDTO("게시글 수정이 완료되었습니다.", "/member/board/list", RequestMethod.GET, null);
 		return showMessageAndRedirect(message, model);
@@ -304,7 +304,7 @@ public class BoardController {
 				removeFile.delete();
 			}
 		}
-		boardSerive.deleteBoard(idx);
+		boardService.deleteBoard(idx);
 		MessageDTO message = new MessageDTO("게시글 삭제가 완료되었습니다.", "/member/board/list", RequestMethod.GET, null);
 		return showMessageAndRedirect(message, model);
 	}

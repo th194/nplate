@@ -14,4 +14,7 @@ public class SearchDTO {
     private int limitStart;             // 시작할 index
     private String memberId;            // 회원아이디
 
+    public SearchDTO(String memberId) {
+        this.memberId = memberId;
+    }
 }

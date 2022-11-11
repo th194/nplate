@@ -2,20 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.netive.nplate.mapper.LoginMapper">
 
-    <!-- todo 다른 매퍼(보드)로 옮기기 -->
-    <select id="getBordListById" parameterType="SearchDTO" resultType="BoardDTO">
-        select * from NETIVE_PROJECT01_BOARD
-        where BBSCTT_WRTER = #{memberId}
-        order by BBSCTT_NO desc
-        limit #{limitStart}, #{recordSize}
-    </select>
-
-    <select id="countPostsById" parameterType="String" resultType="int">
-        <![CDATA[
-        select count(*) from NETIVE_PROJECT01_BOARD where BBSCTT_WRTER = #{id}
-        ]]>
-    </select>
-
     <select id="getLikes" parameterType="hashmap" resultType="BoardDTO">
         select * from NETIVE_PROJECT01_BOARD where BBSCTT_NO in
         <foreach item="item" collection="likeNumbers" open="(" close=")" separator=",">

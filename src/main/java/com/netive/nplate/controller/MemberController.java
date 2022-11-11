@@ -35,6 +35,9 @@ public class MemberController {
     private FollowingService followingService;
 
     @Autowired
+    private BoardService boardService;
+
+    @Autowired
     private MemberUtils memberUtils;
 
 
@@ -215,19 +218,15 @@ public class MemberController {
 
                     likeNumbers.add(likesDTO.getBbscttNo());
                 }
-
                 model.addAttribute("likeNumbers", likeNumbers);
-                
-                /*
-                todo 유저 페이지 처리하기
-                // 아이디로 멤버 정보, 게시판 정보 조회해옴
-                MemberDTO userDTO = memberService.getMemberInfo(id);
-                SearchDTO searchDTO = new SearchDTO(id);
-                PagingResponse<BoardDTO> userBoardList = boardService.getBoardList(searchDTO);
-                model.addAttribute("userInfo", userDTO);
-                model.addAttribute("response", userBoardList);
-                */
 
+                // 아이디로 멤버 정보 조회, searchDTO 값 세팅
+                MemberDTO userDTO = memberService.getMemberInfo(id);
+                model.addAttribute("userInfo", userDTO);
+
+                SearchDTO searchDTO = new SearchDTO(id);
+                model.addAttribute("search", searchDTO);
+                
                 // 팔로잉 여부
                 String memberId = String.valueOf( session.getAttribute("memberID") ) ;
                 List<String> following = memberUtils.getFollowingMember(memberId);
@@ -235,7 +234,6 @@ public class MemberController {
                 model.addAttribute("isFollowing", isFollowing);
 
                 return "bootstrap-template/userInfo";
-
             }
 
         } catch (Exception e) {

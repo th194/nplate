@@ -118,6 +118,14 @@
 			BBSCTT_NO = #{bbscttNo}
 	</update>
 
+	<!-- 특정 ID 게시글 조회 -->
+	<select id="getBordListById" parameterType="SearchDTO" resultType="BoardDTO">
+		select * from NETIVE_PROJECT01_BOARD
+		where BBSCTT_WRTER = #{memberId}
+		order by BBSCTT_NO desc
+			limit #{limitStart}, #{recordSize}
+	</select>
+
 	<!-- 팔로잉 게시글 조회 -->
 	<select id="getBordListByIds" parameterType="hashmap" resultType="BoardDTO">
 		select * from NETIVE_PROJECT01_BOARD where BBSCTT_WRTER in

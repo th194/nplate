@@ -11,19 +11,8 @@ import java.util.Map;
 
 @Service
 public class LoginServiceImpl implements LoginService {
-
     @Autowired
     private LoginMapper loginMapper;
-
-    @Override
-    public List<BoardDTO> getBordListById(SearchDTO dto) {
-        return loginMapper.getBordListById(dto);
-    }
-
-    @Override
-    public int countPostsById(String id) {
-        return loginMapper.countPostsById(id);
-    }
 
     @Override
     public List<BoardDTO> getLikes(Map map) {

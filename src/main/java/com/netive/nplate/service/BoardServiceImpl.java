@@ -53,6 +53,12 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.cntPlus(idx);
     }
 
+    // 특정 ID 게시글 조회
+    @Override
+    public List<BoardDTO> getBordListById(SearchDTO dto) {
+        return boardMapper.getBordListById(dto);
+    }
+
     // 아이디 여러개로 조회(팔로잉)
     @Override
     public List<BoardDTO> getBordListByIds(Map map) {
