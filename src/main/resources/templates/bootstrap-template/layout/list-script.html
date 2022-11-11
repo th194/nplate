@@ -192,17 +192,6 @@
 		}
 		/* 좋아요 처리 E */
 
-		/* 페이지 이동 S */
-		function movePage() {
-			var form = document.getElementById('searchForm');
-			console.log('keyword = ' + form.keyword.value);
-			var queryParams = {
-				keyword : form.keyword.value,
-				searchType : 'search'
-			}
-			location.href = '/board/search?' + new URLSearchParams(queryParams).toString();
-		}
-		/* 페이지 이동 E */
 
 		/* 게시글 상세페이지 이동 */
 		function goViewPage(idx) {

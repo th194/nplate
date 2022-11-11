@@ -3,6 +3,7 @@ package com.netive.nplate.controller;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.service.*;
 
+import com.netive.nplate.util.BoardUtils;
 import com.netive.nplate.util.MemberUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class MemberController {
 
     @Autowired
     private BoardService boardService;
+
+    @Autowired
+    private BoardUtils boardUtils;
 
     @Autowired
     private MemberUtils memberUtils;
@@ -209,15 +213,7 @@ public class MemberController {
                 model.addAttribute("memberInfo", memberDTO);
 
                 // 좋아요 추가
-                List<LikesDTO> likes = likesService.getLikes(memberDTO.getId());
-                List<Long> likeNumbers = new ArrayList<Long>();
-                for (LikesDTO likesDTO : likes) {
-                    System.out.println("like 디티오 프린트====");
-                    System.out.println(likesDTO);
-                    System.out.println("넘버===" + likesDTO.getBbscttNo());
-
-                    likeNumbers.add(likesDTO.getBbscttNo());
-                }
+                List<Long> likeNumbers = boardUtils.getLikeNumbers(memberDTO.getId());
                 model.addAttribute("likeNumbers", likeNumbers);
 
                 // 아이디로 멤버 정보 조회, searchDTO 값 세팅

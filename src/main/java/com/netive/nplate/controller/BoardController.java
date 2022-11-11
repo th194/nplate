@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import com.netive.nplate.common.MessageDTO;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.service.*;
+import com.netive.nplate.util.BoardUtils;
 import com.netive.nplate.util.MemberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,9 @@ public class BoardController {
 
 	@Autowired
 	private FollowingService followingService;
+
+	@Autowired
+	private BoardUtils boardUtils;
 
 	@Autowired
 	private MemberUtils memberUtils;
@@ -138,39 +142,63 @@ public class BoardController {
 				List<BoardDTO> boardList;
 				String memberId = String.valueOf( session.getAttribute("memberID") ) ;
 
-				if (params.getSearchType() == null || Objects.equals(params.getSearchType(), "")) {
-					System.out.println("특정 아이디로 조회 글목록");
-					boardList = boardService.getBordListById(params); // 특정 아이디로 조회 글목록
 
-				} else if (Objects.equals(params.getSearchType(), "following")) {
-					System.out.println("내가 팔로잉하는 사람들 조회(나포함)");
 
-					// 내가 팔로잉하는 사람들 조회
-					List<FollowingDTO> followings = followingService.getFollowingMember(memberId);
-					List<String> followingIds = new ArrayList<>();
+				switch (params.getSearchType()) {
+					case "search":
+					case "hashtag":
+						System.out.println("키워드로 조회 목록");
+						boardList = boardService.getBordListByKeyword(params);
+						break;
+					case "following":
+						System.out.println("내가 팔로잉하는 사람들 조회(나포함)");
+						List<FollowingDTO> followings = followingService.getFollowingMember(memberId);
+						List<String> followingIds = new ArrayList<>();
 
-					followingIds.add(memberId); // 내 아이디도 넣기
-					for (FollowingDTO followingDTO : followings) {
-						System.out.println("팔로잉 아이디===" + followingDTO.getFollowingId());
-						followingIds.add(followingDTO.getFollowingId());
-					}
+						followingIds.add(memberId); // 내 아이디도 넣기
 
-					Map <String, Object> map = new HashMap<>();
-					map.put("followingIds", followingIds);
-					map.put("limitStart", params.getLimitStart());
-					map.put("recordSize", params.getRecordSize());
-					
-					if (followingIds.size() != 0) {
-						boardList = boardService.getBordListByIds(map);
-					} else {
-						boardList = null;
-					}
-					System.out.println("글목록 크기:" + boardList.size());
+						for (FollowingDTO followingDTO : followings) {
+							System.out.println("팔로잉 아이디===" + followingDTO.getFollowingId());
+							followingIds.add(followingDTO.getFollowingId());
+						}
 
-				} else {
-					System.out.println("키워드로 조회 목록");
-					boardList = boardService.getBordListByKeyword(params); // 키워드로 조회 목록
+						Map <String, Object> followingMap = new HashMap<>();
+						followingMap.put("followingIds", followingIds);
+						followingMap.put("limitStart", params.getLimitStart());
+						followingMap.put("recordSize", params.getRecordSize());
+
+						if (followingIds.size() != 0) {
+							boardList = boardService.getBordListByIds(followingMap);
+						} else {
+							boardList = null;
+						}
+						System.out.println("글목록 크기:" + boardList.size());
+						break;
+					case "like":
+						System.out.println("좋아하는 글목록");
+						Map <String, Object> likeMap = new HashMap<>();
+						List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
+						likeMap.put("likeNumbers", likeNumbers);
+						likeMap.put("limitStart", params.getLimitStart());
+						likeMap.put("recordSize", params.getRecordSize());
+
+						if (likeNumbers.size() != 0) {
+							boardList = loginService.getLikes(likeMap);
+						} else {
+							boardList = null;
+						}
+						System.out.println("글목록 크기:" + boardList.size());
+						// todo likePosts 좋아요 누른 순서대로 정렬되게 처리 추가
+
+						resMap.put("likePosts", boardList);
+
+
+						break;
+					default:
+						System.out.println("특정 아이디로 조회 글목록");
+						boardList = boardService.getBordListById(params); // 특정 아이디로 조회 글목록
 				}
+
 				resMap.put("response", boardList);
 				resMap.put("search", params); // 분기처리 위해 넣음
 
@@ -470,16 +498,7 @@ public class BoardController {
 				MemberDTO dto = (MemberDTO) session.getAttribute("member");
 				String id = dto.getId();
 
-				// 좋아요 추가
-				List<LikesDTO> likes = likesService.getLikes(id);
-				List<Long> likeNumbers = new ArrayList<Long>();
-				for (LikesDTO likesDTO : likes) {
-					System.out.println("like 디티오 프린트====");
-					System.out.println(likesDTO);
-					System.out.println("넘버===" + likesDTO.getBbscttNo());
-
-					likeNumbers.add(likesDTO.getBbscttNo());
-				}
+				List<Long> likeNumbers = boardUtils.getLikeNumbers(id);
 
 				model.addAttribute("likeNumbers", likeNumbers);
 				model.addAttribute("memberInfo", dto);
@@ -517,15 +536,7 @@ public class BoardController {
 				params.setSearchType("following");
 
 				// 좋아요 추가
-				List<LikesDTO> likes = likesService.getLikes(id);
-				List<Long> likeNumbers = new ArrayList<Long>();
-				for (LikesDTO likesDTO : likes) {
-					System.out.println("like 디티오 프린트====");
-					System.out.println(likesDTO);
-					System.out.println("넘버===" + likesDTO.getBbscttNo());
-
-					likeNumbers.add(likesDTO.getBbscttNo());
-				}
+				List<Long> likeNumbers = boardUtils.getLikeNumbers(id);
 
 				model.addAttribute("likeNumbers", likeNumbers);
 				model.addAttribute("memberInfo", dto);
@@ -541,5 +552,39 @@ public class BoardController {
 			}
 		}
 		return "member/index";
+	}
+
+
+	// 좋아한 게시글 목록(북마크)
+	@GetMapping("/member/board/likePosts")
+	public String lisePosts(Model model, HttpServletRequest request, String keyword) {
+		System.out.println("좋아한 게시글 목록========");
+		HttpSession session = request.getSession();
+
+		if ((boolean) session.getAttribute("isLogOn")) {
+			try {
+				MemberDTO dto = (MemberDTO) session.getAttribute("member");
+				model.addAttribute("memberInfo", dto);
+
+				// 좋아요 추가
+				List<Long> likeNumbers = boardUtils.getLikeNumbers(dto.getId());
+				model.addAttribute("likeNumbers", likeNumbers);
+
+				SearchDTO searchDTO = new SearchDTO("");
+				searchDTO.setSearchType("like");
+
+				model.addAttribute("search", searchDTO);
+
+				return "bootstrap-template/list";
+
+			} catch (Exception e) {
+				// todo 에러 발생시 처리 추가
+				System.out.println("에러=======");
+				e.printStackTrace();
+				return "member/index";
+			}
+		} else {
+			return "member/index";
+		}
 	}
 }
