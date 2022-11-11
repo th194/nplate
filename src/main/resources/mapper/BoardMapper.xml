@@ -22,31 +22,7 @@
 	<sql id="search">
 		<!-- 검색 키워드가 있을 때 -->
 		<if test="keyword != null and keyword != ''">
-<!--			<choose>-->
-				<!-- 검색 유형이 있을 때 -->
-<!--				<when test="searchType != null and searchType != ''">-->
-					AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
-<!--					<choose>-->
-<!--						<when test="searchType.equals( 'bbscttSj' )">-->
-<!--							AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')-->
-<!--						</when>-->
-<!--						<when test="searchType.equals( 'bbscttCn' )">-->
-<!--							AND BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')-->
-<!--						</when>-->
-<!--						<when test="searchType.equals( 'bbscttWrter' )">-->
-<!--							AND BBSCTT_WRTER LIKE CONCAT('%', #{keyword}, '%')-->
-<!--						</when>-->
-<!--					</choose>-->
-<!--				</when>-->
-				<!-- 전체 검색일 때 때 -->
-<!--				<otherwise>-->
-<!--					AND (-->
-<!--					BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')-->
-<!--					OR BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')-->
-<!--					OR BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')-->
-<!--					)-->
-<!--				</otherwise>-->
-<!--			</choose>-->
+				AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
 		</if>
 	</sql>
 
@@ -124,21 +100,6 @@
 		LIMIT #{pagination.limitStart}, #{recordSize}
 	</select>
 
-
-	<!-- 게시글 검색 -->
-<!--	<select id="selectBoardSearchList" parameterType="SearchDTO" resultType="BoardDTO">-->
-<!--		SELECT-->
-<!--		<include refid="boardColumns"/>-->
-<!--		FROM NETIVE_PROJECT01_BOARD-->
-<!--		WHERE BBSCTT_NO-->
-<!--		<if test="type != null">-->
-<!--			<include refid="search"></include>-->
-<!--		</if>-->
-<!--		ORDER BY-->
-<!--		BBSCTT_NO DESC-->
-<!--		LIMIT #{skip}, #{amount}-->
-<!--	</select>-->
-
 	<!-- 게시글 수 카운트 -->
 	<select id ="count" parameterType="SearchDTO" resultType="int">
 		SELECT
@@ -146,8 +107,6 @@
 		FROM
 			NETIVE_PROJECT01_BOARD
 		WHERE BBSCTT_WRTER = #{memberId}
-<!--			WHERE BBSCTT_NO-->
-<!--		<include refid="search"></include>-->
 	</select>
 
 	<!-- 게시글 조회수 증가 -->
@@ -158,4 +117,33 @@
 		WHERE
 			BBSCTT_NO = #{bbscttNo}
 	</update>
+
+	<!-- 팔로잉 게시글 조회 -->
+	<select id="getBordListByIds" parameterType="hashmap" resultType="BoardDTO">
+		select * from NETIVE_PROJECT01_BOARD where BBSCTT_WRTER in
+		<foreach item="item" collection="followingIds" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		order by BBSCTT_NO desc
+		limit #{limitStart}, #{recordSize}
+	</select>
+
+	<!-- 키워드 검색 -->
+	<select id="getBordListByKeyword" parameterType="SearchDTO" resultType="BoardDTO">
+		select * from NETIVE_PROJECT01_BOARD
+		where
+		<choose>
+			<when test="searchType == 'hashtag'">
+				BBSCTT_HASHTAG like concat('%',#{keyword},'%')
+			</when>
+			<otherwise>
+				BBSCTT_SJ like concat('%', #{keyword}, '%')
+				or BBSCTT_CN like concat('%', #{keyword}, '%')
+				or BBSCTT_Wrter like concat('%', #{keyword}, '%')
+				or BBSCTT_HASHTAG like concat('%',#{keyword},'%')
+			</otherwise>
+		</choose>
+		order by BBSCTT_NO desc
+		limit #{limitStart}, #{recordSize}
+	</select>
 </mapper>

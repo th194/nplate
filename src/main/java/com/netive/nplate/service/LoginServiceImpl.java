@@ -16,8 +16,8 @@ public class LoginServiceImpl implements LoginService {
     private LoginMapper loginMapper;
 
     @Override
-    public List<BoardDTO> getBordListById(SearchDTO params) {
-        return loginMapper.getBordListById(params);
+    public List<BoardDTO> getBordListById(SearchDTO dto) {
+        return loginMapper.getBordListById(dto);
     }
 
     @Override

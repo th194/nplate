@@ -1,6 +1,7 @@
 package com.netive.nplate.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.netive.nplate.domain.SearchDTO;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,6 @@ public class BoardServiceImpl implements BoardService {
         boardMapper.insertBoard(board);
         return board.getBbscttNo();
     }
-
 
     // 게시글 상세
     @Override
@@ -53,5 +53,15 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.cntPlus(idx);
     }
 
+    // 아이디 여러개로 조회(팔로잉)
+    @Override
+    public List<BoardDTO> getBordListByIds(Map map) {
+        return boardMapper.getBordListByIds(map);
+    }
 
+    // 서치 키워드로 조회
+    @Override
+    public List<BoardDTO> getBordListByKeyword(SearchDTO dto) {
+        return boardMapper.getBordListByKeyword(dto);
+    }
 }

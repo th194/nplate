@@ -2,43 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.netive.nplate.mapper.LoginMapper">
 
-    <!-- 게시글 검색 -->
-    <sql id="search">
-        <!-- 검색 키워드가 있을 때 -->
-        <if test="keyword != null and keyword != ''">
-            AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')
-<!--            <choose>-->
-
-                <!-- 검색 유형이 있을 때 -->
-<!--                <when test="searchType != null and searchType != ''">-->
-<!--                    <choose>-->
-<!--                        <when test="searchType.equals( 'bbscttSj' )">-->
-<!--                            AND BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')-->
-<!--                        </when>-->
-<!--                        <when test="searchType.equals( 'bbscttCn' )">-->
-<!--                            AND BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')-->
-<!--                        </when>-->
-<!--                        <when test="searchType.equals( 'bbscttWrter' )">-->
-<!--                            AND BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')-->
-<!--                        </when>-->
-<!--                    </choose>-->
-<!--                </when>-->
-                <!-- 전체 검색일 때 때 -->
-                <!--				<otherwise>-->
-                <!--					AND (-->
-                <!--					BBSCTT_SJ LIKE CONCAT('%', #{keyword}, '%')-->
-                <!--					OR BBSCTT_CN LIKE CONCAT('%', #{keyword}, '%')-->
-                <!--					OR BBSCTT_Wrter LIKE CONCAT('%', #{keyword}, '%')-->
-                <!--					)-->
-                <!--				</otherwise>-->
-<!--            </choose>-->
-        </if>
-    </sql>
-
+    <!-- todo 다른 매퍼(보드)로 옮기기 -->
     <select id="getBordListById" parameterType="SearchDTO" resultType="BoardDTO">
         select * from NETIVE_PROJECT01_BOARD
         where BBSCTT_WRTER = #{memberId}
-        <include refid="search"></include>
         order by BBSCTT_NO desc
         limit #{limitStart}, #{recordSize}
     </select>

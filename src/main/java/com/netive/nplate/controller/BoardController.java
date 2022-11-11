@@ -8,9 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.netive.nplate.common.MessageDTO;
 import com.netive.nplate.domain.*;
-import com.netive.nplate.service.FileService;
-import com.netive.nplate.service.LikesService;
-import com.netive.nplate.service.LoginService;
+import com.netive.nplate.service.*;
 import com.netive.nplate.util.MemberUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import com.netive.nplate.service.BoardService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +38,9 @@ public class BoardController {
 
 	@Autowired
 	private LikesService likesService;
+
+	@Autowired
+	private FollowingService followingService;
 
 	@Autowired
 	private MemberUtils memberUtils;
@@ -116,19 +115,7 @@ public class BoardController {
 		return showMessageAndRedirect(message, model);
 	}
 
-	/**
-	 * 게시글 목록
-	 * @param model
-	 * @return
-	 */
-//	@GetMapping("/board/list.do")
-//	public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model) {
-//
-//		PagingResponse<BoardDTO> response = boardSerive.getBoardList(params);
-//		model.addAttribute("response", response);
-//
-//		return "board/list";
-//	}
+
 
 	/**
 	 * 스크롤 페이징 ajax
@@ -138,6 +125,7 @@ public class BoardController {
 	@PostMapping("/board/scrollList.do")
 	@ResponseBody
 	public Map<String, Object> openBoardScrollList(@ModelAttribute("params") final SearchDTO params, HttpServletRequest request) {
+		System.out.println("스크롤 페이징====================================");
 
 		System.out.println("params===========================");
 		System.out.println(params.toString());
@@ -147,9 +135,45 @@ public class BoardController {
 
 		if ((boolean) session.getAttribute("isLogOn")) {
 			try {
+				List<BoardDTO> boardList;
+				String memberId = String.valueOf( session.getAttribute("memberID") ) ;
 
-				List<BoardDTO> boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
+				if (params.getSearchType() == null || Objects.equals(params.getSearchType(), "")) {
+					System.out.println("특정 아이디로 조회 글목록");
+					boardList = loginService.getBordListById(params); // 특정 아이디로 조회 글목록
+
+				} else if (Objects.equals(params.getSearchType(), "following")) {
+					System.out.println("내가 팔로잉하는 사람들 조회(나포함)");
+
+					// 내가 팔로잉하는 사람들 조회
+					List<FollowingDTO> followings = followingService.getFollowingMember(memberId);
+					List<String> followingIds = new ArrayList<>();
+
+					followingIds.add(memberId); // 내 아이디도 넣기
+					for (FollowingDTO followingDTO : followings) {
+						System.out.println("팔로잉 아이디===" + followingDTO.getFollowingId());
+						followingIds.add(followingDTO.getFollowingId());
+					}
+
+					Map <String, Object> map = new HashMap<>();
+					map.put("followingIds", followingIds);
+					map.put("limitStart", params.getLimitStart());
+					map.put("recordSize", params.getRecordSize());
+					
+					if (followingIds.size() != 0) {
+						boardList = boardSerive.getBordListByIds(map);
+					} else {
+						boardList = null;
+					}
+					System.out.println("글목록 크기:" + boardList.size());
+
+				} else {
+					System.out.println("키워드로 조회 목록");
+					boardList = boardSerive.getBordListByKeyword(params); // 키워드로 조회 목록
+				}
 				resMap.put("response", boardList);
+				resMap.put("search", params); // 분기처리 위해 넣음
+
 			} catch (Exception e) {
 				System.out.println("에러=======");
 				e.printStackTrace();
@@ -158,7 +182,6 @@ public class BoardController {
 				return resMap;
 			}
 		}
-
 		return resMap;
 	}
 
@@ -286,57 +309,6 @@ public class BoardController {
 		return showMessageAndRedirect(message, model);
 	}
 
-
-
-	/**
-	 * 스마트 에디터 싱글 파일 업로드
-	 * @param request
-	 * @param smarteditorDTO
-	 * @return
-	 * @throws UnsupportedEncodingException
-	 */
-//	@PostMapping("/singleImageUpload.do")
-//	public String smarteditorSingleImageUpload(HttpServletRequest request, SmarteditorDTO smarteditorDTO) throws UnsupportedEncodingException {
-//
-//
-//		System.out.println("request >>>>>>>>>>>>>>>>>>>>>>>>>>> " + request);
-//		System.out.println("smarteditorDTO >>>>>>>>>>>>>>>>>>>>>>>>> " + smarteditorDTO);
-//
-//		String callback = smarteditorDTO.getCallback();
-//		String callback_func = smarteditorDTO.getCallback_func();
-//		String file_result = "";
-//		String result = "";
-//		MultipartFile multiFile = smarteditorDTO.getFiledata();
-//
-//		try {
-//			if(multiFile != null && multiFile.getSize() > 0 && StringUtils.isNotBlank(multiFile.getName())) {
-//				if(multiFile.getContentType().toLowerCase().startsWith("image/")) {
-//					String oriName = multiFile.getName();
-//					String uploadPath = request.getServletContext().getRealPath("/img");
-//					String path = uploadPath + "/smarteditor/";
-//					File file = new File(path);
-//
-//					if (!file.exists()) {
-//						file.mkdir();
-//					}
-//					String fileName = UUID.randomUUID().toString();
-//					smarteditorDTO.getFiledata().transferTo(new File(path + fileName));
-//					file_result += "&&bNewLine=true&sFileName=" + oriName + "&sFileURL=/img/smarteditor/" + fileName;
-//				} else {
-//					file_result += "&errstr=error";
-//				}
-//			} else {
-//				file_result += "&errstr=error";
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//		result = "redirect:" + callback + "?callback_func=" + URLEncoder.encode(callback_func, "UTF-8") + file_result;
-//
-//		System.out.println("result>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + result);
-//		return result;
-//	}
 
 	/**
 	 * 스마트 에디터 멀티 파일 업로드
@@ -482,4 +454,92 @@ public class BoardController {
 		}
 	}
 
+
+	// 검색 결과 페이지
+	@GetMapping("/board/search")
+	public String getSearchResult(@ModelAttribute("params") final SearchDTO params, Model model, HttpServletRequest request) {
+		System.out.println("검색 결과 페이지========");
+		HttpSession session = request.getSession();
+
+		System.out.println("서치디티오=====================");
+		System.out.println(params.toString());
+
+		if ((boolean) session.getAttribute("isLogOn")) {
+			try {
+				// todo 똑같은 처리들 하나로 통합하기
+				MemberDTO dto = (MemberDTO) session.getAttribute("member");
+				String id = dto.getId();
+
+				// 좋아요 추가
+				List<LikesDTO> likes = likesService.getLikes(id);
+				List<Long> likeNumbers = new ArrayList<Long>();
+				for (LikesDTO likesDTO : likes) {
+					System.out.println("like 디티오 프린트====");
+					System.out.println(likesDTO);
+					System.out.println("넘버===" + likesDTO.getBbscttNo());
+
+					likeNumbers.add(likesDTO.getBbscttNo());
+				}
+
+				model.addAttribute("likeNumbers", likeNumbers);
+				model.addAttribute("memberInfo", dto);
+				model.addAttribute("search", params);
+
+				return "bootstrap-template/list";
+
+			} catch (Exception e) {
+				// todo 에러 발생시 처리 추가
+				System.out.println("에러=======");
+				e.printStackTrace();
+				return "member/index";
+			}
+		}
+		return "member/index";
+	}
+
+
+	// 팔로잉 피드 페이지
+	@GetMapping("/board/following")
+	public String getFeed(@ModelAttribute("params") final SearchDTO params, Model model, HttpServletRequest request) {
+		System.out.println("팔로잉 피드 페이지========");
+		HttpSession session = request.getSession();
+
+		System.out.println("서치디티오=====================");
+		System.out.println(params.toString());
+
+		if ((boolean) session.getAttribute("isLogOn")) {
+			try {
+				// todo 똑같은 처리들 하나로 통합하기(좋아요 등)
+				MemberDTO dto = (MemberDTO) session.getAttribute("member");
+				String id = dto.getId();
+
+				// 임시로 처리를 위해 넣어둠(팔로잉 분기처리)
+				params.setSearchType("following");
+
+				// 좋아요 추가
+				List<LikesDTO> likes = likesService.getLikes(id);
+				List<Long> likeNumbers = new ArrayList<Long>();
+				for (LikesDTO likesDTO : likes) {
+					System.out.println("like 디티오 프린트====");
+					System.out.println(likesDTO);
+					System.out.println("넘버===" + likesDTO.getBbscttNo());
+
+					likeNumbers.add(likesDTO.getBbscttNo());
+				}
+
+				model.addAttribute("likeNumbers", likeNumbers);
+				model.addAttribute("memberInfo", dto);
+				model.addAttribute("search", params);
+
+				return "bootstrap-template/list";
+
+			} catch (Exception e) {
+				// todo 에러 발생시 처리 추가
+				System.out.println("에러=======");
+				e.printStackTrace();
+				return "member/index";
+			}
+		}
+		return "member/index";
+	}
 }

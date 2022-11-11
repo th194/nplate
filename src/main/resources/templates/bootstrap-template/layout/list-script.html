@@ -28,11 +28,13 @@
 
 			var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
 			var memberInfo = [[${memberInfo}]];
-			var keyword = $('#keyword').val() ? $('#keyword').val() : '';
+
+			var search = [[${search}]];
 
 			var post = {
 				limitStart : page * 30,
-				keyword : keyword,
+				keyword : search.keyword || '',
+				searchType: search.searchType || '',
 				memberId: memberInfo.id
 			}
 
@@ -96,12 +98,12 @@
 								if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
 									var tag = obj.bbscttHashtag.split(',');
 
-									html += `<div class="text-xs">`;
-									var showSize = tag.length > 3 ? 3 : tag.length;
+									html += '<div class="text-xs">';
+									var showSize = tag.length > 3? 3 : tag.length;
 									for (var k = 0; k < showSize; k++) {
-										html += `<span class="text-primary">#` + tag[k] + ' </span>';
+										html += ' <a href="#" class="text-primary hash-tag">#' + tag[k] + '</a>';
 									}
-									html += `</div>`;
+									html += '</div>';
 								}
 
 								html += `</div></div></div></div>`;
@@ -112,12 +114,19 @@
 
 						$('#post-container').append(html);
 
-						// 좋아요 클릭 이벤트 추가
-						var likeBtns = document.querySelectorAll('.like-btn');
-						likeBtns.forEach((btn) => {
-							btn.onclick = likePost;
-						});
-					},
+							// 좋아요 클릭 이벤트 추가
+							var likeBtns = document.querySelectorAll('.like-btn');
+							likeBtns.forEach((btn) => {
+								btn.onclick = likePost;
+							});
+
+							// 해시태그 클릭 이벤트 추가
+							var tags = document.querySelectorAll('.hash-tag');
+							tags.forEach( (tag) => {
+								tag.onclick = clickTag;
+							});
+						},
+
 					error   : function (err) {
 						console.log('err = ' + JSON.stringify(err));
 						if (err.status == 300) {
@@ -184,17 +193,14 @@
 		/* 좋아요 처리 E */
 
 		/* 페이지 이동 S */
-		function movePage(page) {
+		function movePage() {
 			var form = document.getElementById('searchForm');
 			console.log('keyword = ' + form.keyword.value);
 			var queryParams = {
-				page: (page) ? page : 1,
-				recordSize : 10,
-				pageSize : 10,
-				keyword : form.keyword.value
-				// searchType : form.searchType.value
+				keyword : form.keyword.value,
+				searchType : 'search'
 			}
-			location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+			location.href = '/board/search?' + new URLSearchParams(queryParams).toString();
 		}
 		/* 페이지 이동 E */
 
@@ -206,25 +212,30 @@
 		/* 게시글 상세페이지 이동 */
 
 
-		/* 게시글 리스트 조회 S */
-		// 쿼리스트링 파라미터 세팅
+		/* 쿼리스트링 파라미터 세팅 S */
 		function setQueryStringParams() {
-			// location 객체의 search를 이용해서 쿼리 스트링 파라미터를 조회할 수 있다.
-			if (!location.search) {
-				return false;
+			var search = [[${search}]];
+
+			if (search.searchType !== 'hashtag') {
+				document.getElementById('keyword').value = search.keyword || '';
 			}
-
-			var form = document.getElementById('searchForm');
-
-			new URLSearchParams(location.search).forEach((value, key) => {
-				if (form[key]) {
-					form[key].value = value;
-				}
-			});
-
-			document.getElementById('keyword').value = form.keyword.value;
 		}
-		/* 게시글 리스트 조회 E */
+		/* 쿼리스트링 파라미터 세팅 E */
+
+		/* 해시태그 검색 S */
+		function clickTag() {
+			console.log('해시태그 클릭===========');
+
+			var hashTag = String($(this).html().substring(1).trim());
+			console.log('hashTag:' + hashTag);
+
+			var queryParams = {
+				keyword : hashTag,
+				searchType : 'hashtag'
+			}
+			location.href = '/board/search?' + new URLSearchParams(queryParams).toString();
+		}
+		/* 해시태그 검색 E */
 	</script>
 </th:block>
 </html>

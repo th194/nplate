@@ -2,8 +2,6 @@ package com.netive.nplate.controller;
 
 import com.netive.nplate.configuration.SessionConfig;
 import com.netive.nplate.domain.*;
-import com.netive.nplate.paging.Pagination;
-import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.*;
 import com.netive.nplate.util.MemberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +45,6 @@ public class LoginController {
     @GetMapping("/")
     public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-
-
         try {
             // 로그인 되어있으면 -> 피드(임시로 myPage 지정)
             // 로그인 되어있지 않으면 -> 로그인 페이지
@@ -137,7 +133,7 @@ public class LoginController {
     }
     
     
-    // 내가 쓴 게시글 목록 todo 리스트 임시 적용(페이징, 검색 추가해야함)
+    // 내가 쓴 게시글 목록
     @GetMapping("/member/board/list")
     public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model, HttpServletRequest request) {
         System.out.println("내가 쓴 게시글 목록========");
@@ -161,6 +157,7 @@ public class LoginController {
 
                 model.addAttribute("likeNumbers", likeNumbers);
                 model.addAttribute("memberInfo", dto);
+                model.addAttribute("search", params);
 
 
                 return "bootstrap-template/list";

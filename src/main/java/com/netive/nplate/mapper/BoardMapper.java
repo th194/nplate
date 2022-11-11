@@ -1,8 +1,8 @@
 package com.netive.nplate.mapper;
 
 import java.util.List;
+import java.util.Map;
 
-import com.netive.nplate.domain.BoardFileDTO;
 import com.netive.nplate.domain.SearchDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -24,5 +24,9 @@ public interface BoardMapper {
 	public int count(SearchDTO params);
 	// 게시글 조회수 증가
 	public boolean cntPlus(Long idx);
+	// 아이디 여러개로 조회
+	List<BoardDTO> getBordListByIds(Map map);
+	// 서치 키워드로 조회
+	List<BoardDTO> getBordListByKeyword(SearchDTO dto);
 
 }

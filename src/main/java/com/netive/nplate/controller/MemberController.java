@@ -1,7 +1,6 @@
 package com.netive.nplate.controller;
 
 import com.netive.nplate.domain.*;
-import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.*;
 
 import com.netive.nplate.util.MemberUtils;
@@ -28,9 +27,6 @@ public class MemberController {
 
     @Autowired
     private FileService fileService;
-
-    @Autowired
-    private BoardService boardService;
 
     @Autowired
     private LikesService likesService;
@@ -221,14 +217,16 @@ public class MemberController {
                 }
 
                 model.addAttribute("likeNumbers", likeNumbers);
-
-
+                
+                /*
+                todo 유저 페이지 처리하기
                 // 아이디로 멤버 정보, 게시판 정보 조회해옴
                 MemberDTO userDTO = memberService.getMemberInfo(id);
                 SearchDTO searchDTO = new SearchDTO(id);
                 PagingResponse<BoardDTO> userBoardList = boardService.getBoardList(searchDTO);
                 model.addAttribute("userInfo", userDTO);
                 model.addAttribute("response", userBoardList);
+                */
 
                 // 팔로잉 여부
                 String memberId = String.valueOf( session.getAttribute("memberID") ) ;

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface LoginService {
 
-    List<BoardDTO> getBordListById(SearchDTO parmas);
+    List<BoardDTO>  getBordListById(SearchDTO dto);
 
     // 글 개수 세기
     int countPostsById(String id);
