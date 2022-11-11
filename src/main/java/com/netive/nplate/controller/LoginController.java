@@ -47,42 +47,25 @@ public class LoginController {
 
     // 첫페이지
     @GetMapping("/")
-    public String index(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String index(HttpServletRequest request) throws IOException {
         HttpSession session = request.getSession();
         try {
             // 로그인 되어있으면 -> 피드(임시로 myPage 지정)
             // 로그인 되어있지 않으면 -> 로그인 페이지
-            if ((boolean) session.getAttribute("isLogOn")) { // 로그인 되어있으면
-                MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
-
-                // 생일 처리
-                String birthday = memberDTO.getBirthday();
-                if (!birthday.contains("-")) {
-                    String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
-                    memberDTO.setBirthday(formatDay);
-                }
-
-                model.addAttribute("memberInfo", memberDTO);
-                model.addAttribute("area", Area.values());
-
-                return "bootstrap-template/feed";
-
-            } else {
-                return "member/index";
+            if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) { // 로그인 되어있으면
+                return "redirect:/feed";
             }
-
         } catch (Exception e) {
             // e.printStackTrace();
-            session.invalidate();
-            return "member/index";
         }
+        session.invalidate();
+        return "member/index";
     }
 
 
     // 로그인 후 마이페이지 이동
-    @PostMapping("/member/myPage")
+    @PostMapping("/feed")
     public String login(MemberDTO dto, Model model, HttpServletRequest request) throws NoSuchAlgorithmException {
-
         // 비밀번호 암호화 처리 추가
         String encPwd = memberUtils.encrypt(dto.getPwd());
 
@@ -99,7 +82,17 @@ public class LoginController {
             session.setAttribute("isLogOn", true);
 
             model.addAttribute("memberInfo", memberDTO);
-            return "bootstrap-template/feed";
+
+
+            // 좋아요 추가
+            List<Long> likeNumbers = boardUtils.getLikeNumbers(memberDTO.getId());
+            model.addAttribute("likeNumbers", likeNumbers);
+
+            SearchDTO searchDTO = new SearchDTO(memberDTO.getId());
+            searchDTO.setSearchType("following");
+            model.addAttribute("search", searchDTO);
+
+            return "bootstrap-template/list";
 
         } else {
             model.addAttribute("message", "아이디와 비밀번호를 다시 확인해주세요.");
@@ -110,21 +103,30 @@ public class LoginController {
 
 
     // 마이페이지 주소로 이동
-    @GetMapping("/member/myPage")
+    @GetMapping("/feed")
     public String myPage(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
-
         try {
             if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
                 model.addAttribute("memberInfo", session.getAttribute("member"));
-                return "bootstrap-template/feed";
-            } else {
-                return "redirect:/";
+                String memberId = (String) session.getAttribute("memberID");
+
+                // 좋아요 추가
+                List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
+                model.addAttribute("likeNumbers", likeNumbers);
+
+                SearchDTO searchDTO = new SearchDTO(memberId);
+                searchDTO.setSearchType("following");
+                model.addAttribute("search", searchDTO);
+
+                return "bootstrap-template/list";
             }
 
         } catch (Exception e) {
-            return "redirect:/";
+            // e.printStackTrace();
         }
+        session.invalidate();
+        return "redirect:/";
     }
 
     // 로그아웃
@@ -143,7 +145,7 @@ public class LoginController {
         System.out.println("내가 쓴 게시글 목록========");
         HttpSession session = request.getSession();
 
-        if ((boolean) session.getAttribute("isLogOn")) {
+        if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
             try {
                 MemberDTO dto = (MemberDTO) session.getAttribute("member");
                 String id = dto.getId();
@@ -205,10 +207,7 @@ public class LoginController {
         HttpSession session = request.getSession();
 
         try {
-            System.out.println("로그인 여부");
-            System.out.println(session.getAttribute("isLogOn"));
-
-            if ((boolean) session.getAttribute("isLogOn")) {
+            if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
                 MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
 
                 // 생일 처리
@@ -242,7 +241,7 @@ public class LoginController {
             System.out.println("로그인 여부");
             System.out.println(session.getAttribute("isLogOn"));
 
-            if ((boolean) session.getAttribute("isLogOn")) {
+            if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
                 MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
 
                 // 생일 처리

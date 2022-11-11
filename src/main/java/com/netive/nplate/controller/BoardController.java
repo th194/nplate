@@ -79,7 +79,7 @@ public class BoardController {
 	public String openBoardRegister(final BoardDTO board, Model model, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 
-		if ((boolean) session.getAttribute("isLogOn")) {
+		if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
 			boardService.registerBoard(board);
 			String content = board.getBbscttCn();
 			Long idx = board.getBbscttNo(); // 게시글 저장 후의 게시글 번호
@@ -137,7 +137,7 @@ public class BoardController {
 		Map<String , Object> resMap = new HashMap<>();
 		HttpSession session = request.getSession();
 
-		if ((boolean) session.getAttribute("isLogOn")) {
+		if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
 			try {
 				List<BoardDTO> boardList;
 				String memberId = String.valueOf( session.getAttribute("memberID") ) ;
@@ -347,7 +347,7 @@ public class BoardController {
 	public void smarteditorMultiImageUpload(HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession();
 		JsonObject jsonObject = new JsonObject();
-		if ((boolean) session.getAttribute("isLogOn")) {
+		if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
 			MemberDTO member = (MemberDTO) session.getAttribute("member");
 			String id = member.getId();
 
@@ -492,7 +492,7 @@ public class BoardController {
 		System.out.println("서치디티오=====================");
 		System.out.println(params.toString());
 
-		if ((boolean) session.getAttribute("isLogOn")) {
+		if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
 			try {
 				// todo 똑같은 처리들 하나로 통합하기
 				MemberDTO dto = (MemberDTO) session.getAttribute("member");
@@ -526,7 +526,7 @@ public class BoardController {
 		System.out.println("서치디티오=====================");
 		System.out.println(params.toString());
 
-		if ((boolean) session.getAttribute("isLogOn")) {
+		if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
 			try {
 				// todo 똑같은 처리들 하나로 통합하기(좋아요 등)
 				MemberDTO dto = (MemberDTO) session.getAttribute("member");
@@ -561,7 +561,7 @@ public class BoardController {
 		System.out.println("좋아한 게시글 목록========");
 		HttpSession session = request.getSession();
 
-		if ((boolean) session.getAttribute("isLogOn")) {
+		if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
 			try {
 				MemberDTO dto = (MemberDTO) session.getAttribute("member");
 				model.addAttribute("memberInfo", dto);

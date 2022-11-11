@@ -208,7 +208,7 @@ public class MemberController {
         HttpSession session = request.getSession();
 
         try {
-            if ((boolean) session.getAttribute("isLogOn")) {
+            if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
                 MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
                 model.addAttribute("memberInfo", memberDTO);
 
