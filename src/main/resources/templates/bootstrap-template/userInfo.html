@@ -32,12 +32,12 @@
                                         <div class="dropdown-divider" th:if="${memberInfo.id} != ${userInfo.id}"></div>
                                         <a class="dropdown-item following-btn" href="#" th:if="!${isFollowing} and ${memberInfo.id} != ${userInfo.id}"
                                            th:following="${userInfo.id}" th:onclick="following(this.getAttribute('following'))">
-                                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            <i class="bi bi-person-plus mr-2 text-gray-400"></i>
                                             팔로잉
                                         </a>
                                         <a class="dropdown-item" href="#" th:if="${isFollowing} and ${memberInfo.id} != ${userInfo.id}"
                                            th:following="${userInfo.id}" th:onclick="unfollowing(this.getAttribute('following'))">
-                                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            <i class="bi bi-person-x mr-2 text-gray-400"></i>
                                             언팔로잉
                                         </a>
                                     </div>

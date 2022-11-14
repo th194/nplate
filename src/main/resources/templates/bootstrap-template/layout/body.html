@@ -49,7 +49,7 @@
 				<li class="nav-item">
 					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
 					   aria-expanded="true" aria-controls="collapsePages">
-						<i class="bi bi-justify"></i>
+						<i class="bi bi-journal-text"></i>
 						<span>페이지</span>
 					</a>
 					<div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
@@ -61,6 +61,30 @@
 						</div>
 					</div>
 				</li>
+
+				<!-- Divider -->
+				<hr class="sidebar-divider">
+
+				<li class="nav-item">
+					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#followingPages"
+					   aria-expanded="true" aria-controls="followingPages">
+						<i class="bi bi-people"></i>
+						<span>팔로잉</span>
+					</a>
+					<div id="followingPages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+						<div class="bg-white py-2 collapse-inner rounded">
+<!--							<h6 class="collapse-header">팔로잉</h6>-->
+							<span th:each="following: ${followingMembers}">
+								<a class="collapse-item"  th:href=" '/member/userInfo?id=' + ${following.id} ">
+									<img th:src=" '/member/info/profile?id=' + ${following.id}" th:width="30px" th:height="30px" style="border-radius: 20%;"/>
+									<span style="margin-left: 0.2rem" th:text="${following.nickName} + '(@' + ${following.id} + ')'"></span>
+								</a>
+							</span>
+						</div>
+					</div>
+				</li>
+
+
 
 				<!-- Divider -->
 				<hr class="sidebar-divider d-none d-md-block">

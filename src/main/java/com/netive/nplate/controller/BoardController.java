@@ -66,6 +66,8 @@ public class BoardController {
 			BoardDTO board = boardService.getBoardDetail(idx);
 			model.addAttribute("board", board);
 		}
+
+
 		
 		return "bootstrap-template/write";
 	}
@@ -152,15 +154,9 @@ public class BoardController {
 						break;
 					case "following":
 						System.out.println("내가 팔로잉하는 사람들 조회(나포함)");
-						List<FollowingDTO> followings = followingService.getFollowingMember(memberId);
-						List<String> followingIds = new ArrayList<>();
+						List<String> followingIds = memberUtils.getFollowingMember(memberId);
 
 						followingIds.add(memberId); // 내 아이디도 넣기
-
-						for (FollowingDTO followingDTO : followings) {
-							System.out.println("팔로잉 아이디===" + followingDTO.getFollowingId());
-							followingIds.add(followingDTO.getFollowingId());
-						}
 
 						Map <String, Object> followingMap = new HashMap<>();
 						followingMap.put("followingIds", followingIds);
@@ -236,6 +232,11 @@ public class BoardController {
 		System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
 		boardService.cntPlus(idx); // 조회수 증가 추가
 		model.addAttribute("isFollowing", isFollowing);
+
+		// 팔로잉 처리
+
+		List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(following);
+		model.addAttribute("followingMembers", followingMembers);
 		
 		return "bootstrap-template/view";
 	}
@@ -504,6 +505,13 @@ public class BoardController {
 				model.addAttribute("memberInfo", dto);
 				model.addAttribute("search", params);
 
+
+				// 팔로잉 처리
+				String memberId = (String) session.getAttribute("memberID");
+				List<String> followingIds = memberUtils.getFollowingMember(memberId);
+				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				model.addAttribute("followingMembers", followingMembers);
+
 				return "bootstrap-template/list";
 
 			} catch (Exception e) {
@@ -542,6 +550,12 @@ public class BoardController {
 				model.addAttribute("memberInfo", dto);
 				model.addAttribute("search", params);
 
+				// 팔로잉 처리
+				String memberId = (String) session.getAttribute("memberID");
+				List<String> followingIds = memberUtils.getFollowingMember(memberId);
+				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				model.addAttribute("followingMembers", followingMembers);
+
 				return "bootstrap-template/list";
 
 			} catch (Exception e) {
@@ -574,6 +588,12 @@ public class BoardController {
 				searchDTO.setSearchType("like");
 
 				model.addAttribute("search", searchDTO);
+
+				// 팔로잉 처리
+				String memberId = (String) session.getAttribute("memberID");
+				List<String> followingIds = memberUtils.getFollowingMember(memberId);
+				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				model.addAttribute("followingMembers", followingMembers);
 
 				return "bootstrap-template/list";
 

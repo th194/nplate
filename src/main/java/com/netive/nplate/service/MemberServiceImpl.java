@@ -5,8 +5,8 @@ import com.netive.nplate.mapper.MemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -54,5 +54,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public int updatePwd(MemberDTO memberDTO) {
         return memberMapper.updatePwd(memberDTO);
+    }
+
+    @Override
+    public List<MemberDTO> getFollowingInfo(Map map) {
+        return memberMapper.getFollowingInfo(map);
     }
 }

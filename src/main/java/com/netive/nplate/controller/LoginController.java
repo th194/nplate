@@ -83,14 +83,21 @@ public class LoginController {
 
             model.addAttribute("memberInfo", memberDTO);
 
+            String memberId = memberDTO.getId();
+
 
             // 좋아요 추가
-            List<Long> likeNumbers = boardUtils.getLikeNumbers(memberDTO.getId());
+            List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
             model.addAttribute("likeNumbers", likeNumbers);
 
-            SearchDTO searchDTO = new SearchDTO(memberDTO.getId());
+            SearchDTO searchDTO = new SearchDTO(memberId);
             searchDTO.setSearchType("following");
             model.addAttribute("search", searchDTO);
+
+            // todo 이부분 말고도 전체적으로 반복되는 처리 정리
+            List<String> followingIds = memberUtils.getFollowingMember(memberId);
+            List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+            model.addAttribute("followingMembers", followingMembers);
 
             return "bootstrap-template/list";
 
@@ -118,6 +125,12 @@ public class LoginController {
                 SearchDTO searchDTO = new SearchDTO(memberId);
                 searchDTO.setSearchType("following");
                 model.addAttribute("search", searchDTO);
+
+
+                // 팔로잉 처리
+                List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                model.addAttribute("followingMembers", followingMembers);
 
                 return "bootstrap-template/list";
             }
@@ -158,6 +171,11 @@ public class LoginController {
                 model.addAttribute("memberInfo", dto);
                 model.addAttribute("search", params);
 
+                // 팔로잉 처리
+                List<String> followingIds = memberUtils.getFollowingMember(id);
+                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                model.addAttribute("followingMembers", followingMembers);
+
                 return "bootstrap-template/list";
 
             } catch (Exception e) {
@@ -197,6 +215,13 @@ public class LoginController {
 //            model.addAttribute("board", boardDTO);
 //        }
 
+
+        // 팔로잉 처리
+        String memberId = (String) session.getAttribute("memberID");
+        List<String> followingIds = memberUtils.getFollowingMember(memberId);
+        List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+        model.addAttribute("followingMembers", followingMembers);
+
         return "bootstrap-template/write";
     }
 
@@ -219,6 +244,12 @@ public class LoginController {
 
                 model.addAttribute("memberInfo", memberDTO);
                 model.addAttribute("area", Area.values());
+
+                // 팔로잉 처리
+                String memberId = (String) session.getAttribute("memberID");
+                List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                model.addAttribute("followingMembers", followingMembers);
                 return "bootstrap-template/myInfo";
             } else {
                 return "member/error";
@@ -253,6 +284,12 @@ public class LoginController {
 
                 model.addAttribute("memberInfo", memberDTO);
                 model.addAttribute("area", Area.values());
+
+                // 팔로잉 처리
+                String memberId = (String) session.getAttribute("memberID");
+                List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                model.addAttribute("followingMembers", followingMembers);
 
                 return "bootstrap-template/updateForm";
             } else {

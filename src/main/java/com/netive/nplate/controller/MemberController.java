@@ -229,6 +229,10 @@ public class MemberController {
                 boolean isFollowing = following.contains(id);
                 model.addAttribute("isFollowing", isFollowing);
 
+                // 팔로잉 처리
+                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(following);
+                model.addAttribute("followingMembers", followingMembers);
+
                 return "bootstrap-template/userInfo";
             }
 

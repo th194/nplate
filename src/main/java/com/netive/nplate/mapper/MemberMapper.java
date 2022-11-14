@@ -4,6 +4,7 @@ import com.netive.nplate.domain.MemberDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MemberMapper {
@@ -31,4 +32,7 @@ public interface MemberMapper {
 
     // 비밀번호 수정
     int updatePwd(MemberDTO dto);
+
+    // 회원(팔로잉) 닉네임 조회
+    List<MemberDTO> getFollowingInfo(Map map);
 }

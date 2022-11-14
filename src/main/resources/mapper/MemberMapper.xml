@@ -68,4 +68,12 @@
         ]]>
     </update>
 
+    <!-- 팔로잉 멤버 닉네임 조회 -->
+    <select id="getFollowingInfo" parameterType="hashmap" resultMap="memResult">
+        select MBER_ID, MBER_NCNM from NETIVE_PROJECT01_MEMBER where MBER_ID in
+        <foreach item="item" collection="followingIds" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

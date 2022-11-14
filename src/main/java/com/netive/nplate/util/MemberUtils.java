@@ -1,20 +1,27 @@
 package com.netive.nplate.util;
 
 import com.netive.nplate.domain.FollowingDTO;
+import com.netive.nplate.domain.MemberDTO;
 import com.netive.nplate.service.FollowingService;
+import com.netive.nplate.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class MemberUtils {
 
     @Autowired
     private FollowingService followingService;
+
+    @Autowired
+    private MemberService memberService;
 
     // 암호화 분리
     public String encrypt(String str) throws NoSuchAlgorithmException {
@@ -47,5 +54,16 @@ public class MemberUtils {
             following.add(followingDTO.getFollowingId());
         }
         return following;
+    }
+
+
+    // 팔로잉 멤버 인포 조회(위의 메소드랑 합칠 수 있으면 합침)
+    public List<MemberDTO> getFollowingsInfo(List<String> followingIds) {
+        System.out.println("팔로잉 멤버 인포 조회=========");
+
+        Map<String, Object> followingMap = new HashMap<>();
+        followingMap.put("followingIds", followingIds);
+
+        return memberService.getFollowingInfo(followingMap);
     }
 }

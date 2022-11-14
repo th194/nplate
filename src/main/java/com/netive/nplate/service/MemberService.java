@@ -3,6 +3,7 @@ package com.netive.nplate.service;
 import com.netive.nplate.domain.MemberDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MemberService {
 
@@ -29,4 +30,7 @@ public interface MemberService {
 
     // 회원 비밀번호 수정
     int updatePwd(MemberDTO memberDTO);
+
+    // 회원(팔로잉) 닉네임 조회
+    List<MemberDTO> getFollowingInfo(Map map);
 }
