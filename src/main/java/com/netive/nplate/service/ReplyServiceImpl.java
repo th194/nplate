@@ -5,6 +5,7 @@ import com.netive.nplate.mapper.ReplyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,14 +20,20 @@ public class ReplyServiceImpl implements ReplyService{
     public boolean registerReply(ReplyDTO params) {
         int queryResult = 0;
 
-        // 댓글 번호가 없으면 등록
-        if (params.getAnswerNo() == null) {
+        System.out.println("컨트롤러에서 넘어온 params ====================== " + params);
+
             queryResult = replyMapper.insertReply(params);
-        // 댓글 번호가 있으면 수정
-        } else {
-            queryResult = replyMapper.updateReply(params);
-        }
+
         // queryResult가 1이면 성공 그 외 실패
+        return (queryResult == 1) ? true : false;
+    }
+
+    // 댓글 수정
+    @Override
+    public boolean updateReply(ReplyDTO params) {
+        int queryResult = 0;
+        System.out.println("컨트롤러에서 넘어온 params ====================== " + params);
+        queryResult = replyMapper.updateReply(params);
         return (queryResult == 1) ? true : false;
     }
 

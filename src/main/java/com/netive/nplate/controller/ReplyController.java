@@ -67,17 +67,21 @@ public class ReplyController {
     }
 
     /**
-     * 댓글 등록/수정
-     * @param idx
+     * 댓글 등록
+     * @param
      * @param params
      * @return
      */
-    @RequestMapping(value = {"/reply", "/reply/{bbscttNo}"}, method = { RequestMethod.POST, RequestMethod.PATCH })
-    public JsonObject registerReply(@PathVariable(value="bbscttNo", required = false) Long idx, @RequestBody final ReplyDTO params, HttpServletRequest request) {
+    @RequestMapping(value = "/reply", method = RequestMethod.POST)
+    public JsonObject registerReply(@RequestBody final ReplyDTO params, HttpServletRequest request) {
 
         JsonObject jsonObj = new JsonObject();
 
         HttpSession session = request.getSession();
+
+
+        System.out.println("========================request");
+        System.out.println(request);
 
         System.out.println("로그인 체크 ====================== ");
         System.out.println((boolean) session.getAttribute("isLogOn"));
@@ -89,9 +93,68 @@ public class ReplyController {
                 String id = dto.getId();
                 System.out.println("로그인 id = " + id);
 
+                // 원글의 댓글 등록
+                if (params.getAnswerNo() == null) {
+                    params.setAnswerGroup(params.getBbscttNo().intValue()); // 게시글 번호를 댓글 그룹으로
+                    params.setAnswerGroupDp(0); // 원글의 댓글
+                // 댓글의 댓글 등록
+                } else {
+                    params.setAnswerGroup(params.getAnswerNo().intValue()); // 댓글 번호를 댓글 그룹으로
+                    params.setAnswerGroupDp(1); // 댓글의 댓글
+                }
 
                 boolean isRegisterd = replyService.registerReply(params);
                 jsonObj.addProperty("result", isRegisterd);
+                jsonObj.addProperty("member", id);
+
+
+            } catch (DataAccessException dae) {
+                jsonObj.addProperty("message", "데이터베이스 처리 오류");
+            } catch (Exception e) {
+                jsonObj.addProperty("message", "시스템 문제 발생");
+            }
+        } else {
+            // 세션없을때 member/index로 보냄
+            this.redirect();
+        }
+
+        return jsonObj;
+    }
+
+    /**
+     * 댓글 수정
+     * @param boardIdx
+     * @param params
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/reply/{bbscttNo}", method = RequestMethod.PATCH)
+    public JsonObject updateReply(@PathVariable(value="bbscttNo", required = false) Long boardIdx, @RequestBody final ReplyDTO params, HttpServletRequest request) {
+
+        boolean isRegistered = false;
+        JsonObject jsonObj = new JsonObject();
+
+        HttpSession session = request.getSession();
+
+
+        System.out.println("========================request");
+        System.out.println(request);
+
+        System.out.println("로그인 체크 ====================== ");
+        System.out.println((boolean) session.getAttribute("isLogOn"));
+        System.out.println("로그인 체크 ====================== ");
+
+        if ((boolean) session.getAttribute("isLogOn")) {
+            try {
+                MemberDTO dto = (MemberDTO) session.getAttribute("member");
+                String id = dto.getId();
+                System.out.println("로그인 id = " + id);
+
+                if(params.getAnswerWrter() == id) {
+                    isRegistered = replyService.updateReply(params);
+                }
+
+                jsonObj.addProperty("result", isRegistered);
                 jsonObj.addProperty("member", id);
 
 

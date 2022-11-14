@@ -37,138 +37,104 @@
 	</th:block>
 
 	<th:block layout:fragment="main-content">
+		<form class="form-horizontal form-view form-grade" th:object="${board}">
+		<!-- Page content-->
+			<div class="container mt-5">
+				<div class="col">
+					<div class="col-lg-8">
+						<!-- Post content-->
+						<article>
+							<!-- Post header-->
+							<header class="mb-4">
+								<!-- Post title-->
+								<h1 class="fw-bolder mb-1" th:text="*{bbscttSj}"></h1>
+								<!-- Post meta content-->
+								<div class="text-muted fst-italic mb-2" th:text="|*{bbscttRgsde} *{bbscttWrter}|"></div>
+
+<!--								<div class="text-muted fst-italic mb-2" th:text="*{bbscttWrter}"></div>-->
+
+								<div class="form-group" id="hashAfter">
+									<label for="rate1" class="col-sm-2 control-label">평점</label>
+									<fieldset>
+										<input type="radio" name="bbscttGrade" value="5" id="rate1">
+										<label for="rate1" class="grade">⭐</label>
+										<input type="radio" name="bbscttGrade" value="4" id="rate2">
+										<label for="rate2" class="grade">⭐</label>
+										<input type="radio" name="bbscttGrade" value="3" id="rate3">
+										<label for="rate3" class="grade">⭐</label>
+										<input type="radio" name="bbscttGrade" value="2" id="rate4">
+										<label for="rate4" class="grade">⭐</label>
+										<input type="radio" name="bbscttGrade" value="1" id="rate5">
+										<label for="rate5" class="grade">⭐</label>
+									</fieldset>
+								</div>
+								<!-- Post categories-->
+							</header>
+							<!-- Preview image figure-->
+							<figure class="mb-4">
+								<div class="map-size" id="map"></div>
+							</figure>
+
+							<!-- Post content-->
+							<section class="mb-5">
+								<textarea id="bbscttCn" rows="10" colse="100" style="width:100%; height:500px; min-width:600px; display: none;" th:text="${board.bbscttCn}"></textarea>
+							</section>
+						</article>
+						<!-- Comments section-->
+					</div>
+				</div>
+			</div>
+		</form>
+
 		<div class="card-content">
-			<form class="form-horizontal form-view form-grade" th:object="${board}">
-				<div class="form-group">
-					<label for="bbscttSj" class="col-sm-2 control-label">제목</label>
-					<div class="col-sm-10">
-						<p class="form-control" th:text="*{bbscttSj}"></p>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="bbscttWrter" class="col-sm-2 control-label">이름</label>
-					<div class="col-sm-10">
-						<div class="form-control dropdown no-arrow">
-							<a class="dropdown-toggle" href="#" id="userDropdown1" role="button"
-							   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								<span class="text-dark" th:text="*{bbscttWrter}"></span>
-							</a>
-							<div class="dropdown-menu" aria-labelledby="userDropdown1">
-								<a class="dropdown-item" th:href="'/member/userInfo?id=' + *{bbscttWrter}">
-									<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-									개인 페이지
-								</a>
-								<div class="dropdown-divider" th:if="${memberInfo.id} != *{bbscttWrter}"></div>
-								<a class="dropdown-item following-btn" href="#" th:if="!${isFollowing} and ${memberInfo.id} != *{bbscttWrter}"
-								   th:following="*{bbscttWrter}" th:onclick="following(this.getAttribute('following'))">
-									<i class="bi bi-person-plus mr-2 text-gray-400"></i>
-									팔로잉
-								</a>
-								<a class="dropdown-item" href="#" th:if="${isFollowing} and ${memberInfo.id} != *{bbscttWrter}"
-								   th:following="*{bbscttWrter}" th:onclick="unfollowing(this.getAttribute('following'))">
-									<i class="bi bi-person-x mr-2 text-gray-400"></i>
-									언팔로잉
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="inp-type-5" class="col-sm-2 control-label">위치</label>
-					<div class="map-size" id="map"></div>
-				</div>
-
-				<div class="form-group">
-					<label for="bbscttCn" class="col-sm-2 control-label">내용</label>
-					<div class="col-sm-10">
-						<textarea id="bbscttCn" class="form-control" th:text="*{bbscttCn}"></textarea>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="rate1" class="col-sm-2 control-label">평점</label>
-					<fieldset>
-						<input type="radio" name="bbscttGrade" value="5" id="rate1">
-						<label for="rate1" class="grade">⭐</label>
-						<input type="radio" name="bbscttGrade" value="4" id="rate2">
-						<label for="rate2" class="grade">⭐</label>
-						<input type="radio" name="bbscttGrade" value="3" id="rate3">
-						<label for="rate3" class="grade">⭐</label>
-						<input type="radio" name="bbscttGrade" value="2" id="rate4">
-						<label for="rate4" class="grade">⭐</label>
-						<input type="radio" name="bbscttGrade" value="1" id="rate5">
-						<label for="rate5" class="grade">⭐</label>
-					</fieldset>
-				</div>
-
-
-				<div class="form-group">
-					<label for="bbscttHashtag" class="col-sm-2 control-label">해시태그</label>
-					<div class="col-sm-10">
-						<p class="form-control" th:text="*{bbscttHashtag}"></p>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="bbscttRgsde" class="col-sm-2 control-label">등록일</label>
-					<div class="col-sm-10">
-						<p class="form-control" th:text="*{bbscttRgsde}"></p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="bbscttRdcnt" class="col-sm-2 control-label">조회 수</label>
-					<div class="col-sm-10">
-						<p class="form-control" th:text="*{bbscttRdcnt}"></p>
-					</div>
-				</div>
-			</form>
-
 			<div class="btn_wrap text-center">
-				<a href="javascript:void(0)" onclick="goListPage()" class="btn btn-default waves-effect waves-light">뒤로가기</a>
-				<a href="javascript:void(0)" onclick="goWritePage()" class="btn btn-primary waves-effect waves-light">수정하기</a>
-				<button type="button" class="btn btn-danger waves-effect waves-light" th:onclick="deleteBoard()">삭제하기</button>
+				<a href="javascript:void(0)" onclick="goListPage()" class="btn btn-secondary btn-icon-split">
+					<span class="icon text-white-50">
+						<i class="fas fa-arrow-right"></i>
+					</span>
+					<span class="text">뒤로가기</span>
+				</a>
+				<a href="javascript:void(0)" onclick="goWritePage()" class="btn btn-warning btn-icon-split">
+					<span class="icon text-white-50">
+						<i class="fas fa-exclamation-triangle"></i>
+					</span>
+					<span class="text">수정하기</span>
+				</a>
+				<a href="javascript:void(0)" onclick="deleteBoard()" class="btn btn-danger btn-icon-split">
+					<span class="icon text-white-50">
+						<i class="fas fa-trash"></i>
+					</span>
+					<span class="text">삭제하기</span>
+				</a>
 			</div>
 		</div>
 		<!-- /.card-content -->
 		<hr>
 
 		<!-- 댓글 등록 영역 -->
-		<h3> 댓 글 </h3>
-		<form class="form-horizontal form-view form-grade" th:object="${board}">
-			<div class="form-group">
-				<input type="text" id="answerCn" name="answerCn" class="form-control" style="width: 700px"/>
-				<div class="input-group" style="display: inline-block; padding-left: 5px">
-					<a class="btn btn-success btn-circle btn-sm" th:onclick="insertReply()">
-						<i class="fas fa-check" aria-hidden="true"></i>
-					</a>
+
+		<section class="mb-5">
+			<div class="card bg-light">
+				<div class="card-body">
+					<!-- Comment form-->
+					<form class="mb-4" th:object="${board}">
+					<textarea id="answerCn" name="answerCn" class="form-control" rows="3" style="resize: none;" placeholder="Join the discussion and leave a comment!"></textarea>
+						<a class="btn btn-success btn-circle btn-sm" th:onclick="insertReply()">
+							<i class="fas fa-check" aria-hidden="true"></i>
+						</a>
+					</form>
 				</div>
+				<!-- 댓글 목록 -->
+				<div class="col-lg-12" id="replyList">
+
+				</div>
+				<!-- 댓글 목록 -->
 			</div>
-		</form>
+
+
+		</section>
 		<!-- 댓글 등록 영역 -->
 
-		<!-- 댓글 목록 영역 -->
-		<div class="card shadow mb-4">
-			<div class="card-body">
-				<div class="table-responsive">
-					<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-						<thead>
-						<tr>
-							<th>번호</th>
-							<th>내용</th>
-							<th>작성자</th>
-							<th>등록일</th>
-							<th>수정/삭제</th>
-						</tr>
-						</thead>
-						<tbody id="replyList">
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-		<!-- 댓글 목록 영역 -->
 	</th:block>
 
 	<th:block layout:fragment="script">
@@ -185,6 +151,7 @@
 			function replyList() {
 				var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
 				var replyHtml = '';
+				var replyHtml2 = '';
 
 				console.log('목록 uri = ' + uri);
 
@@ -194,37 +161,72 @@
 					if (response.replyList !== undefined) {
 						console.log('로그인 사용자 = ' + loginMember);
 						$(response.replyList).each(function(idx, reply) {
-							replyHtml += `
-							<tr>
-							<td>${reply.answerNo}</td>
-							<td>${reply.answerCn}</td>
-							<td>${reply.answerWrter}</td>
-							<td>${moment(reply.answerRgsde).format('YYYY-MM-DD HH:mm:ss')}</td>
-							<td>`;
 
-							// 세션의 로그인한 사용자와 댓글 작성자가 같을 경우만 수정/삭제 버튼 생성
-							if(loginMember == reply.answerWrter) {
-
-								replyHtml +=`
-										<a class="btn btn-info btn-circle btn-sm" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
-											<i class="fas fa-info-circle" aria-hidden="true"></i>
-										</a>
-									</td>
-								</tr>
-								`;
+							if(reply.answerCn == '') {
+								replyHtml += `<div>삭제된 댓글입니다.</div>`;
 							} else {
 								replyHtml += `
-								</td>
-								</tr>
+								<div class="d-flex mb-4">
+									<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+									<div class="ms-3">
+										<div class="fw-bold">${reply.answerWrter}</div>
+										${reply.answerCn}
+										`;
+								if (reply.answerGroupDp == 1 && reply.answerGroup == reply.answerNo) {
+									replyHtml += `
+											<div class="d-flex mt-4" id="open" style="display: none;">
+												<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+												<div class="ms-3">
+													<div class="fw-bold">${reply.answerWrter}</div>
+													${reply.answerCn}
+												</div>
+											</div>
+
+									`;
+								}
+
+								replyHtml += `
+										</div>
+									</div>
+									<a href="javascript:void(0)" class="btn btn-warning btn-circle btn-sm" id="openReply">답글 보기</a>
 								`;
+
+									// TODO 로그인 체크해서 답글 작성 버튼 생성
+
+									// 답글일때
+									replyHtml2 += `
+										<div class="d-flex mt-4">
+											<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"	alt="..."/></div>
+											<div class="ms-3">
+												<div class="fw-bold">${reply.answerWrter}</div>
+												${reply.answerCn}
+											</div>
+										</div>
+									`;
+								// 작성일 추가
+
+								// 세션의 로그인한 사용자와 댓글 작성자가 같을 경우만 수정/삭제 버튼 생성
+								if(loginMember == reply.answerWrter) {
+
+									replyHtml +=`
+									<a class="btn btn-info btn-circle btn-sm" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
+										<i class="fas fa-info-circle" aria-hidden="true"></i>
+									</a>
+								`;
+								}
+
+								// 답글 입력란 추가
 							}
 						});
 					} else {
 						replyHtml += `
-								<tr><td colspan="5">아직 댓글이 없습니다.</td></tr>
+								<p>아직 댓글이 없습니다.</p>
 								`;
 					}
 					$('#replyList').html(replyHtml);
+					$('#openReply').click(function(){
+						$("#opne").show();
+					});
 				}, 'json');
 			}
 			/* 댓글 목록 S */
@@ -233,7 +235,8 @@
 			var board = [[${board}]];
 			console.log('board = ' + JSON.stringify(board));
 
-			/* 평점 렌더링 */
+			/* 화면 렌더링 */
+			// 별점
 			$('input[name=bbscttGrade]').attr('disabled', true);
 
 			console.log('별점 점수 ============================== ' + board.bbscttGrade);
@@ -254,7 +257,27 @@
 					$('#rate1').attr('checked', true);
 					break;
 			}
-			/* 평점 렌더링 */
+
+			// 해시태그
+			var hashTagList = [];
+			var hashTagListDom = '';
+
+			if(board.bbscttHashtag != null && board.bbscttHashtag != '') {
+				if ((board.bbscttHashtag).indexOf(',') != -1) {
+					hashTagList = (board.bbscttHashtag).split(',');
+					hashTagList.forEach((value) => {
+						hashTagListDom += `
+							<a class="badge bg-secondary text-decoration-none link-light" href="#!">${value}</a>
+						`;
+					});
+				} else {
+					hashTagList = board.bbscttHashtag;
+					hashTagListDom += `<a class="badge bg-secondary text-decoration-none link-light" href="#!">${hashTagList}</a>`;
+				}
+				$('#hashAfter').before(hashTagListDom);
+				hashTagListDom = '';
+			}
+			/* 화면 렌더링 */
 
 			/*게시글 삭제 함수*/
 			function deleteBoard() {
@@ -343,7 +366,8 @@
 			/* 뒤로가기 */
 
 			/* 댓글 등록 S */
-			function insertReply() {
+			function insertReply(idx) {
+				console.log('idx = ' + idx);
 				var answerCn = document.getElementById('answerCn');
 				if ( answerCn.value == null || answerCn.value == '') {
 					answerCn.setAttribute("placeholder", '댓글을 입력해주세요.');
@@ -357,6 +381,7 @@
 					'X-HTTP-Method-Override' : 'POST'
 				};
 				var params = {
+					answerNo : idx,
 					bbscttNo : board.bbscttNo,
 					answerCn : answerCn.value,
 					answerWrter : loginMember
