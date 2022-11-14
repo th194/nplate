@@ -1,179 +1,179 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	  layout:decorate="bootstrap-template/layout/basic">
-	<th:block layout:fragment="title">
-		<title>this is view page</title>
-	</th:block>
+<th:block layout:fragment="title">
+	<title>this is view page</title>
+</th:block>
 
-	<th:block layout:fragment="modal">
-		<div id="replyModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="replyModal" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<form>
-							<div class="form-group">
-								<label for="modalAnswerWrter" class="col-form-label">작성자</label>
-								<input type="text" id="modalAnswerWrter" class="form-control" placeholder="작성자를 입력해 주세요." />
-							</div>
-							<div class="form-group">
-								<label for="modalAnswerCn" class="col-form-label">내용</label>
-								<textarea id="modalAnswerCn" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" id="btnModalCancel" class="btn btn-default waves-effect waves-light" data-dismiss="modal">취소하기</button>
-						<button type="button" id="btnReplyUpdate" class="btn btn-primary waves-effect waves-light">수정하기</button>
-						<button type="button" id="btnReplyDelete" class="btn btn-danger waves-effect waves-light">삭제하기</button>
-					</div>
+<th:block layout:fragment="modal">
+	<div id="replyModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="replyModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-group">
+							<label for="modalAnswerWrter" class="col-form-label">작성자</label>
+							<input type="text" id="modalAnswerWrter" class="form-control" placeholder="작성자를 입력해주세요." disabled="disabled" />
+						</div>
+						<div class="form-group">
+							<label for="modalAnswerCn" class="col-form-label">내용</label>
+							<textarea id="modalAnswerCn" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="btnModalCancel" class="btn btn-default waves-effect waves-light" data-dismiss="modal">취소하기</button>
+					<button type="button" id="btnReplyUpdate" class="btn btn-primary waves-effect waves-light">수정하기</button>
+					<button type="button" id="btnReplyDelete" class="btn btn-danger waves-effect waves-light">삭제하기</button>
 				</div>
 			</div>
 		</div>
-	</th:block>
+	</div>
+</th:block>
 
-	<th:block layout:fragment="main-content">
-		<form class="form-horizontal form-view form-grade" th:object="${board}">
+<th:block layout:fragment="main-content">
+	<form class="form-horizontal form-view form-grade" th:object="${board}">
 		<!-- Page content-->
-			<div class="container mt-5">
-				<div class="col">
-					<div class="col-lg-8">
+		<div class="container mt-5">
+			<div class="col">
+				<div class="col-lg-8">
+					<!-- Post content-->
+					<article>
+						<!-- Post header-->
+						<header class="mb-4">
+							<!-- Post title-->
+							<h1 class="fw-bolder mb-1" th:text="*{bbscttSj}"></h1>
+							<!-- Post meta content-->
+							<div class="text-muted fst-italic mb-2" th:text="|*{bbscttRgsde} *{bbscttWrter}|"></div>
+
+							<!--								<div class="text-muted fst-italic mb-2" th:text="*{bbscttWrter}"></div>-->
+
+							<div class="form-group" id="hashAfter">
+								<label for="rate1" class="col-sm-2 control-label">평점</label>
+								<fieldset>
+									<input type="radio" name="bbscttGrade" value="5" id="rate1">
+									<label for="rate1" class="grade">⭐</label>
+									<input type="radio" name="bbscttGrade" value="4" id="rate2">
+									<label for="rate2" class="grade">⭐</label>
+									<input type="radio" name="bbscttGrade" value="3" id="rate3">
+									<label for="rate3" class="grade">⭐</label>
+									<input type="radio" name="bbscttGrade" value="2" id="rate4">
+									<label for="rate4" class="grade">⭐</label>
+									<input type="radio" name="bbscttGrade" value="1" id="rate5">
+									<label for="rate5" class="grade">⭐</label>
+								</fieldset>
+							</div>
+							<!-- Post categories-->
+						</header>
+						<!-- Preview image figure-->
+						<figure class="mb-4">
+							<div class="map-size" id="map"></div>
+						</figure>
+
 						<!-- Post content-->
-						<article>
-							<!-- Post header-->
-							<header class="mb-4">
-								<!-- Post title-->
-								<h1 class="fw-bolder mb-1" th:text="*{bbscttSj}"></h1>
-								<!-- Post meta content-->
-								<div class="text-muted fst-italic mb-2" th:text="|*{bbscttRgsde} *{bbscttWrter}|"></div>
-
-<!--								<div class="text-muted fst-italic mb-2" th:text="*{bbscttWrter}"></div>-->
-
-								<div class="form-group" id="hashAfter">
-									<label for="rate1" class="col-sm-2 control-label">평점</label>
-									<fieldset>
-										<input type="radio" name="bbscttGrade" value="5" id="rate1">
-										<label for="rate1" class="grade">⭐</label>
-										<input type="radio" name="bbscttGrade" value="4" id="rate2">
-										<label for="rate2" class="grade">⭐</label>
-										<input type="radio" name="bbscttGrade" value="3" id="rate3">
-										<label for="rate3" class="grade">⭐</label>
-										<input type="radio" name="bbscttGrade" value="2" id="rate4">
-										<label for="rate4" class="grade">⭐</label>
-										<input type="radio" name="bbscttGrade" value="1" id="rate5">
-										<label for="rate5" class="grade">⭐</label>
-									</fieldset>
-								</div>
-								<!-- Post categories-->
-							</header>
-							<!-- Preview image figure-->
-							<figure class="mb-4">
-								<div class="map-size" id="map"></div>
-							</figure>
-
-							<!-- Post content-->
-							<section class="mb-5">
-								<textarea id="bbscttCn" rows="10" colse="100" style="width:100%; height:500px; min-width:600px; display: none;" th:text="${board.bbscttCn}"></textarea>
-							</section>
-						</article>
-						<!-- Comments section-->
-					</div>
+						<section class="mb-5">
+							<textarea id="bbscttCn" rows="10" colse="100" style="width:100%; height:500px; min-width:600px; display: none;" th:text="${board.bbscttCn}"></textarea>
+						</section>
+					</article>
+					<!-- Comments section-->
 				</div>
 			</div>
-		</form>
+		</div>
+	</form>
 
-		<div class="card-content">
-			<div class="btn_wrap text-center">
-				<a href="javascript:void(0)" onclick="goListPage()" class="btn btn-secondary btn-icon-split">
+	<div class="card-content">
+		<div class="btn_wrap text-center">
+			<a href="javascript:void(0)" onclick="goListPage()" class="btn btn-secondary btn-icon-split">
 					<span class="icon text-white-50">
 						<i class="fas fa-arrow-right"></i>
 					</span>
-					<span class="text">뒤로가기</span>
-				</a>
-				<a href="javascript:void(0)" onclick="goWritePage()" class="btn btn-warning btn-icon-split">
+				<span class="text">뒤로가기</span>
+			</a>
+			<a href="javascript:void(0)" onclick="goWritePage()" class="btn btn-warning btn-icon-split">
 					<span class="icon text-white-50">
 						<i class="fas fa-exclamation-triangle"></i>
 					</span>
-					<span class="text">수정하기</span>
-				</a>
-				<a href="javascript:void(0)" onclick="deleteBoard()" class="btn btn-danger btn-icon-split">
+				<span class="text">수정하기</span>
+			</a>
+			<a href="javascript:void(0)" onclick="deleteBoard()" class="btn btn-danger btn-icon-split">
 					<span class="icon text-white-50">
 						<i class="fas fa-trash"></i>
 					</span>
-					<span class="text">삭제하기</span>
-				</a>
-			</div>
+				<span class="text">삭제하기</span>
+			</a>
 		</div>
-		<!-- /.card-content -->
-		<hr>
+	</div>
+	<!-- /.card-content -->
+	<hr>
 
-		<!-- 댓글 등록 영역 -->
+	<!-- 댓글 등록 영역 -->
 
-		<section class="mb-5">
-			<div class="card bg-light">
-				<div class="card-body">
-					<!-- Comment form-->
-					<form class="mb-4" th:object="${board}">
+	<section class="mb-5">
+		<div class="card bg-light">
+			<div class="card-body">
+				<!-- Comment form-->
+				<form class="mb-4" th:object="${board}">
 					<textarea id="answerCn" name="answerCn" class="form-control" rows="3" style="resize: none;" placeholder="Join the discussion and leave a comment!"></textarea>
-						<a class="btn btn-success btn-circle btn-sm" th:onclick="insertReply()">
-							<i class="fas fa-check" aria-hidden="true"></i>
-						</a>
-					</form>
-				</div>
-				<!-- 댓글 목록 -->
-				<div class="col-lg-12" id="replyList">
-
-				</div>
-				<!-- 댓글 목록 -->
+					<a class="btn btn-success btn-circle btn-sm" th:onclick="insertReply()">
+						<i class="fas fa-check" aria-hidden="true"></i>
+					</a>
+				</form>
 			</div>
+			<!-- 댓글 목록 -->
+			<div class="col-lg-12" id="replyList">
+
+			</div>
+			<!-- 댓글 목록 -->
+		</div>
 
 
-		</section>
-		<!-- 댓글 등록 영역 -->
+	</section>
+	<!-- 댓글 등록 영역 -->
 
-	</th:block>
+</th:block>
 
-	<th:block layout:fragment="script">
-		<script th:inline="javascript">
-			/*<![CDATA[*/
+<th:block layout:fragment="script">
+	<script th:inline="javascript">
+		/*<![CDATA[*/
 
-			var loginMember;
+		var loginMember;
 
-			$(function(){
-				replyList();
-			});
+		$(function(){
+			replyList();
+		});
 
-			/* 댓글 목록 S */
-			function replyList() {
-				var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
-				var replyHtml = '';
-				var replyHtml2 = '';
+		/* 댓글 목록 S */
+		function replyList() {
+			var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
+			var replyHtml = '';
+			var replyHtml2 = '';
 
-				console.log('목록 uri = ' + uri);
+			console.log('목록 uri = ' + uri);
 
-				$.get(uri, function(response) {
-					loginMember = response.member;
-					console.log('replyList = ' + response.replyList);
-					if (response.replyList !== undefined) {
-						console.log('로그인 사용자 = ' + loginMember);
-						$(response.replyList).each(function(idx, reply) {
+			$.get(uri, function(response) {
+				loginMember = response.member;
+				console.log('replyList = ' + response.replyList);
+				if (response.replyList !== undefined) {
+					console.log('로그인 사용자 = ' + loginMember);
+					$(response.replyList).each(function(idx, reply) {
 
-							if(reply.answerCn == '') {
-								replyHtml += `<div>삭제된 댓글입니다.</div>`;
-							} else {
-								replyHtml += `
+						if(reply.answerCn == '') {
+							replyHtml += `<div>삭제된 댓글입니다.</div>`;
+						} else {
+							replyHtml += `
 								<div class="d-flex mb-4">
 									<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
 									<div class="ms-3">
 										<div class="fw-bold">${reply.answerWrter}</div>
 										${reply.answerCn}
 										`;
-								if (reply.answerGroupDp == 1 && reply.answerGroup == reply.answerNo) {
-									replyHtml += `
+							if (reply.answerGroupDp == 1 && reply.answerGroup == reply.answerNo) {
+								replyHtml += `
 											<div class="d-flex mt-4" id="open" style="display: none;">
 												<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
 												<div class="ms-3">
@@ -183,18 +183,18 @@
 											</div>
 
 									`;
-								}
+							}
 
-								replyHtml += `
+							replyHtml += `
 										</div>
 									</div>
 									<a href="javascript:void(0)" class="btn btn-warning btn-circle btn-sm" id="openReply">답글 보기</a>
 								`;
 
-									// TODO 로그인 체크해서 답글 작성 버튼 생성
+							// TODO 로그인 체크해서 답글 작성 버튼 생성
 
-									// 답글일때
-									replyHtml2 += `
+							// 답글일때
+							replyHtml2 += `
 										<div class="d-flex mt-4">
 											<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"	alt="..."/></div>
 											<div class="ms-3">
@@ -203,355 +203,355 @@
 											</div>
 										</div>
 									`;
-								// 작성일 추가
+							// 작성일 추가
 
-								// 세션의 로그인한 사용자와 댓글 작성자가 같을 경우만 수정/삭제 버튼 생성
-								if(loginMember == reply.answerWrter) {
+							// 세션의 로그인한 사용자와 댓글 작성자가 같을 경우만 수정/삭제 버튼 생성
+							if(loginMember == reply.answerWrter) {
 
-									replyHtml +=`
+								replyHtml +=`
 									<a class="btn btn-info btn-circle btn-sm" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
 										<i class="fas fa-info-circle" aria-hidden="true"></i>
 									</a>
 								`;
-								}
-
-								// 답글 입력란 추가
 							}
-						});
-					} else {
-						replyHtml += `
-								<p>아직 댓글이 없습니다.</p>
-								`;
-					}
-					$('#replyList').html(replyHtml);
-					$('#openReply').click(function(){
-						$("#opne").show();
-					});
-				}, 'json');
-			}
-			/* 댓글 목록 S */
 
-
-			var board = [[${board}]];
-			console.log('board = ' + JSON.stringify(board));
-
-			/* 화면 렌더링 */
-			// 별점
-			$('input[name=bbscttGrade]').attr('disabled', true);
-
-			console.log('별점 점수 ============================== ' + board.bbscttGrade);
-			switch (board.bbscttGrade) {
-				case 1 :
-					$('#rate5').attr('checked', true);
-					break;
-				case 2 :
-					$('#rate4').attr('checked', true);
-					break;
-				case 3 :
-					$('#rate3').attr('checked', true);
-					break;
-				case 4 :
-					$('#rate2').attr('checked', true);
-					break;
-				case 5 :
-					$('#rate1').attr('checked', true);
-					break;
-			}
-
-			// 해시태그
-			var hashTagList = [];
-			var hashTagListDom = '';
-
-			if(board.bbscttHashtag != null && board.bbscttHashtag != '') {
-				if ((board.bbscttHashtag).indexOf(',') != -1) {
-					hashTagList = (board.bbscttHashtag).split(',');
-					hashTagList.forEach((value) => {
-						hashTagListDom += `
-							<a class="badge bg-secondary text-decoration-none link-light" href="#!">${value}</a>
-						`;
+							// 답글 입력란 추가
+						}
 					});
 				} else {
-					hashTagList = board.bbscttHashtag;
-					hashTagListDom += `<a class="badge bg-secondary text-decoration-none link-light" href="#!">${hashTagList}</a>`;
+					replyHtml += `
+								<p>아직 댓글이 없습니다.</p>
+								`;
 				}
-				$('#hashAfter').before(hashTagListDom);
-				hashTagListDom = '';
-			}
-			/* 화면 렌더링 */
-
-			/*게시글 삭제 함수*/
-			function deleteBoard() {
-				var idx = board.bbscttNo;
-				if (!confirm(idx + "번 게시글을 삭제할까요?")) {
-					return false;
-				}
-
-				var inputHtml = "";
-				new URLSearchParams(location.search).forEach((value, key) => {
-					inputHtml += `<input type="hidden" name="${key}" value="${value}" />`;
+				$('#replyList').html(replyHtml);
+				$('#openReply').click(function(){
+					$("#opne").show();
 				});
+			}, 'json');
+		}
+		/* 댓글 목록 S */
 
-				var formHtml = `<form id="deleteForm" action="/board/delete.do" method="post">
+
+		var board = [[${board}]];
+		console.log('board = ' + JSON.stringify(board));
+
+		/* 화면 렌더링 */
+		// 별점
+		$('input[name=bbscttGrade]').attr('disabled', true);
+
+		console.log('별점 점수 ============================== ' + board.bbscttGrade);
+		switch (board.bbscttGrade) {
+			case 1 :
+				$('#rate5').attr('checked', true);
+				break;
+			case 2 :
+				$('#rate4').attr('checked', true);
+				break;
+			case 3 :
+				$('#rate3').attr('checked', true);
+				break;
+			case 4 :
+				$('#rate2').attr('checked', true);
+				break;
+			case 5 :
+				$('#rate1').attr('checked', true);
+				break;
+		}
+
+		// 해시태그
+		var hashTagList = [];
+		var hashTagListDom = '';
+
+		if(board.bbscttHashtag != null && board.bbscttHashtag != '') {
+			if ((board.bbscttHashtag).indexOf(',') != -1) {
+				hashTagList = (board.bbscttHashtag).split(',');
+				hashTagList.forEach((value) => {
+					hashTagListDom += `
+							<a class="badge bg-secondary text-decoration-none link-light" href="#!">${value}</a>
+						`;
+				});
+			} else {
+				hashTagList = board.bbscttHashtag;
+				hashTagListDom += `<a class="badge bg-secondary text-decoration-none link-light" href="#!">${hashTagList}</a>`;
+			}
+			$('#hashAfter').before(hashTagListDom);
+			hashTagListDom = '';
+		}
+		/* 화면 렌더링 */
+
+		/*게시글 삭제 함수*/
+		function deleteBoard() {
+			var idx = board.bbscttNo;
+			if (!confirm(idx + "번 게시글을 삭제할까요?")) {
+				return false;
+			}
+
+			var inputHtml = "";
+			new URLSearchParams(location.search).forEach((value, key) => {
+				inputHtml += `<input type="hidden" name="${key}" value="${value}" />`;
+			});
+
+			var formHtml = `<form id="deleteForm" action="/board/delete.do" method="post">
 									${inputHtml}
 								</form>`;
 
-				var doc = new DOMParser().parseFromString(formHtml, 'text/html');
-				var form = doc.body.firstChild;
-				document.body.append(form);
-				document.getElementById('deleteForm').submit();
+			var doc = new DOMParser().parseFromString(formHtml, 'text/html');
+			var form = doc.body.firstChild;
+			document.body.append(form);
+			document.getElementById('deleteForm').submit();
+		}
+		/*게시글 삭제 함수*/
+
+		var $map = document.getElementById('map');
+
+		var options = {
+			center : new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo),
+			level : 3
+		}
+
+		// 지도 생성
+		var map = new kakao.maps.Map($map, options);
+
+		// 마커가 표시될 위치
+		var markerPosition = new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo);
+
+		// 마커 생성
+		var marker = new kakao.maps.Marker({
+			position : markerPosition
+		});
+
+		// 마커생성
+		marker.setMap(map);
+
+		$map.append(map);
+
+
+		/* smartEditor */
+		var oEditors = [];
+
+		smartEditor = function() {
+			nhn.husky.EZCreator.createInIFrame({
+				oAppRef : oEditors,
+				elPlaceHolder : 'bbscttCn',
+				sSkinURI: '/smarteditor/SmartEditor2Skin.html',
+				fCreator: 'createSEditor2',
+				htParams: {
+					bUseToolbar : false,					// 툴바 사용 여부 (true : 사용 / false : 사용하지 않음)
+					bUseVerticalResizer : false,			// 입력창 크기 조절바 사용 여부 ( true : 사용 / false : 사용하지 않음)
+					bUseModeChanger : false				// 모드 탭 (Editor | HTML | TEXT ) 사용 여부 (true : 사용 / false : 사용하지 않음)
+				},
+				fOnAppLoad : function() {
+					var editor = oEditors.getById['bbscttCn'];
+					// editor.exec('PASTE_HTML', [board.bbscttCn]);
+					editor.exec('DISABLE_WYSIWYG');
+					editor.exec('DISABLE_ALL_UI');
+				}
+			});
+		}
+		smartEditor();
+		/* smartEditor */
+
+		/* 수정하기 */
+		function goWritePage() {
+			location.href = '/member/board/write' + location.search;
+		}
+		/* 수정하기 */
+
+		/* 뒤로가기 */
+		function goListPage() {
+			var queryString = new URLSearchParams(location.search);
+			queryString.delete('idx');
+			location.href = '/member/board/list?' + queryString.toString();
+		}
+		/* 뒤로가기 */
+
+		/* 댓글 등록 S */
+		function insertReply(idx) {
+			console.log('idx = ' + idx);
+			var answerCn = document.getElementById('answerCn');
+			if ( answerCn.value == null || answerCn.value == '') {
+				answerCn.setAttribute("placeholder", '댓글을 입력해주세요.');
+				answerCn.focus();
+				return false;
 			}
-			/*게시글 삭제 함수*/
 
-			var $map = document.getElementById('map');
-
-			var options = {
-				center : new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo),
-				level : 3
+			var uri = /*[[@{/reply}]]*/"";
+			var headers = {
+				'Content-type' : 'application/json',
+				'X-HTTP-Method-Override' : 'POST'
+			};
+			var params = {
+				answerNo : idx,
+				bbscttNo : board.bbscttNo,
+				answerCn : answerCn.value,
+				answerWrter : loginMember
 			}
 
-			// 지도 생성
-			var map = new kakao.maps.Map($map, options);
-
-			// 마커가 표시될 위치
-			var markerPosition = new kakao.maps.LatLng(board.bbscttCchLa, board.bbscttCchLo);
-
-			// 마커 생성
-			var marker = new kakao.maps.Marker({
-				position : markerPosition
+			$.ajax({
+				url : uri,
+				type : 'POST',
+				headers : headers,
+				dataType : 'json',
+				data : JSON.stringify(params),
+				success : function(result) {
+					if (result.result == false) {
+						alert('댓글 등록 실패');
+						return false;
+					}
+					replyList();
+					answerCn.value = '';
+				},
+				error : function(err) {
+					console.log(JSON.stringify(err));
+					return false;
+				}
 			});
 
-			// 마커생성
-			marker.setMap(map);
+		}
+		/* 댓글 등록 E */
 
-			$map.append(map);
+		/* 댓글 수정/삭제 모달 오픈 S */
+		function openModal(idx, writer, content) {
+			$('#replyModal').modal('show');
 
+			$('#modalAnswerWrter').val(writer);
+			$('#modalAnswerCn').val(content);
 
-			/* smartEditor */
-			var oEditors = [];
+			document.getElementById('btnReplyUpdate').setAttribute('onclick', 'updateReply('+ idx + ')');
+			document.getElementById('btnReplyDelete').setAttribute('onclick', 'deleteReply('+ idx + ')');
+		}
+		/* 댓글 수정/삭제 모달 오픈 S */
 
-			smartEditor = function() {
-				nhn.husky.EZCreator.createInIFrame({
-					oAppRef : oEditors,
-					elPlaceHolder : 'bbscttCn',
-					sSkinURI: '/smarteditor/SmartEditor2Skin.html',
-					fCreator: 'createSEditor2',
-					htParams: {
-						bUseToolbar : false,					// 툴바 사용 여부 (true : 사용 / false : 사용하지 않음)
-						bUseVerticalResizer : false,			// 입력창 크기 조절바 사용 여부 ( true : 사용 / false : 사용하지 않음)
-						bUseModeChanger : false				// 모드 탭 (Editor | HTML | TEXT ) 사용 여부 (true : 사용 / false : 사용하지 않음)
-					},
-					fOnAppLoad : function() {
-						var editor = oEditors.getById['bbscttCn'];
-						// editor.exec('PASTE_HTML', [board.bbscttCn]);
-						editor.exec('DISABLE_WYSIWYG');
-						editor.exec('DISABLE_ALL_UI');
-					}
-				});
+		/* 댓글 수정 S */
+		function updateReply(idx) {
+			var writer = $('#modalAnswerWrter').val();
+			var content = $('#modalAnswerCn').val();
+
+			var uri = '/reply/' + idx;
+			console.log('수정 uri = ' + uri);
+			var headers = {
+				'Content-Type': 'application/json',
+				'X-HTTP-Method-Override' : 'PATCH'
+			};
+			var params = {
+				answerNo : idx,
+				answerCn : content,
+				answerWrter: writer
 			}
-			smartEditor();
-			/* smartEditor */
 
-			/* 수정하기 */
-			function goWritePage() {
-				location.href = '/member/board/write' + location.search;
-			}
-			/* 수정하기 */
-
-			/* 뒤로가기 */
-			function goListPage() {
-				var queryString = new URLSearchParams(location.search);
-				queryString.delete('idx');
-				location.href = '/member/board/list?' + queryString.toString();
-			}
-			/* 뒤로가기 */
-
-			/* 댓글 등록 S */
-			function insertReply(idx) {
-				console.log('idx = ' + idx);
-				var answerCn = document.getElementById('answerCn');
-				if ( answerCn.value == null || answerCn.value == '') {
-					answerCn.setAttribute("placeholder", '댓글을 입력해주세요.');
-					answerCn.focus();
-					return false;
-				}
-
-				var uri = /*[[@{/reply}]]*/"";
-				var headers = {
-					'Content-type' : 'application/json',
-					'X-HTTP-Method-Override' : 'POST'
-				};
-				var params = {
-					answerNo : idx,
-					bbscttNo : board.bbscttNo,
-					answerCn : answerCn.value,
-					answerWrter : loginMember
-				}
-
-				$.ajax({
-					url : uri,
-					type : 'POST',
-					headers : headers,
-					dataType : 'json',
-					data : JSON.stringify(params),
-					success : function(result) {
-						if (result.result == false) {
-							alert('댓글 등록 실패');
-							return false;
-						}
-						replyList();
-						answerCn.value = '';
-					},
-					error : function(err) {
-						console.log(JSON.stringify(err));
+			$.ajax({
+				url : uri,
+				type : 'PATCH',
+				headers : headers,
+				dataType: 'json',
+				data : JSON.stringify(params),
+				success : function(result) {
+					if (result.result == false) {
+						alert('수정 실패');
 						return false;
 					}
-				});
+					replyList();
+					$('#replyModal').modal('hide');
 
-			}
-			/* 댓글 등록 E */
-
-			/* 댓글 수정/삭제 모달 오픈 S */
-			function openModal(idx, writer, content) {
-				$('#replyModal').modal('show');
-
-				$('#modalAnswerWrter').val(writer);
-				$('#modalAnswerCn').val(content);
-
-				document.getElementById('btnReplyUpdate').setAttribute('onclick', 'updateReply('+ idx + ')');
-				document.getElementById('btnReplyDelete').setAttribute('onclick', 'deleteReply('+ idx + ')');
-			}
-			/* 댓글 수정/삭제 모달 오픈 S */
-
-			/* 댓글 수정 S */
-			function updateReply(idx) {
-				var writer = $('#modalAnswerWrter').val();
-				var content = $('#modalAnswerCn').val();
-
-				var uri = '/reply/' + idx;
-				console.log('수정 uri = ' + uri);
-				var headers = {
-					'Content-Type': 'application/json',
-					'X-HTTP-Method-Override' : 'PATCH'
-				};
-				var params = {
-					answerNo : idx,
-					answerCn : content,
-					answerWrter: writer
+				},
+				error : function(err) {
+					console.log('err = ' + JSON.stringify(err));
+					return;
 				}
+			});
+		}
+		/* 댓글 수정 E */
 
-				$.ajax({
-					url : uri,
-					type : 'PATCH',
-					headers : headers,
-					dataType: 'json',
-					data : JSON.stringify(params),
-					success : function(result) {
-						if (result.result == false) {
-							alert('수정 실패');
-							return false;
-						}
-						replyList();
-						$('#replyModal').modal('hide');
-
-					},
-					error : function(err) {
-						console.log('err = ' + JSON.stringify(err));
-						return;
-					}
-				});
+		/* 댓글 삭제 S */
+		function deleteReply(idx) {
+			if (!confirm('댓글을 삭제 하시겠습니까?')) {
+				return false;
 			}
-			/* 댓글 수정 E */
 
-			/* 댓글 삭제 S */
-			function deleteReply(idx) {
-				if (!confirm('댓글을 삭제 하시겠습니까?')) {
-					return false;
-				}
-
-				var uri = '/reply/' + idx;
-				console.log('삭제 uri = ' + uri);
-				var headers = {
-					'Content-Type' : 'application/json',
-					'X-HTTP-Method-Override' : 'DELETE'
-				};
-				$.ajax({
-					url : uri,
-					type : 'DELETE',
-					headers : headers,
-					dataType : 'json',
-					success : function(result) {
-						if (result.result == false) {
-							alert('댓글 삭제 실패');
-							return false;
-						}
-						replyList();
-						$('#replyModal').modal('hide');
-					},
-					error : function(err) {
-						console.log('err = ' + JSON.stringify(err));
+			var uri = '/reply/' + idx;
+			console.log('삭제 uri = ' + uri);
+			var headers = {
+				'Content-Type' : 'application/json',
+				'X-HTTP-Method-Override' : 'DELETE'
+			};
+			$.ajax({
+				url : uri,
+				type : 'DELETE',
+				headers : headers,
+				dataType : 'json',
+				success : function(result) {
+					if (result.result == false) {
+						alert('댓글 삭제 실패');
 						return false;
 					}
-				});
-			}
-			/* 댓글 삭제 E */
+					replyList();
+					$('#replyModal').modal('hide');
+				},
+				error : function(err) {
+					console.log('err = ' + JSON.stringify(err));
+					return false;
+				}
+			});
+		}
+		/* 댓글 삭제 E */
 
 
-			/* 팔로잉하기 S */
-			function following(id) {
-				console.log('팔로잉 함수=================');
-				console.log('id===========');
-				console.log(id);
+		/* 팔로잉하기 S */
+		function following(id) {
+			console.log('팔로잉 함수=================');
+			console.log('id===========');
+			console.log(id);
 
-				$.ajax({
-					type: "get",
-					dataType: "text",
-					async: false,
-					url: "/member/following",
-					data: { id: id },
-					success: function (data) {
-						if (data === 'success') {
-							alert('팔로잉 성공');
-							location.reload(); // 버튼 바꾸기 위해 새로고침 해줌
-						} else {
-							alert('팔로잉 실패');
-						}
-					},
-					error: function () {
+			$.ajax({
+				type: "get",
+				dataType: "text",
+				async: false,
+				url: "/member/following",
+				data: { id: id },
+				success: function (data) {
+					if (data === 'success') {
+						alert('팔로잉 성공');
+						location.reload(); // 버튼 바꾸기 위해 새로고침 해줌
+					} else {
 						alert('팔로잉 실패');
 					}
-				});
-			}
+				},
+				error: function () {
+					alert('팔로잉 실패');
+				}
+			});
+		}
 
-			function unfollowing(id) {
-				console.log('언팔로잉 함수=================');
-				console.log('id===========');
-				console.log(id);
+		function unfollowing(id) {
+			console.log('언팔로잉 함수=================');
+			console.log('id===========');
+			console.log(id);
 
-				$.ajax({
-					type: "get",
-					dataType: "text",
-					async: false,
-					url: "/member/unfollowing",
-					data: { id: id },
-					success: function (data) {
-						if (data === 'success') {
-							alert('언팔로잉 성공');
-							location.reload();
-						} else {
-							alert('언팔로잉 실패');
-						}
-					},
-					error: function () {
+			$.ajax({
+				type: "get",
+				dataType: "text",
+				async: false,
+				url: "/member/unfollowing",
+				data: { id: id },
+				success: function (data) {
+					if (data === 'success') {
+						alert('언팔로잉 성공');
+						location.reload();
+					} else {
 						alert('언팔로잉 실패');
 					}
-				});
-			}
-			/* 팔로잉하기 E */
+				},
+				error: function () {
+					alert('언팔로잉 실패');
+				}
+			});
+		}
+		/* 팔로잉하기 E */
 
 
 
-			/*[- end of function -]*/
-			/*]]>*/
-		</script>
-	</th:block>
+		/*[- end of function -]*/
+		/*]]>*/
+	</script>
+</th:block>
 </html>
