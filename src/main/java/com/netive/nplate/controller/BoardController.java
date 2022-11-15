@@ -142,10 +142,8 @@ public class BoardController {
 		if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
 			try {
 				List<BoardDTO> boardList;
-				String memberId = String.valueOf( session.getAttribute(SessionConstants.MEMBER_ID) ) ;
-
-
-
+				String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+				
 				switch (params.getSearchType()) {
 					case "search":
 					case "hashtag":
@@ -154,8 +152,12 @@ public class BoardController {
 						break;
 					case "following":
 						System.out.println("내가 팔로잉하는 사람들 조회(나포함)");
-						List<String> followingIds = memberUtils.getFollowingMember(memberId);
-
+						List<String> followingIds;
+						if (session.getAttribute(SessionConstants.FOLLOWING_IDS) != null) {
+							followingIds = (List<String>) session.getAttribute(SessionConstants.FOLLOWING_IDS);
+						} else {
+							followingIds = memberUtils.getFollowingMember(memberId);
+						}
 						followingIds.add(memberId); // 내 아이디도 넣기
 
 						Map <String, Object> followingMap = new HashMap<>();
@@ -173,7 +175,14 @@ public class BoardController {
 					case "like":
 						System.out.println("좋아하는 글목록");
 						Map <String, Object> likeMap = new HashMap<>();
-						List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
+						List<Long> likeNumbers;
+
+						if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+							likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+						} else {
+							likeNumbers = boardUtils.getLikeNumbers(memberId);
+						}
+
 						likeMap.put("likeNumbers", likeNumbers);
 						likeMap.put("limitStart", params.getLimitStart());
 						likeMap.put("recordSize", params.getRecordSize());
@@ -185,10 +194,6 @@ public class BoardController {
 						}
 						System.out.println("글목록 크기:" + boardList.size());
 						// todo likePosts 좋아요 누른 순서대로 정렬되게 처리 추가
-
-						resMap.put("likePosts", boardList);
-
-
 						break;
 					default:
 						System.out.println("특정 아이디로 조회 글목록");
@@ -225,19 +230,30 @@ public class BoardController {
 		BoardDTO board = boardService.getBoardDetail(idx);
 		model.addAttribute("board", board);
 
-		// todo 매번 글 불러올때마다 하지말고 한번만 하는걸로 처리 수정
-		String memberId = String.valueOf( session.getAttribute(SessionConstants.MEMBER_ID) ) ;
-		List<String> following = memberUtils.getFollowingMember(memberId);
-		boolean isFollowing = following.contains(board.getBbscttWrter());
+		String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+
+		// 팔로잉 여부 확인
+		List<String> followingIds;
+		if (session.getAttribute(SessionConstants.FOLLOWING_IDS) != null) {
+			followingIds = (List<String>) session.getAttribute(SessionConstants.FOLLOWING_IDS);
+		} else {
+			followingIds = memberUtils.getFollowingMember(memberId);
+		}
+		boolean isFollowing = followingIds.contains(board.getBbscttWrter());
 		System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
-		boardService.cntPlus(idx); // 조회수 증가 추가
 		model.addAttribute("isFollowing", isFollowing);
 
-		// 팔로잉 처리
-
-		List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(following);
+		// 메뉴 팔로잉 처리
+		List<MemberDTO> followingMembers;
+		if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+			followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+		} else {
+			followingMembers = memberUtils.getFollowingsInfo(followingIds);
+		}
 		model.addAttribute("followingMembers", followingMembers);
-		
+
+		boardService.cntPlus(idx); // 조회수 증가 추가
+
 		return "bootstrap-template/view";
 	}
 
@@ -448,15 +464,18 @@ public class BoardController {
 
 	// 게시물 좋아요 추가
 	@GetMapping("/board/addLike")
-	public @ResponseBody String likePost(String id, Long idx) {
+	public @ResponseBody String likePost(HttpServletRequest request, Long idx) {
 		System.out.println("좋아요 추가 컨트롤러 시작=========");
-		System.out.println("아이디" + id);
+		HttpSession session = request.getSession();
+		String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+		System.out.println("아이디" + memberId);
 		System.out.println("글번호" + idx);
 
-		LikesDTO likesDTO = new LikesDTO(id, idx);
+		LikesDTO likesDTO = new LikesDTO(memberId, idx);
 		int result = likesService.addLike(likesDTO);
 		if (result > 0) {
 			System.out.println("좋아요 추가 성공=========");
+			session.setAttribute(SessionConstants.LIKE_NUMBERS, null);
 			return "success";
 		} else {
 			System.out.println("좋아요 추가 실패=========");
@@ -467,15 +486,18 @@ public class BoardController {
 
 	// 게시물 좋아요 취소
 	@GetMapping("/board/deleteLike")
-	public @ResponseBody String deleteLike(String id, Long idx) {
+	public @ResponseBody String deleteLike(HttpServletRequest request, Long idx) {
 		System.out.println("좋아요 취소 컨트롤러 시작=========");
-		System.out.println("아이디" + id);
+		HttpSession session = request.getSession();
+		String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+		System.out.println("아이디" + memberId);
 		System.out.println("글번호" + idx);
 
-		LikesDTO likesDTO = new LikesDTO(id, idx);
+		LikesDTO likesDTO = new LikesDTO(memberId, idx);
 		int result = likesService.deleteLike(likesDTO);
 		if (result > 0) {
 			System.out.println("좋아요 취소 성공=========");
+			session.setAttribute(SessionConstants.LIKE_NUMBERS, null);
 			return "success";
 		} else {
 			System.out.println("좋아요 취소 실패=========");
@@ -497,19 +519,28 @@ public class BoardController {
 			try {
 				// todo 똑같은 처리들 하나로 통합하기
 				MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
-				String id = dto.getId();
+				String memberId = dto.getId();
 
-				List<Long> likeNumbers = boardUtils.getLikeNumbers(id);
-
-				model.addAttribute("likeNumbers", likeNumbers);
 				model.addAttribute("memberInfo", dto);
 				model.addAttribute("search", params);
 
+				// 좋아요
+				List<Long> likeNumbers;
+				if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+					likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+				} else {
+					likeNumbers = boardUtils.getLikeNumbers(memberId);
+				}
+				model.addAttribute("likeNumbers", likeNumbers);
 
 				// 팔로잉 처리
-				String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-				List<String> followingIds = memberUtils.getFollowingMember(memberId);
-				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				List<MemberDTO> followingMembers;
+				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+				} else {
+					List<String> followingIds = memberUtils.getFollowingMember(memberId);
+					followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				}
 				model.addAttribute("followingMembers", followingMembers);
 
 				return "bootstrap-template/list";
@@ -538,22 +569,31 @@ public class BoardController {
 			try {
 				// todo 똑같은 처리들 하나로 통합하기(좋아요 등)
 				MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
-				String id = dto.getId();
+				String memberId = dto.getId();
 
-				// 임시로 처리를 위해 넣어둠(팔로잉 분기처리)
+				// 리스트 타입(피드: 팔로잉)
 				params.setSearchType("following");
-
-				// 좋아요 추가
-				List<Long> likeNumbers = boardUtils.getLikeNumbers(id);
-
-				model.addAttribute("likeNumbers", likeNumbers);
 				model.addAttribute("memberInfo", dto);
 				model.addAttribute("search", params);
 
+				// 좋아요
+				List<Long> likeNumbers;
+				if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+					likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+				} else {
+					likeNumbers = boardUtils.getLikeNumbers(memberId);
+				}
+				model.addAttribute("likeNumbers", likeNumbers);
+
+
 				// 팔로잉 처리
-				String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-				List<String> followingIds = memberUtils.getFollowingMember(memberId);
-				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				List<MemberDTO> followingMembers;
+				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+				} else {
+					List<String> followingIds = memberUtils.getFollowingMember(memberId);
+					followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				}
 				model.addAttribute("followingMembers", followingMembers);
 
 				return "bootstrap-template/list";
@@ -579,20 +619,30 @@ public class BoardController {
 			try {
 				MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
 				model.addAttribute("memberInfo", dto);
+				String memberId = dto.getId();
 
-				// 좋아요 추가
-				List<Long> likeNumbers = boardUtils.getLikeNumbers(dto.getId());
-				model.addAttribute("likeNumbers", likeNumbers);
-
+				// 리스트 타입(좋아요: 좋아한 글 목록)
 				SearchDTO searchDTO = new SearchDTO("");
 				searchDTO.setSearchType("like");
-
 				model.addAttribute("search", searchDTO);
 
+				// 좋아요
+				List<Long> likeNumbers;
+				if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+					likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+				} else {
+					likeNumbers = boardUtils.getLikeNumbers(memberId);
+				}
+				model.addAttribute("likeNumbers", likeNumbers);
+
 				// 팔로잉 처리
-				String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-				List<String> followingIds = memberUtils.getFollowingMember(memberId);
-				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				List<MemberDTO> followingMembers;
+				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+				} else {
+					List<String> followingIds = memberUtils.getFollowingMember(memberId);
+					followingMembers = memberUtils.getFollowingsInfo(followingIds);
+				}
 				model.addAttribute("followingMembers", followingMembers);
 
 				return "bootstrap-template/list";

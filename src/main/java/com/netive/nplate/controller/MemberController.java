@@ -212,26 +212,46 @@ public class MemberController {
                 MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 model.addAttribute("memberInfo", memberDTO);
 
-                // 좋아요 추가
-                List<Long> likeNumbers = boardUtils.getLikeNumbers(memberDTO.getId());
-                model.addAttribute("likeNumbers", likeNumbers);
-
                 // 아이디로 멤버 정보 조회, searchDTO 값 세팅
                 // todo 비밀번호까지 다 가져오는데 필요한 정보만 가져오도록 수정
                 MemberDTO userDTO = memberService.getMemberInfo(id);
                 model.addAttribute("userInfo", userDTO);
 
+                // 리스트 타입(유저페이지: 특정유저 글)
                 SearchDTO searchDTO = new SearchDTO(id);
                 model.addAttribute("search", searchDTO);
-                
-                // 팔로잉 여부
-                String memberId = String.valueOf( session.getAttribute(SessionConstants.MEMBER_ID) ) ;
-                List<String> following = memberUtils.getFollowingMember(memberId);
-                boolean isFollowing = following.contains(id);
+
+
+                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+
+                // 좋아요
+                List<Long> likeNumbers;
+                if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+                    likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+                } else {
+                    likeNumbers = boardUtils.getLikeNumbers(memberId);
+                }
+                model.addAttribute("likeNumbers", likeNumbers);
+
+
+                // 팔로잉 여부 확인
+                List<String> followingIds;
+                if (session.getAttribute(SessionConstants.FOLLOWING_IDS) != null) {
+                    followingIds = (List<String>) session.getAttribute(SessionConstants.FOLLOWING_IDS);
+                } else {
+                    followingIds = memberUtils.getFollowingMember(memberId);
+                }
+                boolean isFollowing = followingIds.contains(id);
+                System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
                 model.addAttribute("isFollowing", isFollowing);
 
-                // 팔로잉 처리
-                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(following);
+                // 메뉴 팔로잉 처리
+                List<MemberDTO> followingMembers;
+                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+                    followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+                } else {
+                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                }
                 model.addAttribute("followingMembers", followingMembers);
 
                 return "bootstrap-template/userInfo";
@@ -252,13 +272,15 @@ public class MemberController {
 
         HttpSession session = request.getSession();
         if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_ID) != null) {
-            String memberId = String.valueOf( session.getAttribute(SessionConstants.MEMBER_ID) ) ;
+            String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
             FollowingDTO followingDTO = new FollowingDTO(memberId, id);
 
             int result = followingService.followMember(followingDTO);
 
             if (result > 0) {
                 System.out.println("팔로잉 성공=========");
+                session.setAttribute(SessionConstants.FOLLOWING_IDS, null);
+                session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, null);
                 return "success";
             } else {
                 System.out.println("팔로잉 실패=========");
@@ -277,13 +299,15 @@ public class MemberController {
 
         HttpSession session = request.getSession();
         if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_ID) != null) {
-            String memberId = String.valueOf( session.getAttribute(SessionConstants.MEMBER_ID) ) ;
+            String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
             FollowingDTO followingDTO = new FollowingDTO(memberId, id);
 
             int result = followingService.unfollowMember(followingDTO);
 
             if (result > 0) {
                 System.out.println("언팔로잉 성공=========");
+                session.setAttribute(SessionConstants.FOLLOWING_IDS, null);
+                session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, null);
                 return "success";
             } else {
                 System.out.println("언팔로잉 실패=========");

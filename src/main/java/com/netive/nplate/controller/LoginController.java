@@ -85,19 +85,26 @@ public class LoginController {
 
             String memberId = memberDTO.getId();
 
-
-            // 좋아요 추가
-            List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
-            model.addAttribute("likeNumbers", likeNumbers);
-
+            // todo 중복소스 처리하기
+            
+            // 리스트 타입(피드: 팔로잉)
             SearchDTO searchDTO = new SearchDTO(memberId);
             searchDTO.setSearchType("following");
             model.addAttribute("search", searchDTO);
 
-            // todo 이부분 말고도 전체적으로 반복되는 처리 정리
+            // 좋아요
+            List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
+            model.addAttribute("likeNumbers", likeNumbers);
+            session.setAttribute(SessionConstants.LIKE_NUMBERS, likeNumbers);
+            // 세션에 저장된 값 있으면 다시 DB 조회 하지 않음(좋아요 추가 및 삭제시 세션에 저장된 값 갱신)
+
+            // 팔로잉 멤버
             List<String> followingIds = memberUtils.getFollowingMember(memberId);
             List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
             model.addAttribute("followingMembers", followingMembers);
+            session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+            session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
+            // 세션에 저장된 값 있으면 다시 DB 조회 하지 않음(팔로잉 추가 및 삭제시 세션에 저장된 값 갱신)
 
             return "bootstrap-template/list";
 
@@ -112,24 +119,35 @@ public class LoginController {
     // 마이페이지 주소로 이동
     @GetMapping("/feed")
     public String myPage(HttpServletRequest request, Model model) {
+        System.out.println("피드 주소로 이동===========================");
         HttpSession session = request.getSession();
         try {
             if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
                 model.addAttribute("memberInfo", session.getAttribute(SessionConstants.MEMBER_DTO));
                 String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
 
-                // 좋아요 추가
-                List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
-                model.addAttribute("likeNumbers", likeNumbers);
-
+                // 리스트 타입(피드: 팔로잉)
                 SearchDTO searchDTO = new SearchDTO(memberId);
                 searchDTO.setSearchType("following");
                 model.addAttribute("search", searchDTO);
 
+                // 좋아요
+                List<Long> likeNumbers;
+                if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+                    likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+                } else {
+                    likeNumbers = boardUtils.getLikeNumbers(memberId);
+                }
+                model.addAttribute("likeNumbers", likeNumbers);
 
-                // 팔로잉 처리
-                List<String> followingIds = memberUtils.getFollowingMember(memberId);
-                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                // 팔로잉 멤버 정보
+                List<MemberDTO> followingMembers;
+                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+                    followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+                } else {
+                    List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                }
                 model.addAttribute("followingMembers", followingMembers);
 
                 return "bootstrap-template/list";
