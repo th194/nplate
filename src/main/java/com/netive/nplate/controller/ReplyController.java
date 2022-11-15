@@ -39,12 +39,12 @@ public class ReplyController {
         HttpSession session = request.getSession();
 
         System.out.println("로그인 체크 ====================== ");
-        System.out.println((boolean) session.getAttribute("isLogOn"));
+        System.out.println((boolean) session.getAttribute("IS_LOGIN"));
         System.out.println("로그인 체크 ====================== ");
 
-        if ((boolean) session.getAttribute("isLogOn")) {
+        if ((boolean) session.getAttribute("IS_LOGIN")) {
 
-            MemberDTO dto = (MemberDTO) session.getAttribute("member");
+            MemberDTO dto = (MemberDTO) session.getAttribute("MEMBER_DTO");
             String id = dto.getId();
             System.out.println("로그인 id = " + id);
 
@@ -84,12 +84,12 @@ public class ReplyController {
         System.out.println(request);
 
         System.out.println("로그인 체크 ====================== ");
-        System.out.println((boolean) session.getAttribute("isLogOn"));
+        System.out.println((boolean) session.getAttribute("IS_LOGIN"));
         System.out.println("로그인 체크 ====================== ");
 
-        if ((boolean) session.getAttribute("isLogOn")) {
+        if ((boolean) session.getAttribute("IS_LOGIN")) {
             try {
-                MemberDTO dto = (MemberDTO) session.getAttribute("member");
+                MemberDTO dto = (MemberDTO) session.getAttribute("MEMBER_DTO");
                 String id = dto.getId();
                 System.out.println("로그인 id = " + id);
 
@@ -141,12 +141,12 @@ public class ReplyController {
         System.out.println(request);
 
         System.out.println("로그인 체크 ====================== ");
-        System.out.println((boolean) session.getAttribute("isLogOn"));
+        System.out.println((boolean) session.getAttribute("IS_LOGIN"));
         System.out.println("로그인 체크 ====================== ");
 
-        if ((boolean) session.getAttribute("isLogOn")) {
+        if ((boolean) session.getAttribute("IS_LOGIN")) {
             try {
-                MemberDTO dto = (MemberDTO) session.getAttribute("member");
+                MemberDTO dto = (MemberDTO) session.getAttribute("MEMBER_DTO");
                 String id = dto.getId();
                 System.out.println("로그인 id = " + id);
 

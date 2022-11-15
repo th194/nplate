@@ -208,8 +208,8 @@ public class MemberController {
         HttpSession session = request.getSession();
 
         try {
-            if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
-                MemberDTO memberDTO = (MemberDTO) session.getAttribute("member");
+            if ((boolean) session.getAttribute("IS_LOGIN") && session.getAttribute("MEMBER_DTO") != null) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute("MEMBER_DTO");
                 model.addAttribute("memberInfo", memberDTO);
 
                 // 좋아요 추가
@@ -250,7 +250,7 @@ public class MemberController {
         System.out.println("팔로잉 할 아이디" + id);
 
         HttpSession session = request.getSession();
-        if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("MEMBER_ID") != null) {
+        if ((boolean) session.getAttribute("IS_LOGIN") && session.getAttribute("MEMBER_ID") != null) {
             String memberId = String.valueOf( session.getAttribute("MEMBER_ID") ) ;
             FollowingDTO followingDTO = new FollowingDTO(memberId, id);
 
@@ -275,7 +275,7 @@ public class MemberController {
         System.out.println("언팔로잉 할 아이디" + id);
 
         HttpSession session = request.getSession();
-        if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("MEMBER_ID") != null) {
+        if ((boolean) session.getAttribute("IS_LOGIN") && session.getAttribute("MEMBER_ID") != null) {
             String memberId = String.valueOf( session.getAttribute("MEMBER_ID") ) ;
             FollowingDTO followingDTO = new FollowingDTO(memberId, id);
 
