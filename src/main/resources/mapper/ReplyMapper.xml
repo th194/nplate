@@ -16,9 +16,17 @@
     <!-- 댓글 등록 -->
     <insert id="insertReply" parameterType="ReplyDTO">
         INSERT INTO NETIVE_PROJECT01_REPLY
-        (<include refid="replyColumns"></include>)
+        (
+            BBSCTT_NO,
+            ANSWER_GROUP,
+            ANSWER_GROUP_DP,
+            ANSWER_DELETE_AT,
+            ANSWER_CN,
+            ANSWER_WRTER,
+            ANSWER_RGSDE,
+            ANSWER_UPDDE
+        )
         VALUES (
-            #{answerNo},
             #{bbscttNo},
             #{answerGroup},
             #{answerGroupDp},

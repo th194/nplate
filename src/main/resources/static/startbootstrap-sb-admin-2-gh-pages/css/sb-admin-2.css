@@ -11361,3 +11361,12 @@ body.sidebar-toggled footer.sticky-footer {
   height: 400px;
 }
 /* se-size */
+
+/* flex-right 추가 */
+.right-flex {
+  margin-left: auto;
+  width: 100px;
+  height: 50px;
+  text-align: center;
+}
+/* flex-right 추가 */

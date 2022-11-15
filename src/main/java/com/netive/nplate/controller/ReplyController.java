@@ -150,11 +150,9 @@ public class ReplyController {
                 MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 String id = dto.getId();
                 System.out.println("로그인 id = " + id);
-
-                if(params.getAnswerWrter() == id) {
+                if(params.getAnswerWrter().equals(id)) {
                     isRegistered = replyService.updateReply(params);
                 }
-
                 jsonObj.addProperty("result", isRegistered);
                 jsonObj.addProperty("member", id);
 

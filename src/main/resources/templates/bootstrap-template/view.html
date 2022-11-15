@@ -111,29 +111,31 @@
 	<!-- /.card-content -->
 	<hr>
 
-	<!-- 댓글 등록 영역 -->
+
+
+	<!-- 댓글 -->
 
 	<section class="mb-5">
 		<div class="card bg-light">
 			<div class="card-body">
+				<!-- 댓글 목록 -->
+				<div class="col-lg-12" id="replyList">
+
+				</div>
+				<!-- 댓글 목록 -->
+
 				<!-- Comment form-->
 				<form class="mb-4" th:object="${board}">
-					<textarea id="answerCn" name="answerCn" class="form-control" rows="3" style="resize: none;" placeholder="Join the discussion and leave a comment!"></textarea>
-					<a class="btn btn-success btn-circle btn-sm" th:onclick="insertReply()">
+					<textarea id="answerCn" name="answerCn" class="form-control" rows="3" style="resize: none;" placeholder="답글 입력"></textarea>
+					<a class="btn btn-success btn-circle btn-sm" th:onclick="insertReply()" style="float:right">
 						<i class="fas fa-check" aria-hidden="true"></i>
 					</a>
 				</form>
 			</div>
-			<!-- 댓글 목록 -->
-			<div class="col-lg-12" id="replyList">
 
-			</div>
-			<!-- 댓글 목록 -->
 		</div>
-
-
 	</section>
-	<!-- 댓글 등록 영역 -->
+	<!-- 댓글 -->
 
 </th:block>
 
@@ -155,67 +157,58 @@
 
 			console.log('목록 uri = ' + uri);
 
-			$.get(uri, function(response) {
+			$.get(uri, function (response) {
 				loginMember = response.member;
-				console.log('replyList = ' + response.replyList);
+				console.log('replyList => ',response.replyList);
 				if (response.replyList !== undefined) {
 					console.log('로그인 사용자 = ' + loginMember);
-					$(response.replyList).each(function(idx, reply) {
+					$(response.replyList).each(function (idx, reply) {
 
-						if(reply.answerCn == '') {
+						if (reply.answerCn == '') {
 							replyHtml += `<div>삭제된 댓글입니다.</div>`;
 						} else {
+							if(reply.answerGroupDp == 0) {
+
+
 							replyHtml += `
-								<div class="d-flex mb-4">
+								<div class="d-flex mb-4" data-index="${reply.answerNo}">
 									<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
 									<div class="ms-3">
 										<div class="fw-bold">${reply.answerWrter}</div>
 										${reply.answerCn}
-										`;
-							if (reply.answerGroupDp == 1 && reply.answerGroup == reply.answerNo) {
-								replyHtml += `
-											<div class="d-flex mt-4" id="open" style="display: none;">
-												<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-												<div class="ms-3">
-													<div class="fw-bold">${reply.answerWrter}</div>
-													${reply.answerCn}
-												</div>
-											</div>
-
+									</div>
 									`;
-							}
 
 							replyHtml += `
-										</div>
-									</div>
-									<a href="javascript:void(0)" class="btn btn-warning btn-circle btn-sm" id="openReply">답글 보기</a>
-								`;
-
-							// TODO 로그인 체크해서 답글 작성 버튼 생성
-
-							// 답글일때
-							replyHtml2 += `
-										<div class="d-flex mt-4">
-											<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"	alt="..."/></div>
-											<div class="ms-3">
-												<div class="fw-bold">${reply.answerWrter}</div>
-												${reply.answerCn}
-											</div>
-										</div>
+										<a href="javascript:void(0)" class="btn btn-warning btn-circle btn-sm right-flex openReply">
+											<i class="fas fa-exclamation-triangle"></i>
+										</a>
 									`;
-							// 작성일 추가
-
-							// 세션의 로그인한 사용자와 댓글 작성자가 같을 경우만 수정/삭제 버튼 생성
-							if(loginMember == reply.answerWrter) {
-
+							// 로그인 한 사용자가 댓글 작성자와 같을 경우 수정/삭제 버튼 생성
+							if (loginMember == reply.answerWrter) {
 								replyHtml +=`
 									<a class="btn btn-info btn-circle btn-sm" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
 										<i class="fas fa-info-circle" aria-hidden="true"></i>
 									</a>
 								`;
 							}
-
-							// 답글 입력란 추가
+							replyHtml += `
+									</div>
+								`;
+							}
+						}
+						// 대댓글
+						if (reply.answerGroupDp == 1) {
+							console.log('대댓글' + idx);
+							replyHtml2 += `
+									<div class="d-flex mt-4" data-index="${reply.answerGroup}">
+										<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+										<div class="ms-3">
+											<div class="fw-bold">${reply.answerWrter}</div>
+											${reply.answerCn}
+										</div>
+									</div>
+								`;
 						}
 					});
 				} else {
@@ -224,13 +217,41 @@
 								`;
 				}
 				$('#replyList').html(replyHtml);
-				$('#openReply').click(function(){
-					$("#opne").show();
+				var htmlIdx = $('#replyList').find('.mb-4');
+				console.log(htmlIdx)
+				$(htmlIdx).each(function(idx, val) {
+					var num = val.dataset.index;
+					console.log(num);
+					console.log($(this).find('.fw-bold'));
+					console.log('num == response.replyList.answerGroup = ' + num, response.replyList.answerGroup);
+					if(num == response.replyList.answerGroup) {
+						$(this).find('.fw-bold').html(replyHtml2);
+					}
+				});
+
+				$('.openReply').click(function () {
+					var idx = $(this).parent().data('index');
+					var replyDom = '';
+					if($(this).parent().next('form').length == 0) {
+						replyDom += `
+						<form class="mb-4">
+						<textarea id="replyCn" name="replyCn" class="form-control" rows="3" style="resize: none;" placeholder="답글 입력"></textarea>
+							<a class="btn btn-success btn-circle btn-sm" onclick="insertReply(${idx})" style="float:right">
+								<i class="fas fa-check" aria-hidden="true"></i>
+							</a>
+						</form>
+						`;
+						$(this).parent().after(replyDom);
+					} else {
+						$(this).parent().next().remove();
+					}
+
+
 				});
 			}, 'json');
-		}
-		/* 댓글 목록 S */
 
+			/* 댓글 목록 S */
+		}
 
 		var board = [[${board}]];
 		console.log('board = ' + JSON.stringify(board));
@@ -367,13 +388,22 @@
 
 		/* 댓글 등록 S */
 		function insertReply(idx) {
+			var answerNo;
+			var answerCn;
 			console.log('idx = ' + idx);
-			var answerCn = document.getElementById('answerCn');
-			if ( answerCn.value == null || answerCn.value == '') {
-				answerCn.setAttribute("placeholder", '댓글을 입력해주세요.');
-				answerCn.focus();
-				return false;
+			if(idx != undefined) { // 대댓글
+				answerCn = document.getElementById('replyCn');
+				answerNo = idx;
+			} else {	// 댓글
+				answerCn = document.getElementById('answerCn');
+				answerNo = null;
 			}
+			console.log('answerCn = ' + answerCn);
+			// if ( answerCn.value == null || answerCn.value == '') {
+			// 	answerCn.setAttribute("placeholder", '댓글을 입력해주세요.');
+			// 	answerCn.focus();
+			// 	return false;
+			// }
 
 			var uri = /*[[@{/reply}]]*/"";
 			var headers = {
