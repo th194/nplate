@@ -52,7 +52,7 @@ public class LoginController {
         try {
             // 로그인 되어있으면 -> 피드(임시로 myPage 지정)
             // 로그인 되어있지 않으면 -> 로그인 페이지
-            if ((boolean) session.getAttribute(Constants.IS_LOGIN) && session.getAttribute(Constants.MEMBER_DTO) != null) { // 로그인 되어있으면
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) { // 로그인 되어있으면
                 return "redirect:/feed";
             }
         } catch (Exception e) {
@@ -75,11 +75,11 @@ public class LoginController {
             HttpSession session = request.getSession();
 
             // 중복로그인 체크
-            SessionConfig.getSessionidCheck(Constants.MEMBER_DTO, dto.getId());
+            SessionConfig.getSessionidCheck(SessionConstants.MEMBER_DTO, dto.getId());
 
-            session.setAttribute(Constants.MEMBER_DTO, memberDTO);
-            session.setAttribute(Constants.MEMBER_ID, memberDTO.getId());
-            session.setAttribute(Constants.IS_LOGIN, true);
+            session.setAttribute(SessionConstants.MEMBER_DTO, memberDTO);
+            session.setAttribute(SessionConstants.MEMBER_ID, memberDTO.getId());
+            session.setAttribute(SessionConstants.IS_LOGIN, true);
 
             model.addAttribute("memberInfo", memberDTO);
 
@@ -114,9 +114,9 @@ public class LoginController {
     public String myPage(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
         try {
-            if ((boolean) session.getAttribute(Constants.IS_LOGIN) && session.getAttribute(Constants.MEMBER_DTO) != null) {
-                model.addAttribute("memberInfo", session.getAttribute(Constants.MEMBER_DTO));
-                String memberId = (String) session.getAttribute(Constants.MEMBER_ID);
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                model.addAttribute("memberInfo", session.getAttribute(SessionConstants.MEMBER_DTO));
+                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
 
                 // 좋아요 추가
                 List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
@@ -158,9 +158,9 @@ public class LoginController {
         System.out.println("내가 쓴 게시글 목록========");
         HttpSession session = request.getSession();
 
-        if ((boolean) session.getAttribute(Constants.IS_LOGIN) && session.getAttribute(Constants.MEMBER_DTO) != null) {
+        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
             try {
-                MemberDTO dto = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+                MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 String id = dto.getId();
                 params.setMemberId(id); // 내 아이디 세팅
 
@@ -195,7 +195,7 @@ public class LoginController {
     public String openBoardWrite(@RequestParam(value = "idx", required = false) Long idx, Model model, HttpServletRequest request) {
 
         HttpSession session = request.getSession();
-        MemberDTO memberDTO = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+        MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
 
         model.addAttribute("memberInfo", memberDTO);
 
@@ -217,7 +217,7 @@ public class LoginController {
 
 
         // 팔로잉 처리
-        String memberId = (String) session.getAttribute(Constants.MEMBER_ID);
+        String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
         List<String> followingIds = memberUtils.getFollowingMember(memberId);
         List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
         model.addAttribute("followingMembers", followingMembers);
@@ -232,8 +232,8 @@ public class LoginController {
         HttpSession session = request.getSession();
 
         try {
-            if ((boolean) session.getAttribute(Constants.IS_LOGIN) && session.getAttribute(Constants.MEMBER_DTO) != null) {
-                MemberDTO memberDTO = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
 
                 // 생일 처리
                 String birthday = memberDTO.getBirthday();
@@ -246,7 +246,7 @@ public class LoginController {
                 model.addAttribute("area", Area.values());
 
                 // 팔로잉 처리
-                String memberId = (String) session.getAttribute(Constants.MEMBER_ID);
+                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
                 List<String> followingIds = memberUtils.getFollowingMember(memberId);
                 List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
                 model.addAttribute("followingMembers", followingMembers);
@@ -270,10 +270,10 @@ public class LoginController {
 
         try {
             System.out.println("로그인 여부");
-            System.out.println(session.getAttribute(Constants.IS_LOGIN));
+            System.out.println(session.getAttribute(SessionConstants.IS_LOGIN));
 
-            if ((boolean) session.getAttribute(Constants.IS_LOGIN) && session.getAttribute(Constants.MEMBER_DTO) != null) {
-                MemberDTO memberDTO = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
 
                 // 생일 처리
                 String birthday = memberDTO.getBirthday();
@@ -286,7 +286,7 @@ public class LoginController {
                 model.addAttribute("area", Area.values());
 
                 // 팔로잉 처리
-                String memberId = (String) session.getAttribute(Constants.MEMBER_ID);
+                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
                 List<String> followingIds = memberUtils.getFollowingMember(memberId);
                 List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
                 model.addAttribute("followingMembers", followingMembers);
@@ -312,8 +312,8 @@ public class LoginController {
         String encPwd = memberUtils.encrypt(dto.getPwd());
 
         try {
-            if (session.getAttribute(Constants.MEMBER_DTO) != null) {
-                MemberDTO sessionDto = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+            if (session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                MemberDTO sessionDto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
 
                 if (Objects.equals(sessionDto.getId(), dto.getId()) && Objects.equals(sessionDto.getPwd(), encPwd)) {
                     memberService.deleteMember(dto.getId()); // 회원 DB 삭제처리
@@ -364,8 +364,8 @@ public class LoginController {
         String encPwd = memberUtils.encrypt(dto.getPwd());
 
         try {
-            if (session.getAttribute(Constants.MEMBER_DTO) != null) {
-                MemberDTO sessionDto = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+            if (session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                MemberDTO sessionDto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
 
                 if (Objects.equals(sessionDto.getId(), dto.getId()) && Objects.equals(sessionDto.getPwd(), encPwd)) {
                     dto.setPwd(memberUtils.encrypt(changePwd));

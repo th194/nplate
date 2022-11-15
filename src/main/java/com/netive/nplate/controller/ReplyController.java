@@ -3,7 +3,7 @@ package com.netive.nplate.controller;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.netive.nplate.domain.Constants;
+import com.netive.nplate.domain.SessionConstants;
 import com.netive.nplate.domain.MemberDTO;
 import com.netive.nplate.domain.ReplyDTO;
 import com.netive.nplate.service.ReplyService;
@@ -40,12 +40,12 @@ public class ReplyController {
         HttpSession session = request.getSession();
 
         System.out.println("로그인 체크 ====================== ");
-        System.out.println((boolean) session.getAttribute(Constants.IS_LOGIN));
+        System.out.println((boolean) session.getAttribute(SessionConstants.IS_LOGIN));
         System.out.println("로그인 체크 ====================== ");
 
-        if ((boolean) session.getAttribute(Constants.IS_LOGIN)) {
+        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN)) {
 
-            MemberDTO dto = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+            MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
             String id = dto.getId();
             System.out.println("로그인 id = " + id);
 
@@ -85,12 +85,12 @@ public class ReplyController {
         System.out.println(request);
 
         System.out.println("로그인 체크 ====================== ");
-        System.out.println((boolean) session.getAttribute(Constants.IS_LOGIN));
+        System.out.println((boolean) session.getAttribute(SessionConstants.IS_LOGIN));
         System.out.println("로그인 체크 ====================== ");
 
-        if ((boolean) session.getAttribute(Constants.IS_LOGIN)) {
+        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN)) {
             try {
-                MemberDTO dto = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+                MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 String id = dto.getId();
                 System.out.println("로그인 id = " + id);
 
@@ -142,12 +142,12 @@ public class ReplyController {
         System.out.println(request);
 
         System.out.println("로그인 체크 ====================== ");
-        System.out.println((boolean) session.getAttribute(Constants.IS_LOGIN));
+        System.out.println((boolean) session.getAttribute(SessionConstants.IS_LOGIN));
         System.out.println("로그인 체크 ====================== ");
 
-        if ((boolean) session.getAttribute(Constants.IS_LOGIN)) {
+        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN)) {
             try {
-                MemberDTO dto = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
+                MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 String id = dto.getId();
                 System.out.println("로그인 id = " + id);
 
