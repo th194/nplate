@@ -179,19 +179,29 @@ public class LoginController {
         if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
             try {
                 MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
-                String id = dto.getId();
-                params.setMemberId(id); // 내 아이디 세팅
+                String memberId = dto.getId();
+                params.setMemberId(memberId); // 내 아이디 세팅
 
-                // 좋아요 추가
-                List<Long> likeNumbers = boardUtils.getLikeNumbers(id);
-
-                model.addAttribute("likeNumbers", likeNumbers);
                 model.addAttribute("memberInfo", dto);
                 model.addAttribute("search", params);
 
-                // 팔로잉 처리
-                List<String> followingIds = memberUtils.getFollowingMember(id);
-                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                // 좋아요
+                List<Long> likeNumbers;
+                if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+                    likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+                } else {
+                    likeNumbers = boardUtils.getLikeNumbers(memberId);
+                }
+                model.addAttribute("likeNumbers", likeNumbers);
+
+                // 팔로잉 멤버 정보
+                List<MemberDTO> followingMembers;
+                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+                    followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+                } else {
+                    List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                }
                 model.addAttribute("followingMembers", followingMembers);
 
                 return "bootstrap-template/list";
@@ -236,8 +246,13 @@ public class LoginController {
 
         // 팔로잉 처리
         String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-        List<String> followingIds = memberUtils.getFollowingMember(memberId);
-        List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+        List<MemberDTO> followingMembers;
+        if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+            followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+        } else {
+            List<String> followingIds = memberUtils.getFollowingMember(memberId);
+            followingMembers = memberUtils.getFollowingsInfo(followingIds);
+        }
         model.addAttribute("followingMembers", followingMembers);
 
         return "bootstrap-template/write";
@@ -265,9 +280,15 @@ public class LoginController {
 
                 // 팔로잉 처리
                 String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-                List<String> followingIds = memberUtils.getFollowingMember(memberId);
-                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                List<MemberDTO> followingMembers;
+                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+                    followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+                } else {
+                    List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                }
                 model.addAttribute("followingMembers", followingMembers);
+
                 return "bootstrap-template/myInfo";
             } else {
                 return "member/error";
@@ -305,8 +326,13 @@ public class LoginController {
 
                 // 팔로잉 처리
                 String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-                List<String> followingIds = memberUtils.getFollowingMember(memberId);
-                List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                List<MemberDTO> followingMembers;
+                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+                    followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+                } else {
+                    List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                }
                 model.addAttribute("followingMembers", followingMembers);
 
                 return "bootstrap-template/updateForm";
