@@ -49,7 +49,7 @@ public class MemberController {
     @GetMapping("/list")
     public String list(Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        String id = (String) session.getAttribute("MEMBER_ID");
+        String id = (String) session.getAttribute(Constants.MEMBER_ID);
         if (Objects.equals(id, "admin")) {
             List<MemberDTO> memberList = memberService.getMemberList();
             model.addAttribute("memberList", memberList);
@@ -208,8 +208,8 @@ public class MemberController {
         HttpSession session = request.getSession();
 
         try {
-            if ((boolean) session.getAttribute("IS_LOGIN") && session.getAttribute("MEMBER_DTO") != null) {
-                MemberDTO memberDTO = (MemberDTO) session.getAttribute("MEMBER_DTO");
+            if ((boolean) session.getAttribute(Constants.IS_LOGIN) && session.getAttribute(Constants.MEMBER_DTO) != null) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute(Constants.MEMBER_DTO);
                 model.addAttribute("memberInfo", memberDTO);
 
                 // 좋아요 추가
@@ -224,7 +224,7 @@ public class MemberController {
                 model.addAttribute("search", searchDTO);
                 
                 // 팔로잉 여부
-                String memberId = String.valueOf( session.getAttribute("MEMBER_ID") ) ;
+                String memberId = String.valueOf( session.getAttribute(Constants.MEMBER_ID) ) ;
                 List<String> following = memberUtils.getFollowingMember(memberId);
                 boolean isFollowing = following.contains(id);
                 model.addAttribute("isFollowing", isFollowing);
@@ -250,8 +250,8 @@ public class MemberController {
         System.out.println("팔로잉 할 아이디" + id);
 
         HttpSession session = request.getSession();
-        if ((boolean) session.getAttribute("IS_LOGIN") && session.getAttribute("MEMBER_ID") != null) {
-            String memberId = String.valueOf( session.getAttribute("MEMBER_ID") ) ;
+        if ((boolean) session.getAttribute(Constants.IS_LOGIN) && session.getAttribute(Constants.MEMBER_ID) != null) {
+            String memberId = String.valueOf( session.getAttribute(Constants.MEMBER_ID) ) ;
             FollowingDTO followingDTO = new FollowingDTO(memberId, id);
 
             int result = followingService.followMember(followingDTO);
@@ -275,8 +275,8 @@ public class MemberController {
         System.out.println("언팔로잉 할 아이디" + id);
 
         HttpSession session = request.getSession();
-        if ((boolean) session.getAttribute("IS_LOGIN") && session.getAttribute("MEMBER_ID") != null) {
-            String memberId = String.valueOf( session.getAttribute("MEMBER_ID") ) ;
+        if ((boolean) session.getAttribute(Constants.IS_LOGIN) && session.getAttribute(Constants.MEMBER_ID) != null) {
+            String memberId = String.valueOf( session.getAttribute(Constants.MEMBER_ID) ) ;
             FollowingDTO followingDTO = new FollowingDTO(memberId, id);
 
             int result = followingService.unfollowMember(followingDTO);
