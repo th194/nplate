@@ -78,7 +78,7 @@ public class LoginController {
             SessionConfig.getSessionidCheck("member", dto.getId());
 
             session.setAttribute("member", memberDTO);
-            session.setAttribute("memberID", memberDTO.getId());
+            session.setAttribute("MEMBER_ID", memberDTO.getId());
             session.setAttribute("isLogOn", true);
 
             model.addAttribute("memberInfo", memberDTO);
@@ -116,7 +116,7 @@ public class LoginController {
         try {
             if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
                 model.addAttribute("memberInfo", session.getAttribute("member"));
-                String memberId = (String) session.getAttribute("memberID");
+                String memberId = (String) session.getAttribute("MEMBER_ID");
 
                 // 좋아요 추가
                 List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
@@ -217,7 +217,7 @@ public class LoginController {
 
 
         // 팔로잉 처리
-        String memberId = (String) session.getAttribute("memberID");
+        String memberId = (String) session.getAttribute("MEMBER_ID");
         List<String> followingIds = memberUtils.getFollowingMember(memberId);
         List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
         model.addAttribute("followingMembers", followingMembers);
@@ -246,7 +246,7 @@ public class LoginController {
                 model.addAttribute("area", Area.values());
 
                 // 팔로잉 처리
-                String memberId = (String) session.getAttribute("memberID");
+                String memberId = (String) session.getAttribute("MEMBER_ID");
                 List<String> followingIds = memberUtils.getFollowingMember(memberId);
                 List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
                 model.addAttribute("followingMembers", followingMembers);
@@ -286,7 +286,7 @@ public class LoginController {
                 model.addAttribute("area", Area.values());
 
                 // 팔로잉 처리
-                String memberId = (String) session.getAttribute("memberID");
+                String memberId = (String) session.getAttribute("MEMBER_ID");
                 List<String> followingIds = memberUtils.getFollowingMember(memberId);
                 List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
                 model.addAttribute("followingMembers", followingMembers);

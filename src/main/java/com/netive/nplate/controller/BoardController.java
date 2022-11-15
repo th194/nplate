@@ -142,7 +142,7 @@ public class BoardController {
 		if ((boolean) session.getAttribute("isLogOn") && session.getAttribute("member") != null) {
 			try {
 				List<BoardDTO> boardList;
-				String memberId = String.valueOf( session.getAttribute("memberID") ) ;
+				String memberId = String.valueOf( session.getAttribute("MEMBER_ID") ) ;
 
 
 
@@ -226,7 +226,7 @@ public class BoardController {
 		model.addAttribute("board", board);
 
 		// todo 매번 글 불러올때마다 하지말고 한번만 하는걸로 처리 수정
-		String memberId = String.valueOf( session.getAttribute("memberID") ) ;
+		String memberId = String.valueOf( session.getAttribute("MEMBER_ID") ) ;
 		List<String> following = memberUtils.getFollowingMember(memberId);
 		boolean isFollowing = following.contains(board.getBbscttWrter());
 		System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
@@ -507,7 +507,7 @@ public class BoardController {
 
 
 				// 팔로잉 처리
-				String memberId = (String) session.getAttribute("memberID");
+				String memberId = (String) session.getAttribute("MEMBER_ID");
 				List<String> followingIds = memberUtils.getFollowingMember(memberId);
 				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
 				model.addAttribute("followingMembers", followingMembers);
@@ -551,7 +551,7 @@ public class BoardController {
 				model.addAttribute("search", params);
 
 				// 팔로잉 처리
-				String memberId = (String) session.getAttribute("memberID");
+				String memberId = (String) session.getAttribute("MEMBER_ID");
 				List<String> followingIds = memberUtils.getFollowingMember(memberId);
 				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
 				model.addAttribute("followingMembers", followingMembers);
@@ -590,7 +590,7 @@ public class BoardController {
 				model.addAttribute("search", searchDTO);
 
 				// 팔로잉 처리
-				String memberId = (String) session.getAttribute("memberID");
+				String memberId = (String) session.getAttribute("MEMBER_ID");
 				List<String> followingIds = memberUtils.getFollowingMember(memberId);
 				List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
 				model.addAttribute("followingMembers", followingMembers);
