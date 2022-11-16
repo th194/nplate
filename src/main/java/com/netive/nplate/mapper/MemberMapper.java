@@ -35,4 +35,7 @@ public interface MemberMapper {
 
     // 회원(팔로잉) 닉네임 조회
     List<MemberDTO> getFollowingInfo(Map map);
+
+    // 회원 정보 보기(ID, 닉네임만 조회)
+    MemberDTO getUserInfo(String id);
 }

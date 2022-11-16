@@ -60,4 +60,9 @@ public class MemberServiceImpl implements MemberService {
     public List<MemberDTO> getFollowingInfo(Map map) {
         return memberMapper.getFollowingInfo(map);
     }
+
+    @Override
+    public MemberDTO getUserInfo(String id) {
+        return memberMapper.getUserInfo(id);
+    }
 }

@@ -25,10 +25,7 @@
 		// 조회 목록
 		function drawList() {
 			console.log('isFlag = ' + isFlag);
-
 			var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
-			var memberInfo = [[${memberInfo}]]; // todo 안쓰면 삭제
-
 			var search = [[${search}]];
 
 			var post = {
@@ -114,18 +111,33 @@
 
 						$('#post-container').append(html);
 
-							// 좋아요 클릭 이벤트 추가
-							var likeBtns = document.querySelectorAll('.like-btn');
-							likeBtns.forEach((btn) => {
-								btn.onclick = likePost;
+						// 좋아요 클릭 이벤트 추가
+						var likeBtns = document.querySelectorAll('.like-btn');
+						likeBtns.forEach((btn) => {
+							btn.onclick = likePost;
+						});
+
+						// 해시태그 클릭 이벤트 추가
+						var tags = document.querySelectorAll('.hash-tag');
+						tags.forEach( (tag) => {
+							tag.onclick = clickTag;
+						});
+
+						// 유저 페이지 최근 해시태그 처리
+						if (page === 0 && $('#recentTag').length) {
+							var recentTag = '';
+
+							$.each(tags, function (index, tag) {
+								if (index < 10) {
+									recentTag += $(tag).html() + ' ';
+								} else {
+									return false;
+								}
 							});
 
-							// 해시태그 클릭 이벤트 추가
-							var tags = document.querySelectorAll('.hash-tag');
-							tags.forEach( (tag) => {
-								tag.onclick = clickTag;
-							});
-						},
+							$('#recentTag').html(recentTag);
+						}
+					},
 
 					error   : function (err) {
 						console.log('err = ' + JSON.stringify(err));

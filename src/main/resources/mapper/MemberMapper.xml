@@ -76,4 +76,9 @@
         </foreach>
     </select>
 
+    <!-- 팔로잉 멤버 닉네임 조회 -->
+    <select id="getUserInfo" parameterType="String" resultMap="memResult">
+        select MBER_ID, MBER_NCNM from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
+    </select>
+
 </mapper>

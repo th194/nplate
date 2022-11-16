@@ -212,9 +212,8 @@ public class MemberController {
                 MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 model.addAttribute("memberInfo", memberDTO);
 
-                // 아이디로 멤버 정보 조회, searchDTO 값 세팅
-                // todo 비밀번호까지 다 가져오는데 필요한 정보만 가져오도록 수정
-                MemberDTO userDTO = memberService.getMemberInfo(id);
+                // 아이디로 멤버 정보 조회
+                MemberDTO userDTO = memberService.getUserInfo(id);
                 model.addAttribute("userInfo", userDTO);
 
                 // 리스트 타입(유저페이지: 특정유저 글)
