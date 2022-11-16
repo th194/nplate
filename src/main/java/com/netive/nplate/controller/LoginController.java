@@ -150,13 +150,17 @@ public class LoginController {
                 }
                 model.addAttribute("likeNumbers", likeNumbers);
 
-                // 팔로잉 멤버 정보
-                List<MemberDTO> followingMembers;
+                // 팔로잉 처리
+                List<MemberDTO> followingMembers = new ArrayList<>();
                 if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
                     followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
                 } else {
                     List<String> followingIds = memberUtils.getFollowingMember(memberId);
-                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    if (followingIds.size() > 0) {
+                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    }
+                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
                 }
                 model.addAttribute("followingMembers", followingMembers);
 
@@ -204,13 +208,17 @@ public class LoginController {
                 }
                 model.addAttribute("likeNumbers", likeNumbers);
 
-                // 팔로잉 멤버 정보
-                List<MemberDTO> followingMembers;
+                // 팔로잉 처리
+                List<MemberDTO> followingMembers = new ArrayList<>();
                 if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
                     followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
                 } else {
                     List<String> followingIds = memberUtils.getFollowingMember(memberId);
-                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    if (followingIds.size() > 0) {
+                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    }
+                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
                 }
                 model.addAttribute("followingMembers", followingMembers);
 
@@ -256,12 +264,17 @@ public class LoginController {
 
         // 팔로잉 처리
         String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-        List<MemberDTO> followingMembers;
+
+        List<MemberDTO> followingMembers = new ArrayList<>();
         if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
             followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
         } else {
             List<String> followingIds = memberUtils.getFollowingMember(memberId);
-            followingMembers = memberUtils.getFollowingsInfo(followingIds);
+            if (followingIds.size() > 0) {
+                followingMembers = memberUtils.getFollowingsInfo(followingIds);
+            }
+            session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+            session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
         }
         model.addAttribute("followingMembers", followingMembers);
 
@@ -290,12 +303,17 @@ public class LoginController {
 
                 // 팔로잉 처리
                 String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-                List<MemberDTO> followingMembers;
+
+                List<MemberDTO> followingMembers = new ArrayList<>();
                 if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
                     followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
                 } else {
                     List<String> followingIds = memberUtils.getFollowingMember(memberId);
-                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    if (followingIds.size() > 0) {
+                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    }
+                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
                 }
                 model.addAttribute("followingMembers", followingMembers);
 
@@ -336,12 +354,17 @@ public class LoginController {
 
                 // 팔로잉 처리
                 String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-                List<MemberDTO> followingMembers;
+
+                List<MemberDTO> followingMembers = new ArrayList<>();
                 if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
                     followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
                 } else {
                     List<String> followingIds = memberUtils.getFollowingMember(memberId);
-                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    if (followingIds.size() > 0) {
+                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    }
+                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
                 }
                 model.addAttribute("followingMembers", followingMembers);
 

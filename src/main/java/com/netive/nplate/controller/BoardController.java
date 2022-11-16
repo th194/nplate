@@ -141,7 +141,7 @@ public class BoardController {
 
 		if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
 			try {
-				List<BoardDTO> boardList;
+				List<BoardDTO> boardList = new ArrayList<>();
 				String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
 				
 				switch (params.getSearchType()) {
@@ -167,8 +167,6 @@ public class BoardController {
 
 						if (followingIds.size() != 0) {
 							boardList = boardService.getBordListByIds(followingMap);
-						} else {
-							boardList = null;
 						}
 						System.out.println("글목록 크기:" + boardList.size());
 						break;
@@ -189,8 +187,6 @@ public class BoardController {
 
 						if (likeNumbers.size() != 0) {
 							boardList = loginService.getLikes(likeMap);
-						} else {
-							boardList = null;
 						}
 						System.out.println("글목록 크기:" + boardList.size());
 						// todo likePosts 좋아요 누른 순서대로 정렬되게 처리 추가
@@ -238,18 +234,23 @@ public class BoardController {
 			followingIds = (List<String>) session.getAttribute(SessionConstants.FOLLOWING_IDS);
 		} else {
 			followingIds = memberUtils.getFollowingMember(memberId);
+			session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
 		}
 		boolean isFollowing = followingIds.contains(board.getBbscttWrter());
 		System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
 		model.addAttribute("isFollowing", isFollowing);
 
 		// 메뉴 팔로잉 처리
-		List<MemberDTO> followingMembers;
+		List<MemberDTO> followingMembers = new ArrayList<>();
 		if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
 			followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
 		} else {
-			followingMembers = memberUtils.getFollowingsInfo(followingIds);
+			if (followingIds.size() > 0) {
+				followingMembers = memberUtils.getFollowingsInfo(followingIds);
+			}
+			session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
 		}
+
 		model.addAttribute("followingMembers", followingMembers);
 
 		boardService.cntPlus(idx); // 조회수 증가 추가
@@ -534,12 +535,16 @@ public class BoardController {
 				model.addAttribute("likeNumbers", likeNumbers);
 
 				// 팔로잉 처리
-				List<MemberDTO> followingMembers;
+				List<MemberDTO> followingMembers = new ArrayList<>();
 				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
 					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
 				} else {
 					List<String> followingIds = memberUtils.getFollowingMember(memberId);
-					followingMembers = memberUtils.getFollowingsInfo(followingIds);
+					if (followingIds.size() > 0) {
+						followingMembers = memberUtils.getFollowingsInfo(followingIds);
+					}
+					session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+					session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
 				}
 				model.addAttribute("followingMembers", followingMembers);
 
@@ -587,12 +592,16 @@ public class BoardController {
 
 
 				// 팔로잉 처리
-				List<MemberDTO> followingMembers;
+				List<MemberDTO> followingMembers = new ArrayList<>();
 				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
 					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
 				} else {
 					List<String> followingIds = memberUtils.getFollowingMember(memberId);
-					followingMembers = memberUtils.getFollowingsInfo(followingIds);
+					if (followingIds.size() > 0) {
+						followingMembers = memberUtils.getFollowingsInfo(followingIds);
+					}
+					session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+					session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
 				}
 				model.addAttribute("followingMembers", followingMembers);
 
@@ -636,12 +645,16 @@ public class BoardController {
 				model.addAttribute("likeNumbers", likeNumbers);
 
 				// 팔로잉 처리
-				List<MemberDTO> followingMembers;
+				List<MemberDTO> followingMembers = new ArrayList<>();
 				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
 					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
 				} else {
 					List<String> followingIds = memberUtils.getFollowingMember(memberId);
-					followingMembers = memberUtils.getFollowingsInfo(followingIds);
+					if (followingIds.size() > 0) {
+						followingMembers = memberUtils.getFollowingsInfo(followingIds);
+					}
+					session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+					session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
 				}
 				model.addAttribute("followingMembers", followingMembers);
 

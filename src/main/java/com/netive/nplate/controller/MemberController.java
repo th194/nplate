@@ -239,18 +239,23 @@ public class MemberController {
                     followingIds = (List<String>) session.getAttribute(SessionConstants.FOLLOWING_IDS);
                 } else {
                     followingIds = memberUtils.getFollowingMember(memberId);
+                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
                 }
                 boolean isFollowing = followingIds.contains(id);
                 System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
                 model.addAttribute("isFollowing", isFollowing);
 
                 // 메뉴 팔로잉 처리
-                List<MemberDTO> followingMembers;
+                List<MemberDTO> followingMembers = new ArrayList<>();
                 if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
                     followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
                 } else {
-                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    if (followingIds.size() > 0) {
+                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    }
+                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
                 }
+
                 model.addAttribute("followingMembers", followingMembers);
 
                 return "bootstrap-template/userInfo";
