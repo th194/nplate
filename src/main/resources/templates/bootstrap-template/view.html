@@ -153,7 +153,6 @@
 		function replyList() {
 			var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
 			var replyHtml = '';
-			var replyHtml2 = '';
 
 			console.log('목록 uri = ' + uri);
 
@@ -164,8 +163,8 @@
 					console.log('로그인 사용자 = ' + loginMember);
 					$(response.replyList).each(function (idx, reply) {
 						replyHtml += `
-							<div class="d-flex mb-4" data-index="${reply.answerNo}">
-								<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+							<div class="d-flex" data-index="${reply.answerNo}">
+								<div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${reply.answerWrter}" alt="..." /></div>
 								<div class="ms-3">
 									<div class="fw-bold">${reply.answerWrter}</div>
 									${reply.answerCn}
@@ -230,12 +229,12 @@
 				hashTagList = (board.bbscttHashtag).split(',');
 				hashTagList.forEach((value) => {
 					hashTagListDom += `
-							<a class="badge bg-secondary text-decoration-none link-light" href="#!">${value}</a>
+							<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" href="#!">${value}</a>
 						`;
 				});
 			} else {
 				hashTagList = board.bbscttHashtag;
-				hashTagListDom += `<a class="badge bg-secondary text-decoration-none link-light" href="#!">${hashTagList}</a>`;
+				hashTagListDom += `<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" href="#!">${hashTagList}</a>`;
 			}
 			$('#hashAfter').before(hashTagListDom);
 			hashTagListDom = '';
