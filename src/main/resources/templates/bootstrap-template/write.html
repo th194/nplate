@@ -20,7 +20,7 @@
             <div class="form-group">
                 <label for="bbscttSj" class="col-sm-2 control-label">제목</label>
                 <div class="col-sm-10">
-                    <input type="text" id="bbscttSj" name="bbscttSj" class="form-control" placeholder="제목을 입력해 주세요."/>
+                    <input type="text" id="bbscttSj" name="bbscttSj" class="form-control" placeholder="제목을 입력해주세요."/>
                 </div>
             </div>
 
@@ -120,11 +120,15 @@
                 oAppRef      : oEditors,
                 elPlaceHolder: 'bbscttCn',
                 sSkinURI     : '/smarteditor/SmartEditor2Skin.html',
-                fCreator     : 'createSEditor2'
+                fCreator     : 'createSEditor2',
+                htParams: {
+                    bUseToolbar : true,					// 툴바 사용 여부 (true : 사용 / false : 사용하지 않음)
+                    bUseVerticalResizer : true,			// 입력창 크기 조절바 사용 여부 ( true : 사용 / false : 사용하지 않음)
+                    bUseModeChanger : false				// 모드 탭 (Editor | HTML | TEXT ) 사용 여부 (true : 사용 / false : 사용하지 않음)
+                },
             });
         }
         smartEditor();
-
         /* smartEditor */
 
 
@@ -132,55 +136,69 @@
             oEditors.getById['bbscttCn'].exec('UPDATE_CONTENTS_FIELD', []);
 
             var form = document.getElementById('saveForm');
+            var subject = $('#bbscttSj');
+
             // textarea 값 가져오기
-            var content = document.getElementById('bbscttCn').value;
+            var content = $('#bbscttCn');
 
+            console.log('content.val = ' + content.val());
             // <p>태그 <br>로 바꾸기
-            var contentVal = content.replace(/<\/p><p>/gi, "<br>");
-
-
-            if (content == '') {
-                alert('내용을 입력해주세요');
-                oEditors.getById['bbscttCn'].exec('FOCUS');
+            // var contentVal = content.val().replace(/<\/p><p>/gi, "<br>");
+            if(subject.val() == '' || subject.val() == null) {
+                alert('제목을 입력해주세요.');
+                subject.focus();
                 return;
-            } else {
-
-                var text = oEditors.getById['bbscttCn'].getIR();
-                var $text = $(text);
-                var srcArr = [];
-                if($text.find('img').length > 0) {
-                    var img = $text.find('img');
-                    console.log(img);
-                    for(var i = 0; i < img.length; i ++) {
-                        srcArr.push(img[i].src);
-                    }
-                } else {
-                    alert('이미지를 반드시 등록해주세요.');
-                    return;
-                }
-
-                var src = img.attr('src');
-
-                $('#bbscttImage').val(src);
-                console.log('srcReplace = ' + src);
-
-
-                var bbscttHashTag = marginTag();
-                $('#bbscttHashtag').val(bbscttHashTag);
-
-                // 글 등록/수정 action 변경
-                var board = [[${board}]];
-                var memberInfo = [[${memberInfo}]]
-                $('#bbscttWrter').val(memberInfo.id);
-                if(board == null) {
-                    form.action = '/board/register.do';
-                } else {
-
-                    form.action = '/board/update.do';
-                }
-                form.submit();
             }
+
+            var text = oEditors.getById['bbscttCn'].getIR();
+            var $text = $(text);
+            var srcArr = [];
+            if($text.find('img').length > 0) {
+                var img = $text.find('img');
+                console.log(img);
+                for(var i = 0; i < img.length; i ++) {
+                    srcArr.push(img[i].src);
+                }
+            } else {
+                alert('이미지를 반드시 등록해주세요.');
+                return;
+            }
+
+            var src = img.attr('src');
+
+            $('#bbscttImage').val(src);
+            console.log('srcReplace = ' + src);
+
+
+            var bbscttHashTag = marginTag();
+            $('#bbscttHashtag').val(bbscttHashTag);
+
+            // 글 등록/수정 action 변경
+            var board = [[${board}]];
+            var memberInfo = [[${memberInfo}]]
+            $('#bbscttWrter').val(memberInfo.id);
+            if(board == null) {
+                form.action = '/board/register.do'; // 등록
+            } else {
+                form.action = '/board/update.do';   // 수정
+            }
+            form.submit();
         }
+
+        // 에디터에 있는 textarea 값 체크가 안됨..
+        // function valid(...target) {
+        //     target.forEach((val, index) => {
+        //         if( val.val() == '' || val.val() == null) {
+        //             console.log('index = ' + index);
+        //             console.log(val.val());
+        //             target[index].addClass('is-invalid');
+        //             target[index].focus();
+        //             return false;
+        //         } else {
+        //             return true;
+        //         }
+        //     })
+        // }
 
         /* 해시태그 시작 */
         var tag = {};
@@ -380,4 +398,5 @@
         /*]]>*/
     </script>
 </th:block>
+
 </html>

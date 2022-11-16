@@ -230,12 +230,12 @@
 				hashTagList = (board.bbscttHashtag).split(',');
 				hashTagList.forEach((value) => {
 					hashTagListDom += `
-							<a class="badge bg-secondary text-decoration-none link-light" href="#!">${value}</a>
+							<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" href="#!">${value}</a>
 						`;
 				});
 			} else {
 				hashTagList = board.bbscttHashtag;
-				hashTagListDom += `<a class="badge bg-secondary text-decoration-none link-light" href="#!">${hashTagList}</a>`;
+				hashTagListDom += `<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" href="#!">${hashTagList}</a>`;
 			}
 			$('#hashAfter').before(hashTagListDom);
 			hashTagListDom = '';
