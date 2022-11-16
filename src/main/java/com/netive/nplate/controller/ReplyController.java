@@ -52,11 +52,6 @@ public class ReplyController {
 
             List<ReplyDTO> replyList = replyService.getReplyList(params);
             if(CollectionUtils.isEmpty(replyList) == false) {
-
-            // JSON 날짜 형식 지정 ( 혹시 필요하다면 사용..)
-//            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeAdapter()).create();
-//            JsonArray jsonArr = gson.toJsonTree(replyList).getAsJsonArray();
-
                 JsonArray jsonArr = new Gson().toJsonTree(replyList).getAsJsonArray();
                 jsonObj.add("replyList", jsonArr);
             }
@@ -93,16 +88,6 @@ public class ReplyController {
                 MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 String id = dto.getId();
                 System.out.println("로그인 id = " + id);
-
-                // 원글의 댓글 등록
-                if (params.getAnswerNo() == null) {
-                    params.setAnswerGroup(params.getBbscttNo().intValue()); // 게시글 번호를 댓글 그룹으로
-                    params.setAnswerGroupDp(0); // 원글의 댓글
-                // 댓글의 댓글 등록
-                } else {
-                    params.setAnswerGroup(params.getAnswerNo().intValue()); // 댓글 번호를 댓글 그룹으로
-                    params.setAnswerGroupDp(1); // 댓글의 댓글
-                }
 
                 boolean isRegisterd = replyService.registerReply(params);
                 jsonObj.addProperty("result", isRegisterd);

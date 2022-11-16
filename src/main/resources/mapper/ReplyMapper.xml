@@ -4,9 +4,6 @@
     <sql id="replyColumns">
         ANSWER_NO,
         BBSCTT_NO,
-        ANSWER_GROUP,
-        ANSWER_GROUP_DP,
-        ANSWER_DELETE_AT,
         ANSWER_CN,
         ANSWER_WRTER,
         ANSWER_RGSDE,
@@ -17,20 +14,11 @@
     <insert id="insertReply" parameterType="ReplyDTO">
         INSERT INTO NETIVE_PROJECT01_REPLY
         (
-            BBSCTT_NO,
-            ANSWER_GROUP,
-            ANSWER_GROUP_DP,
-            ANSWER_DELETE_AT,
-            ANSWER_CN,
-            ANSWER_WRTER,
-            ANSWER_RGSDE,
-            ANSWER_UPDDE
+            <include refid="replyColumns"></include>
         )
         VALUES (
+            #{answerNo},
             #{bbscttNo},
-            #{answerGroup},
-            #{answerGroupDp},
-            IFNULL(#{answerDeleteAt}, 'N'),
             #{answerCn},
             #{answerWrter},
             NOW(),
