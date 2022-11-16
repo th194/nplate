@@ -63,9 +63,9 @@
 				</li>
 
 				<!-- Divider -->
-				<hr class="sidebar-divider">
+				<hr class="sidebar-divider js-following">
 
-				<li class="nav-item">
+				<li class="nav-item js-following">
 					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#followingPages"
 					   aria-expanded="true" aria-controls="followingPages">
 						<i class="bi bi-people"></i>
@@ -342,6 +342,14 @@
 
 
 		<script th:inline="javascript">
+			// 팔로잉 없을 경우 팔로잉 메뉴 가리기
+			$(document).ready(function (){
+				var followingMembers = [[${followingMembers}]]; // 팔로잉멤버
+				if (followingMembers.length === 0) {
+					$('.js-following').hide();
+				}
+			});
+
 			/* 페이지 이동 S */
 			function movePage() {
 				var form = document.getElementById('searchForm');

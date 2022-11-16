@@ -66,53 +66,63 @@ public class LoginController {
     // 로그인 후 마이페이지 이동
     @PostMapping("/feed")
     public String login(MemberDTO dto, Model model, HttpServletRequest request) throws NoSuchAlgorithmException {
-        // 비밀번호 암호화 처리 추가
-        String encPwd = memberUtils.encrypt(dto.getPwd());
+        try {
+            // 비밀번호 암호화 처리 추가
+            String encPwd = memberUtils.encrypt(dto.getPwd());
 
-        MemberDTO memberDTO = memberService.login(dto.getId(), encPwd);
+            MemberDTO memberDTO = memberService.login(dto.getId(), encPwd);
 
-        if(memberDTO != null) {
-            HttpSession session = request.getSession();
+            if(memberDTO != null) {
+                HttpSession session = request.getSession();
 
-            // 중복로그인 체크
-            SessionConfig.getSessionidCheck(SessionConstants.MEMBER_DTO, dto.getId());
+                // 중복로그인 체크
+                SessionConfig.getSessionidCheck(SessionConstants.MEMBER_DTO, dto.getId());
 
-            session.setAttribute(SessionConstants.MEMBER_DTO, memberDTO);
-            session.setAttribute(SessionConstants.MEMBER_ID, memberDTO.getId());
-            session.setAttribute(SessionConstants.IS_LOGIN, true);
+                session.setAttribute(SessionConstants.MEMBER_DTO, memberDTO);
+                session.setAttribute(SessionConstants.MEMBER_ID, memberDTO.getId());
+                session.setAttribute(SessionConstants.IS_LOGIN, true);
 
-            model.addAttribute("memberInfo", memberDTO);
+                model.addAttribute("memberInfo", memberDTO);
 
-            String memberId = memberDTO.getId();
+                String memberId = memberDTO.getId();
 
-            // todo 중복소스 처리하기
-            
-            // 리스트 타입(피드: 팔로잉)
-            SearchDTO searchDTO = new SearchDTO(memberId);
-            searchDTO.setSearchType("following");
-            model.addAttribute("search", searchDTO);
+                // todo 중복소스 처리하기
 
-            // 좋아요
-            List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
-            model.addAttribute("likeNumbers", likeNumbers);
-            session.setAttribute(SessionConstants.LIKE_NUMBERS, likeNumbers);
-            // 세션에 저장된 값 있으면 다시 DB 조회 하지 않음(좋아요 추가 및 삭제시 세션에 저장된 값 갱신)
+                // 리스트 타입(피드: 팔로잉)
+                SearchDTO searchDTO = new SearchDTO(memberId);
+                searchDTO.setSearchType("following");
+                model.addAttribute("search", searchDTO);
 
-            // 팔로잉 멤버
-            List<String> followingIds = memberUtils.getFollowingMember(memberId);
-            List<MemberDTO> followingMembers = memberUtils.getFollowingsInfo(followingIds);
-            model.addAttribute("followingMembers", followingMembers);
-            session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
-            session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
-            // 세션에 저장된 값 있으면 다시 DB 조회 하지 않음(팔로잉 추가 및 삭제시 세션에 저장된 값 갱신)
+                // 좋아요
+                List<Long> likeNumbers = boardUtils.getLikeNumbers(memberId);
+                model.addAttribute("likeNumbers", likeNumbers);
+                session.setAttribute(SessionConstants.LIKE_NUMBERS, likeNumbers);
+                // 세션에 저장된 값 있으면 다시 DB 조회 하지 않음(좋아요 추가 및 삭제시 세션에 저장된 값 갱신)
 
-            return "bootstrap-template/list";
+                // 팔로잉 멤버
+                List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                List<MemberDTO> followingMembers = new ArrayList<>();
+                if (followingIds.size() > 0) {
+                    followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                }
 
-        } else {
-            model.addAttribute("message", "아이디와 비밀번호를 다시 확인해주세요.");
-            model.addAttribute("url", "/");
-            return "member/error";
+                model.addAttribute("followingMembers", followingMembers);
+                session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+                session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
+                // 세션에 저장된 값 있으면 다시 DB 조회 하지 않음(팔로잉 추가 및 삭제시 세션에 저장된 값 갱신)
+
+                return "bootstrap-template/list";
+
+            } else {
+                model.addAttribute("message", "아이디와 비밀번호를 다시 확인해주세요.");
+                model.addAttribute("url", "/");
+            }
+
+        } catch (Exception e) {
+//            e.printStackTrace();
         }
+        return "member/error";
+
     }
 
 
