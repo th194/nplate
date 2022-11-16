@@ -153,7 +153,6 @@
 		function replyList() {
 			var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
 			var replyHtml = '';
-			var replyHtml2 = '';
 
 			console.log('목록 uri = ' + uri);
 
@@ -164,8 +163,8 @@
 					console.log('로그인 사용자 = ' + loginMember);
 					$(response.replyList).each(function (idx, reply) {
 						replyHtml += `
-							<div class="d-flex mb-4" data-index="${reply.answerNo}">
-								<div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+							<div class="d-flex" data-index="${reply.answerNo}">
+								<div class="flex-shrink-0"><img class="rounded-circle" src="/member/info/profile?id=${reply.answerWrter}" alt="..." /></div>
 								<div class="ms-3">
 									<div class="fw-bold">${reply.answerWrter}</div>
 									${reply.answerCn}
