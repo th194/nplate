@@ -164,7 +164,7 @@
 					$(response.replyList).each(function (idx, reply) {
 						replyHtml += `
 							<div class="d-flex" data-index="${reply.answerNo}">
-								<div class="flex-shrink-0"><img class="rounded-circle" src="/member/info/profile?id=${reply.answerWrter}" alt="..." /></div>
+								<div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${reply.answerWrter}" alt="..." /></div>
 								<div class="ms-3">
 									<div class="fw-bold">${reply.answerWrter}</div>
 									${reply.answerCn}
