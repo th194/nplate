@@ -41,7 +41,7 @@
 		<!-- Page content-->
 		<div class="container mt-5">
 			<div class="col">
-				<div class="col-lg-8">
+				<div class="col-lg-12">
 					<!-- Post content-->
 					<article>
 						<!-- Post header-->
@@ -51,7 +51,7 @@
 							<!-- Post meta content-->
 							<div class="text-muted fst-italic mb-2" th:text="|*{bbscttRgsde} *{bbscttWrter}|"></div>
 
-							<!--								<div class="text-muted fst-italic mb-2" th:text="*{bbscttWrter}"></div>-->
+							<!-- <div class="text-muted fst-italic mb-2" th:text="*{bbscttWrter}"></div> -->
 
 							<div class="form-group" id="hashAfter">
 								<label for="rate1" class="col-sm-2 control-label">평점</label>
@@ -176,10 +176,10 @@
 								<a class="btn btn-info btn-circle btn-sm right-flex" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
 									<i class="fas fa-info-circle" aria-hidden="true"></i>
 								</a>
-								<div style="align-self: flex-end">${reply.answerRgsde}</div>
 							`;
 						}
 						replyHtml += `
+									<div class="right-flex" style="align-self: flex-end">${reply.answerRgsde}</div>
 								</div>
 							`;
 					});
