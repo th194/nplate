@@ -50,7 +50,7 @@ public class LoginController {
     public String index(HttpServletRequest request) throws IOException {
         HttpSession session = request.getSession();
         try {
-            // 로그인 되어있으면 -> 피드(임시로 myPage 지정)
+            // 로그인 되어있으면 -> 피드
             // 로그인 되어있지 않으면 -> 로그인 페이지
             if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) { // 로그인 되어있으면
                 return "redirect:/feed";

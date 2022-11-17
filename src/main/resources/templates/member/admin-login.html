@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="member/layout/basic">
 <th:block layout:fragment="title">
-    <title>로그인</title>
+    <title>admin 로그인</title>
 </th:block>
 
 <th:block layout:fragment="content">
@@ -15,39 +15,29 @@
                 <div class="card-body p-0">
                     <!-- Nested Row within Card Body -->
                     <div class="row">
-                        <!--
-                        <div class="col-lg-6 d-none d-lg-block">
-                            <img src="/startbootstrap-sb-admin-2-gh-pages/img/eat.png" width="400px" height="400px">
-                        </div>
-                        -->
                         <div class="col-lg-12">
                             <div class="p-5">
                                 <div class="text-center">
                                     <h1 class="h4 text-gray-900 mb-4">Nplate</h1>
                                 </div>
-                                <form class="user" th:action="@{/feed}" method="post">
+                                <form class="user" th:action="@{/admin}" method="post">
                                     <div class="form-group">
-                                        <input type="text" class="form-control form-control-user" id="id" name="id" placeholder="ID">
+                                        <input type="text" class="form-control form-control-user" id="admin-id" name="id" placeholder="ID">
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" class="form-control form-control-user" id="pwd" name="pwd" placeholder="비밀번호">
+                                        <input type="password" class="form-control form-control-user" id="admin-pwd" name="pwd" placeholder="비밀번호">
                                     </div>
                                     <div class="form-group">
                                         <div class="custom-control custom-checkbox small">
-                                            <input type="checkbox" class="custom-control-input" id="checkId">
-                                            <label class="custom-control-label" for="checkId">Remember
+                                            <input type="checkbox" class="custom-control-input" id="checkAdminId">
+                                            <label class="custom-control-label" for="checkAdminId">Remember
                                                 Me</label>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-user btn-block">
-                                        로그인
+                                    <button type="submit" class="btn btn-dark btn-user btn-block">
+                                        관리자 로그인
                                     </button>
                                 </form>
-                                <hr>
-
-                                <div class="text-center">
-                                    <a href="/join" class="small">회원가입</a>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -75,26 +65,26 @@
 
 
             // 아이디 기억하기
-            var key = getCookie('memberId');
-            $('#id').val(key);
+            var id = getCookie('admin-id');
+            $('#admin-id').val(id);
 
             // 그 전에 ID를 저장해서 처음 페이지 로딩 시, 입력 칸에 저장된 ID가 표시된 상태라면,
-            if($('#id').val() != ''){
-                $('#checkId').attr('checked', true); // ID 저장하기를 체크 상태로 두기.
+            if($('#admin-id').val() != ''){
+                $('#checkAdminId').attr('checked', true); // ID 저장하기를 체크 상태로 두기.
             }
 
-            $('#checkId').change(function(){ // 체크박스에 변화가 있다면,
-                if($('#checkId').is(':checked')){ // ID 저장하기 체크했을 때,
-                    setCookie('memberId', $('#id').val(), 7); // 7일 동안 쿠키 보관
+            $('#checkAdminId').change(function(){ // 체크박스에 변화가 있다면,
+                if($('#checkAdminId').is(':checked')){ // ID 저장하기 체크했을 때,
+                    setCookie('admin-id', $('#admin-id').val(), 7); // 7일 동안 쿠키 보관
                 }else{ // ID 저장하기 체크 해제 시,
-                    deleteCookie('memberId');
+                    deleteCookie('admin-id');
                 }
             });
 
             // ID 저장하기를 체크한 상태에서 ID를 입력하는 경우, 이럴 때도 쿠키 저장.
-            $('#id').keyup(function(){ // ID 입력 칸에 ID를 입력할 때,
-                if($('#checkId').is(':checked')){ // ID 저장하기를 체크한 상태라면,
-                    setCookie('memberId', $('#id').val(), 7); // 7일 동안 쿠키 보관
+            $('#admin-id').keyup(function(){ // ID 입력 칸에 ID를 입력할 때,
+                if($('#checkAdminId').is(':checked')){ // ID 저장하기를 체크한 상태라면,
+                    setCookie('admin-id', $('#admin-id').val(), 7); // 7일 동안 쿠키 보관
                 }
             });
 

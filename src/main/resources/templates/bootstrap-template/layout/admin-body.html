@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<body id="page-top" th:fragment="admin-body" class="bg-gradient-light">
+		<div id="wrapper">
+			<!-- 메뉴 사이드바 -->
+			<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+				<!-- Sidebar - Brand -->
+				<a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+					<div class="sidebar-brand-icon rotate-n-15">
+						<i class="fas fa-laugh-wink"></i>
+					</div>
+					<div class="sidebar-brand-text mx-3">Plate <sup>n</sup></div>
+				</a>
+
+				<!-- Divider -->
+				<hr class="sidebar-divider">
+
+				<!-- Heading -->
+				<div class="sidebar-heading">
+					Interface
+				</div>
+
+				<!-- 관리자 메뉴 -->
+				<li class="nav-item js-admin" th:if="true">
+					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#adminMenu"
+					   aria-expanded="true" aria-controls="adminMenu">
+						<i class="bi bi-gear-fill"></i>
+						<span>관리자 메뉴</span>
+					</a>
+					<div id="adminMenu" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+						<div class="bg-white py-2 collapse-inner rounded">
+							<h6 class="collapse-header">로그아웃</h6>
+							<a class="collapse-item" href="/member/logout">로그아웃</a>
+
+							<h6 class="collapse-header">회원</h6>
+							<a class="collapse-item" href="#">회원목록</a>
+							<a class="collapse-item" href="#">기타관리1</a>
+							<a class="collapse-item" href="#">기타관리2</a>
+
+							<h6 class="collapse-header">게시판</h6>
+							<a class="collapse-item" href="#">게시판목록</a>
+							<a class="collapse-item" href="#">게시판관리1</a>
+							<a class="collapse-item" href="#">게시판관리2</a>
+						</div>
+					</div>
+				</li>
+
+
+				<!-- Divider -->
+				<hr class="sidebar-divider d-none d-md-block">
+
+				<!-- Sidebar Toggler (Sidebar) -->
+				<div class="text-center d-none d-md-inline">
+					<button class="rounded-circle border-0" id="sidebarToggle"></button>
+				</div>
+			</ul>
+
+			<div id="content-wrapper" class="d-flex flex-column">
+				<div id="content">
+					<!-- 탑 메뉴 -->
+					<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+							<!-- Sidebar Toggle (Topbar) -->
+							<button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+								<i class="fa fa-bars"></i>
+							</button>
+
+
+							<!-- Topbar Navbar -->
+							<ul class="navbar-nav ml-auto">
+
+								<!-- Nav Item - User Information -->
+								<li class="nav-item dropdown no-arrow">
+									<span class="mr-2 d-none d-lg-inline text-gray-600 small">관리자</span>
+								</li>
+							</ul>
+						</nav>
+
+					<th:block layout:fragment="modal"></th:block>
+					<!-- 메인 콘텐츠 -->
+					<div class="container-fluid">
+						<section>
+							<div class="container px-4 px-lg-5 mt-5">
+								<th:block layout:fragment="main-content"></th:block>
+							</div>
+						</section>
+					</div>
+				</div>
+
+				<!-- 하단 푸터 -->
+				<footer class="sticky-footer bg-white">
+					<div class="container my-auto">
+						<div class="copyright text-center my-auto">
+							<span>Copyright &copy; NPLATE 2022</span>
+						</div>
+					</div>
+				</footer>
+			</div>
+
+			<!-- 페이지 탑 버튼 -->
+			<a class="scroll-to-top rounded" href="#page-top">
+				<i class="fas fa-angle-up"></i>
+			</a>
+
+		</div>
+
+		<!-- 부트스트랩 스크립트 -->
+		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery/jquery.min.js}"></script>
+		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/jquery-easing/jquery.easing.min.js}"></script>
+		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js}"></script>
+		<script th:src="@{/plugin/moment.js}"></script>
+
+		<!-- kakao map api -->
+		<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=326897593e49c2218efe8c3613445f46"></script>
+
+		<!-- smartEditor -->
+		<script th:src="@{/smarteditor/js/HuskyEZCreator.js}"></script>
+
+
+		<script th:inline="javascript">
+			/* 페이지 이동 S */
+			function movePage() {
+				var form = document.getElementById('searchForm');
+				console.log('keyword = ' + form.keyword.value);
+				var queryParams = {
+					keyword : form.keyword.value,
+					searchType : 'search'
+				}
+				location.href = '/board/search?' + new URLSearchParams(queryParams).toString();
+			}
+			/* 페이지 이동 E */
+		</script>
+
+		<!-- 리스트에서만 쓰는 스크립트 -->
+		<th:block layout:fragment="template-list-script"></th:block>
+
+		<!-- 필요시 추가 스크립트 -->
+		<th:block layout:fragment="script"></th:block>
+	</body>
+</html>
