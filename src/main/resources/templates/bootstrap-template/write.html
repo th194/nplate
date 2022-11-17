@@ -71,7 +71,7 @@
             <div class="form-group">
                 <label for="tag" class="col-sm-2 control-label">해시태그</label>
                 <div class="col-sm-10">
-                    <input type="text" id="tag" class="form-control" placeholder="엔터로 해시태그를 등록해주세요."/>
+                    <input type="text" id="tag" class="form-control" placeholder="해시태그를 입력해주세요."/>
                     <a href="javascript:void(0)" class="btn btn-success btn-circle btn-sm" id="onHashTag">
                         <i class="fas fa-check"></i>
                     </a>
@@ -351,7 +351,7 @@
         /* 지도 관련 */
         // 지도 팝업
         function openPopup() {
-            window.open('/board/mapPopup', 'pop', 'width=1000, height=600, scrollbars=yes');
+            window.open('/board/mapPopup', 'pop', 'width=1500, height=500, scrollbars=no');
         }
 
         // 팝업에서 정보 받아옴
@@ -383,6 +383,18 @@
             });
             // 지도에 마커를 표시합니다
             marker.setMap(map);
+
+            var iwContent = `<div style="padding:5px;">${title}<br></div>`; // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+            var iwPosition = new kakao.maps.LatLng(lat, lng); //인포윈도우 표시 위치입니다
+
+            // 인포윈도우를 생성합니다
+            var infowindow = new kakao.maps.InfoWindow({
+                position : iwPosition,
+                content : iwContent
+            });
+
+            // 마커 위에 인포윈도우를 표시합니다. 두번째 파라미터인 marker를 넣어주지 않으면 지도 위에 표시됩니다
+            infowindow.open(map, marker);
 
             var latitude = document.getElementById('bbscttCchLa');
             var longitude = document.getElementById('bbscttCchLo');

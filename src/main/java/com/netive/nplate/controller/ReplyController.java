@@ -55,7 +55,7 @@ public class ReplyController {
                 JsonArray jsonArr = new Gson().toJsonTree(replyList).getAsJsonArray();
                 jsonObj.add("replyList", jsonArr);
             }
-            jsonObj.addProperty("member", id); // 세션에 로그인한 아이디는 무조건 화면으로 넘김
+            jsonObj.addProperty("member", id);
 
         }
 
