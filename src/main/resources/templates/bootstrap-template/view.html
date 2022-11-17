@@ -94,13 +94,13 @@
 					</span>
 				<span class="text">뒤로가기</span>
 			</a>
-			<a href="javascript:void(0)" onclick="goWritePage()" class="btn btn-warning btn-icon-split">
+			<a th:if="${board.bbscttWrter == memberInfo.getId()}" href="javascript:void(0)" onclick="goWritePage()" class="btn btn-warning btn-icon-split">
 					<span class="icon text-white-50">
 						<i class="fas fa-exclamation-triangle"></i>
 					</span>
 				<span class="text">수정하기</span>
 			</a>
-			<a href="javascript:void(0)" onclick="deleteBoard()" class="btn btn-danger btn-icon-split">
+			<a th:if="${board.bbscttWrter == memberInfo.getId()}" href="javascript:void(0)" onclick="deleteBoard()" class="btn btn-danger btn-icon-split">
 					<span class="icon text-white-50">
 						<i class="fas fa-trash"></i>
 					</span>
