@@ -49,7 +49,10 @@
 							<!-- Post title-->
 							<h1 class="fw-bolder mb-1" th:text="*{bbscttSj}"></h1>
 							<!-- Post meta content-->
-							<div class="text-muted fst-italic mb-2" th:text="|*{bbscttRgsde} *{bbscttWrter}|"></div>
+							<div class="text-muted fst-italic mb-2">
+								<span th:text="*{bbscttWrter}"></span>
+								<span style="float:right;" th:text="*{bbscttRgsde}"></span>
+							</div>
 
 							<!-- <div class="text-muted fst-italic mb-2" th:text="*{bbscttWrter}"></div> -->
 
