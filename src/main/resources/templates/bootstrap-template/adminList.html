@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="bootstrap-template/layout/admin-basic">
+<th:block layout:fragment="title">
+    <title>관리자 페이지</title>
+</th:block>
+
+<th:block layout:fragment="main-content">
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <!--<h1 class="h3 mb-2 text-gray-800">게시글 목록</h1>-->
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-gray-700" style="width: 90%">게시글 목록</h5>
+                <a href="javascript:void(0)" class="btn btn-danger btn-icon-split" style="float:right;"
+                   onclick="deleteAll()">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-trash"></i>
+                    </span>
+                    <span class="text">삭제</span>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <form id="adminListForm" method="post">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="allCheck"/>
+                                        <label class="form-check-label" for="allCheck"></label>
+                                    </div>
+                                </th>
+                                <th>번호</th>
+                                <th>제목</th>
+                                <th>작성자</th>
+                                <th>작성일</th>
+                                <th>조회수</th>
+                            </tr>
+                            </thead>
+                            <tbody id="boardList">
+
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+                <ul class="pagination" style="justify-content: center">
+
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container-fluid -->
+</th:block>
+
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        console.log('관리자페이지========');
+
+        /* 게시글 리스트 조회 S */
+        window.onload = () => {
+            // setQueryStringParams();
+            findAllPost();
+            addEvent();
+        }
+
+        function findAllPost() {
+            var boardList = [[${boardList}]];
+            console.log(boardList);
+            if (!boardList.list.length) {
+                $('boardList').append('<div>검색 결과가 없습니다.</div>');
+                drawPage();
+                return false;
+            }
+
+            var pagination = [[${boardList.pagination}]];
+            var params = [[${params}]];
+            var num = pagination.totalRecordCount - ((params.page - 1) * params.recordSize);
+
+            drawList(boardList.list, num);
+            drawPage(pagination, params);
+        }
+
+        // 조회 목록
+        function drawList(list, num) {
+            var boardHtml = '';
+            if (list.length > 0) {
+                list.forEach((val) => {
+                    boardHtml += `
+                    <tr>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="${val.bbscttNo}" name="subCheck" id="${val.bbscttNo}"/>
+                                <label class="form-check-label" for="${val.bbscttNo}"></label>
+                            </div>
+                        </td>
+                        <td>${val.bbscttNo}</td>
+                        <td><a class="gallery" data-image="${val.bbscttImage}" href="javascript:void(0)" onclick="goViewPage(${val.bbscttNo})">${val.bbscttSj}</a></td>
+                        <td>${val.bbscttWrter}</td>
+                        <td>${val.bbscttRgsde}</td>
+                        <td>${val.bbscttRdcnt}</td>
+                    </tr>
+                `;
+                });
+                $('#boardList').append(boardHtml);
+            }
+        }
+
+        function drawPage(pagination, params) {
+            if (!pagination || !params) {
+                $('.pagination').empty();
+                return false;
+            }
+
+            var html = '';
+
+            // 첫 페이지, 이전 페이지
+            if (pagination.existPrevPage) {
+                html += `
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.startPage - 1});" aria-label="Previous">
+                        <span aria-hidden="true">&lsaquo;</span>
+                        </a>
+                    </li>
+                `;
+            }
+
+            // 페이지 번호
+            for (var i = pagination.startPage; i <= pagination.endPage; i++) {
+                var active = (i === params.page) ? 'active' : '';
+                html += `
+                <li  class="${active} paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${i});">${i}</a>
+                </li>
+                `;
+            }
+
+            if (pagination.existNextPage) {
+                html += `
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.endPage + 1});" aria-label="Next">
+                        <span aria-hidden="true">&rsaquo;</span>
+                    </a>
+                </li>
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.totalPageCount});" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                `;
+            }
+
+            $('.pagination').append(html);
+        }
+
+        // 쿼리스트링 파라미터 세팅
+        // function setQueryStringParams() {
+        //     // location 객체의 search를 이용해서 쿼리 스트링 파라미터를 조회할 수 있다.
+        //     if (!location.search) {
+        //         return false;
+        //     }
+        //
+        //     var form = document.getElementById('searchForm');
+        //
+        //     new URLSearchParams(location.search).forEach((value, key) => {
+        //         if (form[key]) {
+        //             form[key].value = value;
+        //         }
+        //     });
+        //
+        //     document.getElementById('keyword').value = form.keyword.value;
+        // }
+        /* 게시글 리스트 조회 E */
+
+
+        /* 페이지 이동 */
+        function movePage(page) {
+            // var form = document.getElementById('searchForm');
+            var queryParams = {
+                page      : (page) ? page : 1,
+                recordSize: 10,
+                pageSize  : 10
+                // ,
+                // keyword : form.keyword.value
+                // searchType : form.searchType.value
+            }
+            location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+        }
+
+        /* 페이지 이동 */
+
+        /* 이벤트 함수 */
+        function addEvent() {
+            var boardList = [[${boardList}]];
+
+            // 체크박스 전체체크 클릭
+            $('#allCheck').click(function () {
+                if ($('#allCheck').is(':checked')) {
+                    $('input[name=subCheck]').prop('checked', true);
+                } else {
+                    $('input[name=subCheck]').prop('checked', false);
+                }
+            });
+
+            // 체크박스 개별체크
+            $('input[name=subCheck]').click(function () {
+                var total = $('input[name=subCheck]').length;
+                var checked = $('input[name=subCheck]:checked').length;
+                if (total != checked) {
+                    $('#allCheck').prop('checked', false);
+                } else {
+                    $('#allCheck').prop('checked', true);
+                }
+            });
+
+            var xOffset = 10;
+            var yOffset = 30;
+
+            // 마우스 오버 시 preview 생성
+            $(document).on('mouseover', '.gallery', function(e){
+                var imgHtml = '';
+                var image_data = $(this).data('image');
+                $(boardList.list).each(function() {
+                    imgHtml = `
+                        <p id="preview"><img src="${image_data}" width="100px" height="100px" style="z-index: 1;"/></p>
+                    `;
+                });
+                $(this).append(imgHtml); // TODO 미리보기 이미지 위치 수정..
+                $('#preview').css('top', (e.pageY - xOffset) + 'px').css('left', (e.pageX + yOffset) + 'px').fadeIn('fast');
+            });
+
+            // 마우스 이동 시 preview 이동
+            $(document).on('mousemove', '.gallery', function(e) {
+                $('#preview').css('top', (e.pageY - xOffset) + 'px').css('left', (e.pageX + yOffset) + 'px');
+            });
+
+            // 마우스 아웃 시 preivew 제거
+            $(document).on('mouseout', '.gallery', function(e) {
+                $('#preview').remove();
+            });
+        }
+
+        /* 이벤트 함수 */
+
+        /* 게시글 상세페이지 이동 */
+        function goViewPage(idx) {
+            var queryString = (location.search) ? location.search + `&idx=${idx}` : `?idx=${idx}`;
+            location.href = '/admin/adminView' + queryString;
+        }
+        /* 게시글 상세페이지 이동 */
+
+        /* 게시글 삭제 S */
+        function deleteAll() {
+            var delArr = [];
+            var delList = $('input[name=subCheck]');
+
+            for (var i = 0; i < delList.length; i++) {
+                if(delList[i].checked) {
+                    delArr.push(delList[i].value);
+                }
+            }
+            console.log(delArr);
+            if(delArr.length == 0) {
+                alert('선택된 게시글이 없습니다.');
+            } else {
+                $.ajax({
+                    url : '/admin/delete',
+                    type : 'POST',
+                    traditional : true,
+                    data : {delArr : delArr},
+                    success : function() {
+                        location.replace('/admin/adminList');
+                    }
+                })
+            }
+
+
+
+        }
+
+        /* 게시글 삭제 E */
+    </script>
+</th:block>
+</html>
