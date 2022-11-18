@@ -3,7 +3,10 @@ package com.netive.nplate.service;
 import java.util.List;
 import java.util.Map;
 
+import com.netive.nplate.domain.PageDTO;
 import com.netive.nplate.domain.SearchDTO;
+import com.netive.nplate.paging.Pagination;
+import com.netive.nplate.paging.PagingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,10 +50,28 @@ public class BoardServiceImpl implements BoardService {
         return idx;
     }
 
+    // 관리자용 게시글 삭제
+    @Override
+    public void deleteAdminBoard(String params) {
+        boardMapper.deleteAdminBoard(params);
+    }
+
     // 게시글 조회수 증가
     @Override
     public boolean cntPlus(Long idx) {
         return boardMapper.cntPlus(idx);
+    }
+
+    // 관리자용 게시글 목록
+    @Override
+    public List<BoardDTO> getAllBoardList(PageDTO params) {
+        return boardMapper.selectBoardList(params);
+    }
+
+    // 전체 글 갯수
+    @Override
+    public int count(PageDTO params) {
+        return boardMapper.count(params);
     }
 
     // 특정 ID 게시글 조회

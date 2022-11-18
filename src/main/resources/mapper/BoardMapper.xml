@@ -87,26 +87,33 @@
 			BBSCTT_NO = #{bbscttNo}
 	</delete>
 
+	<!-- 관리자용 게시글 삭제 -->
+	<delete id="deleteAdminBoard">
+		DELETE
+		FROM
+			NETIVE_PROJECT01_BOARD
+		WHERE
+		    BBSCTT_NO = #{bbscttNo}
+	</delete>
+
 	<!--게시글 목록-->
-	<select id="selectBoardList" parameterType="SearchDTO" resultType="BoardDTO">
+	<select id="selectBoardList" parameterType="PageDTO" resultType="BoardDTO">
 		SELECT
 			<include refid="boardColumns"/>
 		FROM
 			NETIVE_PROJECT01_BOARD
-		WHERE BBSCTT_WRTER = #{memberId}
-			<include refid="search"></include>
+		<include refid="search"></include>
 		ORDER BY
 			BBSCTT_NO DESC
 		LIMIT #{pagination.limitStart}, #{recordSize}
 	</select>
 
 	<!-- 게시글 수 카운트 -->
-	<select id ="count" parameterType="SearchDTO" resultType="int">
+	<select id ="count" parameterType="PageDTO" resultType="int">
 		SELECT
 			COUNT(*)
 		FROM
 			NETIVE_PROJECT01_BOARD
-		WHERE BBSCTT_WRTER = #{memberId}
 	</select>
 
 	<!-- 게시글 조회수 증가 -->

@@ -3,6 +3,7 @@ package com.netive.nplate.mapper;
 import java.util.List;
 import java.util.Map;
 
+import com.netive.nplate.domain.PageDTO;
 import com.netive.nplate.domain.SearchDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,9 +20,9 @@ public interface BoardMapper {
 	// 게시글 삭제
 	public void deleteBoard(Long idx);
 	// 게시글 목록 조회
-	public List<BoardDTO> selectBoardList(SearchDTO params);
+	public List<BoardDTO> selectBoardList(PageDTO params);
 	// 총 게시글 수 조회
-	public int count(SearchDTO params);
+	public int count(PageDTO params);
 	// 게시글 조회수 증가
 	public boolean cntPlus(Long idx);
 	// 특정 ID 게시글 조회
@@ -30,5 +31,6 @@ public interface BoardMapper {
 	List<BoardDTO> getBordListByIds(Map map);
 	// 서치 키워드로 조회
 	List<BoardDTO> getBordListByKeyword(SearchDTO dto);
-
+	// 관리자가 게시글 삭제
+	void deleteAdminBoard(String params);
 }

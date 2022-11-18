@@ -11330,21 +11330,21 @@ body.sidebar-toggled footer.sticky-footer {
 }
 .form-grade input[type=radio]{
   display: none; /* 라디오박스 감춤 */
-  text-shadow: 0 0 0 #a00; /* 마우스 클릭 체크 */
+  text-shadow: 0 0 0 #ffd400; /* 마우스 클릭 체크 */
 }
 .form-grade input[type=radio]:checked ~ label{
-  text-shadow: 0 0 0 #a00; /* 마우스 클릭 체크 */
+  text-shadow: 0 0 0 #ffd400; /* 마우스 클릭 체크 */
 }
 .form-grade label.grade {
   color: transparent; /* 기존 이모지 컬러 제거 */
   text-shadow: 0 0 0 #f0f0f0; /* 새 이모지 색상 부여 */
 }
-.form-grade label:hover {
-  text-shadow: 0 0 0 #a00; /* 마우스 호버 */
-}
-.form-grade label:hover ~ label {
-  text-shadow: 0 0 0 #a00; /* 마우스 호버 뒤에오는 이모지들 */
-}
+/*.form-grade label:hover {*/
+/*  text-shadow: 0 0 0 #ffd400; !* 마우스 호버 *!*/
+/*}*/
+/*.form-grade label:hover ~ label {*/
+/*  text-shadow: 0 0 0 #ffd400; !* 마우스 호버 뒤에오는 이모지들 *!*/
+/*}*/
 /* 별점 */
 
 

@@ -50,7 +50,7 @@
 							<h1 class="fw-bolder mb-1" th:text="*{bbscttSj}"></h1>
 							<!-- Post meta content-->
 							<div class="text-muted fst-italic mb-2">
-								<span th:text="*{bbscttWrter}"></span>
+								<span class="fw-bold" th:text="*{bbscttWrter}"></span>
 								<span style="float:right;" th:text="*{bbscttRgsde}"></span>
 							</div>
 
@@ -130,8 +130,11 @@
 				<!-- Comment form-->
 				<form class="mb-4" th:object="${board}">
 					<textarea id="answerCn" name="answerCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력"></textarea>
-					<a class="btn btn-success btn-circle btn-sm" th:onclick="insertReply()" style="float:right">
-						<i class="fas fa-check" aria-hidden="true"></i>
+					<a href="javascript:void(0)" class="btn btn-light btn-icon-split" th:onclick="insertReply()" style="float:right">
+						<span class="icon text-gray-600">
+							<i class="fas fa-arrow-right"></i>
+						</span>
+						<span class="text">댓글 등록</span>
 					</a>
 				</form>
 			</div>
@@ -168,25 +171,25 @@
 						var rgsdeFormt = timeForToday(rgsde);
 						replyHtml += `
 							<div class="d-flex mb-2" data-index="${reply.answerNo}">
-								<div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${reply.answerWrter}" alt="..." /></div>
-								<div class="ms-3" style="width:70%">
-									<div class="fw-bold">${reply.answerWrter}</div>
-									${reply.answerCn}
-								</div>
-								`;
+                                <div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${reply.answerWrter}" alt="..." /></div>
+                                <div class="ms-3" style="width:70%">
+                                    <div class="fw-bold">${reply.answerWrter}</div>
+                                    ${reply.answerCn}
+                                </div>
+                                `;
 						// 로그인 한 사용자가 댓글 작성자와 같을 경우 수정/삭제 버튼 생성
 						if (loginMember == reply.answerWrter) {
-							replyHtml +=`
-									<div class="right-flex">
-										<a class="btn btn-info btn-circle btn-sm right-flex" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
-											<i class="fas fa-info-circle" aria-hidden="true"></i>
-										</a>
-									`;
+							replyHtml += `
+                                    <div class="right-flex">
+                                        <a class="btn btn-info btn-circle btn-sm right-flex" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
+                                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                                        </a>
+                                    `;
 						}
 						replyHtml += `
-										<div class="right-flex" style="align-self: flex-end">${rgsdeFormt}</div>
-									</div>
-								</div>
+                                    <div class="right-flex" style="align-self: flex-end">${rgsdeFormt}</div>
+                                </div>
+                            </div>
 							`;
 					});
 				} else {
@@ -259,8 +262,8 @@
 			});
 
 			var formHtml = `<form id="deleteForm" action="/board/delete.do" method="post">
-									${inputHtml}
-								</form>`;
+								${inputHtml}
+							</form>`;
 
 			var doc = new DOMParser().parseFromString(formHtml, 'text/html');
 			var form = doc.body.firstChild;
