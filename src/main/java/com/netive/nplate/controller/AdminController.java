@@ -121,21 +121,24 @@ public class AdminController {
      */
     @GetMapping("/admin/adminList")
     public String adminBoardList(@ModelAttribute("params") PageDTO params, Model model) {
-
-
-
         int count = boardService.count(params);
         Pagination pagination = new Pagination(count, params);
         params.setPagination(pagination);
-
-        System.out.println("params===================");
-        System.out.println(params);
-        System.out.println("params===================");
 
         List<BoardDTO> list = boardService.getAllBoardList(params);
         PagingResponse<BoardDTO> boardList = new PagingResponse<>(list, pagination);
         model.addAttribute("boardList", boardList);
         return "bootstrap-template/adminList";
+    }
+
+    /**
+     * 관리자용 사용자별 게시글 목록 보기
+     * @return
+     */
+    @GetMapping("/admin/adminListById")
+    public String adminListById(String id) {
+
+        return null;
     }
 
     /**

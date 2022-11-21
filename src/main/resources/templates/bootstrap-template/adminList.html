@@ -101,7 +101,24 @@
                         </td>
                         <td>${val.bbscttNo}</td>
                         <td><a class="gallery" data-image="${val.bbscttImage}" href="javascript:void(0)" onclick="goViewPage(${val.bbscttNo})">${val.bbscttSj}</a></td>
-                        <td>${val.bbscttWrter}</td>
+                        <td>
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">${val.bbscttWrter}</span>
+                                </a>
+                                <!-- Dropdown - User Information -->
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" href="/member/userInfo?id=${val.bbscttWrter}">
+                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        작성자 상세보기
+                                    </a>
+                                    <a class="dropdown-item" href="/admin/adminListById">
+                                        <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        작성자 게시글 목록 보기
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
                         <td>${val.bbscttRgsde}</td>
                         <td>${val.bbscttRdcnt}</td>
                     </tr>
@@ -273,19 +290,18 @@
             if(delArr.length == 0) {
                 alert('선택된 게시글이 없습니다.');
             } else {
-                $.ajax({
-                    url : '/admin/delete',
-                    type : 'POST',
-                    traditional : true,
-                    data : {delArr : delArr},
-                    success : function() {
-                        location.replace('/admin/adminList');
-                    }
-                })
+                if(confirm(delArr + '번 게시물을 삭제하시겠습니까?')) {
+                    $.ajax({
+                        url : '/admin/delete',
+                        type : 'POST',
+                        traditional : true,
+                        data : {delArr : delArr},
+                        success : function() {
+                            location.replace('/admin/adminList');
+                        }
+                    })
+                }
             }
-
-
-
         }
 
         /* 게시글 삭제 E */
