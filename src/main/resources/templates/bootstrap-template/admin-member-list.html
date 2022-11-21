@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="bootstrap-template/layout/admin-basic">
+<th:block layout:fragment="title">
+    <title>회원 목록</title>
+</th:block>
+
+<th:block layout:fragment="main-content">
+
+    <h1 class="h3 mb-2 text-gray-800">회원 목록</h1>
+    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
+        For more information about DataTables, please visit the</p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">MemberTable</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>아이디</th>
+                        <th>이름</th>
+                        <th>닉네임</th>
+                        <th>가입일</th>
+                        <th>회원정보</th>
+                        <th>계정삭제</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>아이디</th>
+                        <th>이름</th>
+                        <th>닉네임</th>
+                        <th>가입일</th>
+                        <th>회원정보</th>
+                        <th>계정삭제</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    <tr th:if="${not #lists.isEmpty( memberList )}" th:each="list : ${memberList}">
+                        <td th:text="${list.id}"></td>
+                        <td th:text="${list.name}"></td>
+                        <td th:text="${list.nickName}"></td>
+                        <td th:text="${list.birthday}"></td>
+                        <td><a th:href=" '/member/info?id=' + ${list.id}">보기</a></td>
+                        <td><a th:href=" '/member/delete?id=' + ${list.id}">삭제</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</th:block>
+
+<th:block layout:fragment="script">
+
+    <!--
+    <script th:inline="javascript">
+
+    </script>
+    -->
+</th:block>
+
+
+</html>

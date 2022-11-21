@@ -34,7 +34,7 @@
 							<a class="collapse-item" href="/member/logout">로그아웃</a>
 
 							<h6 class="collapse-header">회원</h6>
-							<a class="collapse-item" href="#">회원목록</a>
+							<a class="collapse-item" href="/admin/member/list">회원목록</a>
 							<a class="collapse-item" href="#">기타관리1</a>
 							<a class="collapse-item" href="#">기타관리2</a>
 
@@ -80,11 +80,7 @@
 					<th:block layout:fragment="modal"></th:block>
 					<!-- 메인 콘텐츠 -->
 					<div class="container-fluid">
-						<section>
-							<div class="container px-4 px-lg-5 mt-5">
-								<th:block layout:fragment="main-content"></th:block>
-							</div>
-						</section>
+						<th:block layout:fragment="main-content"></th:block>
 					</div>
 				</div>
 
@@ -117,6 +113,11 @@
 
 		<!-- smartEditor -->
 		<script th:src="@{/smarteditor/js/HuskyEZCreator.js}"></script>
+
+
+		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/jquery.dataTables.min.js}"></script>
+		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/dataTables.bootstrap4.min.js}"></script>
+		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/js/demo/datatables-demo.js}"></script>
 
 
 		<script th:inline="javascript">

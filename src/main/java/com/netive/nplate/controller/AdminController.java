@@ -1,6 +1,5 @@
 package com.netive.nplate.controller;
 
-import com.google.gson.JsonObject;
 import com.netive.nplate.configuration.SessionConfig;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.paging.Pagination;
@@ -19,16 +18,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class AdminController {
 
     @Value("${nplate.upload.path}")
     private String filePath;
+
     @Autowired
     private MemberService memberService;
 
@@ -99,6 +96,22 @@ public class AdminController {
         // 일단은 로그인 아이디가 관리자 계정이 아니거나 아이디 비밀번호가 틀리거나 에러일 경우 일반 로그인 페이지로 리다이렉트
         // todo 추후 처리 수정
         return "redirect:/";
+    }
+
+
+    // 회원목록
+    @GetMapping("/admin/member/list")
+    public String memberList(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String id = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+        if (Objects.equals(id, "admin")) {
+            List<MemberDTO> memberList = memberService.getMemberList();
+            model.addAttribute("memberList", memberList);
+
+            return "bootstrap-template/admin-member-list";
+        } else {
+            return "redirect:/";
+        }
     }
 
 
