@@ -1,5 +1,6 @@
 package com.netive.nplate.controller;
 
+import com.netive.nplate.configuration.SessionConfig;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.service.*;
 
@@ -8,6 +9,7 @@ import com.netive.nplate.util.MemberUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,25 +41,14 @@ public class MemberController {
     private BoardService boardService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private BoardUtils boardUtils;
 
     @Autowired
     private MemberUtils memberUtils;
 
-
-    // 회원목록
-    @GetMapping("/list")
-    public String list(Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        String id = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-        if (Objects.equals(id, "admin")) {
-            List<MemberDTO> memberList = memberService.getMemberList();
-            model.addAttribute("memberList", memberList);
-            return "member/list";
-        } else {
-            return "redirect:/";
-        }
-    }
 
     // 회원가입 페이지
     @GetMapping("/join")
@@ -67,6 +58,7 @@ public class MemberController {
     }
 
     // 회원 등록
+    // todo 기존꺼 삭제하기
     @PostMapping("/member/submit")
     public String submit(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
         try {
@@ -96,6 +88,36 @@ public class MemberController {
                 model.addAttribute("url", "/member/error");
                 return "member/error";
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "catch msg=======");
+            model.addAttribute("url", "/member/error");
+            return "member/error";
+        }
+    }
+
+
+    // 회원 등록
+    // todo 스프링 시큐리티 적용해서 만듦 작업중
+    @PostMapping("/member/spring/submit")
+    public String springSubmit(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
+        try {
+            // 생일 문자열 형식 변경
+            String formatDate = memberDTO.getBirthday().replaceAll("-", "");
+            memberDTO.setBirthday(formatDate);
+
+            userService.springSubmit(memberDTO);
+
+            if (file.isEmpty()) { // 파일 없는 경우
+                fileService.saveDefaultFile(memberDTO.getId());
+            } else {
+                fileService.saveFile(file, memberDTO.getId());
+            }
+
+            model.addAttribute("message", "가입이 완료되었습니다.");
+            model.addAttribute("url", "/");
+            return "member/index";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,21 +187,6 @@ public class MemberController {
     }
 
 
-    // 회원 정보 수정 todo 관리 페이지 처리 수정
-    @PostMapping("/member/adminUpdate")
-    public String update(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
-
-        if (!file.isEmpty()) { // 프로필 사진 수정
-            fileService.updateFile(file, memberDTO.getId());
-        }
-
-        // 그 외 정보 수정
-        memberService.updateInfo(memberDTO);
-
-        return "redirect:/list"; // 처리 수정해야함
-    }
-
-
     // 회원가입 아이디 중복 조회
     @GetMapping("member/checkOverlappedID")
     public @ResponseBody String checkOverlappedID(String id) {
@@ -199,6 +206,39 @@ public class MemberController {
         model.addAttribute("message", null);
         model.addAttribute("url", null);
         return "member/error";
+    }
+
+
+    // todo (임시)스프링 시큐리티 임시 로그인 성공 페이지
+    @GetMapping("/login/success")
+    public String successPage(Model model, Authentication authentication, HttpServletRequest request) {
+
+        System.out.println("임시 로그인 성공 페이지======");
+
+        MemberDTO memberDTO = (MemberDTO) authentication.getPrincipal();
+
+        System.out.println("로그인 성공 멤버 디티오");
+        System.out.println(memberDTO.toString());
+
+
+        HttpSession session = request.getSession();
+
+        // 중복로그인 체크
+        SessionConfig.getSessionidCheck(SessionConstants.MEMBER_DTO, memberDTO.getId());
+
+        session.setAttribute(SessionConstants.MEMBER_DTO, memberDTO);
+        session.setAttribute(SessionConstants.MEMBER_ID, memberDTO.getId());
+        session.setAttribute(SessionConstants.IS_LOGIN, true);
+
+        if (Objects.equals(memberDTO.getRole(), "ROLE_ADMIN")) {
+            return "redirect:/admin";
+        } else if (Objects.equals(memberDTO.getRole(), "ROLE_USER")){
+            return "member/login-success";
+        } else {
+            session.invalidate();
+            return "redirect:/";
+        }
+        // todo 처리 수정해야함
     }
 
 

@@ -48,6 +48,9 @@ dependencies {
 
 	// 파일 관련 추가
 	implementation 'commons-io:commons-io:2.6'
+
+	// spring security 권한설정
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {

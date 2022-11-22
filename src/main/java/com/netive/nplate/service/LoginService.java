@@ -1,7 +1,6 @@
 package com.netive.nplate.service;
 
 import com.netive.nplate.domain.BoardDTO;
-import com.netive.nplate.domain.SearchDTO;
 
 import java.util.List;
 import java.util.Map;
