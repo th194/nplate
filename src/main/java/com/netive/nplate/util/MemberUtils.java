@@ -58,12 +58,24 @@ public class MemberUtils {
 
 
     // 팔로잉 멤버 인포 조회(위의 메소드랑 합칠 수 있으면 합침)
-    public List<MemberDTO> getFollowingsInfo(List<String> followingIds) {
+    public List<Map> getFollowingsInfo(List<String> followingIds) {
         System.out.println("팔로잉 멤버 인포 조회=========");
 
         Map<String, Object> followingMap = new HashMap<>();
         followingMap.put("followingIds", followingIds);
 
-        return memberService.getFollowingInfo(followingMap);
+        List<MemberDTO> followingMembers = memberService.getFollowingInfo(followingMap);
+
+        List<Map> followings = new ArrayList<>();
+        for (MemberDTO dto : followingMembers) {
+            Map testMap = new HashMap<>();
+            testMap.put("id", dto.getId());
+            testMap.put("nickName", dto.getNickName());
+            followings.add(testMap);
+        }
+
+        System.out.println("팔로잉 맵: ");
+        System.out.println(followings);
+        return followings;
     }
 }

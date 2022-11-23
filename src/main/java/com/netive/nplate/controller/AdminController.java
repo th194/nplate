@@ -129,9 +129,9 @@ public class AdminController {
         model.addAttribute("isFollowing", isFollowing);
 
         // 메뉴 팔로잉 처리
-        List<MemberDTO> followingMembers = new ArrayList<>();
+        List<Map> followingMembers = new ArrayList<>();
         if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
-            followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+            followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
         } else {
             if (followingIds.size() > 0) {
                 followingMembers = memberUtils.getFollowingsInfo(followingIds);

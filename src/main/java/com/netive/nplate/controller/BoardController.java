@@ -241,9 +241,9 @@ public class BoardController {
 		model.addAttribute("isFollowing", isFollowing);
 
 		// 메뉴 팔로잉 처리
-		List<MemberDTO> followingMembers = new ArrayList<>();
+		List<Map> followingMembers = new ArrayList<>();
 		if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
-			followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+			followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
 		} else {
 			if (followingIds.size() > 0) {
 				followingMembers = memberUtils.getFollowingsInfo(followingIds);
@@ -535,9 +535,9 @@ public class BoardController {
 				model.addAttribute("likeNumbers", likeNumbers);
 
 				// 팔로잉 처리
-				List<MemberDTO> followingMembers = new ArrayList<>();
+				List<Map> followingMembers = new ArrayList<>();
 				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
-					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+					followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
 				} else {
 					List<String> followingIds = memberUtils.getFollowingMember(memberId);
 					if (followingIds.size() > 0) {
@@ -546,6 +546,7 @@ public class BoardController {
 					session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
 					session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
 				}
+
 				model.addAttribute("followingMembers", followingMembers);
 
 				return "bootstrap-template/list";
@@ -592,9 +593,9 @@ public class BoardController {
 
 
 				// 팔로잉 처리
-				List<MemberDTO> followingMembers = new ArrayList<>();
+				List<Map> followingMembers = new ArrayList<>();
 				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
-					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+					followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
 				} else {
 					List<String> followingIds = memberUtils.getFollowingMember(memberId);
 					if (followingIds.size() > 0) {
@@ -603,6 +604,7 @@ public class BoardController {
 					session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
 					session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
 				}
+
 				model.addAttribute("followingMembers", followingMembers);
 
 				return "bootstrap-template/list";
@@ -645,9 +647,9 @@ public class BoardController {
 				model.addAttribute("likeNumbers", likeNumbers);
 
 				// 팔로잉 처리
-				List<MemberDTO> followingMembers = new ArrayList<>();
+				List<Map> followingMembers = new ArrayList<>();
 				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
-					followingMembers = (List<MemberDTO>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+					followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
 				} else {
 					List<String> followingIds = memberUtils.getFollowingMember(memberId);
 					if (followingIds.size() > 0) {
@@ -656,6 +658,7 @@ public class BoardController {
 					session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
 					session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
 				}
+
 				model.addAttribute("followingMembers", followingMembers);
 
 				return "bootstrap-template/list";
