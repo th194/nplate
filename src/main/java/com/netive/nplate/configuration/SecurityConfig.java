@@ -21,9 +21,9 @@ public class SecurityConfig {
                 .loginPage("/")
                 .usernameParameter("id")
                 .passwordParameter("pwd")
-                .loginProcessingUrl("/login/success")
+                .loginProcessingUrl("/loginProc")
                 .defaultSuccessUrl("/login/success")
-                .failureUrl("/member/error")
+                .failureUrl("/login/fail")
                 .permitAll();
         return http.build();
     }

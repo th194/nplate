@@ -19,11 +19,11 @@ public class UserService implements UserDetailsService {
     @Autowired
     MemberMapper memberMapper;
 
-    public void springSubmit(MemberDTO memberDTO) {
+    public void registerMember(MemberDTO memberDTO) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         memberDTO.setPwd(passwordEncoder.encode(memberDTO.getPwd()));
-        memberMapper.springSubmit(memberDTO);
+        memberMapper.registerMember(memberDTO);
     }
 
     @Override

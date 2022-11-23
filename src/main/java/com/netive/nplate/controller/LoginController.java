@@ -8,6 +8,7 @@ import com.netive.nplate.util.MemberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -113,6 +114,51 @@ public class LoginController {
         session.invalidate();
         return "redirect:/";
     }
+
+
+    // 스프링 시큐리티 로그인 성공
+    @GetMapping("/login/success")
+    public String loginSuccess(Model model, Authentication authentication, HttpServletRequest request) {
+
+        System.out.println("임시 로그인 성공 페이지======");
+
+        MemberDTO memberDTO = (MemberDTO) authentication.getPrincipal();
+
+        System.out.println("로그인 성공 멤버 디티오");
+        System.out.println(memberDTO.toString());
+
+
+        HttpSession session = request.getSession();
+
+        // 중복로그인 체크
+        SessionConfig.getSessionidCheck(SessionConstants.MEMBER_DTO, memberDTO.getId());
+
+        session.setAttribute(SessionConstants.MEMBER_DTO, memberDTO);
+        session.setAttribute(SessionConstants.MEMBER_ID, memberDTO.getId());
+        session.setAttribute(SessionConstants.IS_LOGIN, true);
+
+        if (Objects.equals(memberDTO.getRole(), "ROLE_ADMIN")) {
+            return "redirect:/admin";
+        } else if (Objects.equals(memberDTO.getRole(), "ROLE_USER")){
+            // 처리..
+        } else {
+            session.invalidate();
+        }
+        return "redirect:/";
+        // todo 처리 수정해야함
+    }
+
+
+    // 스프링 시큐리티 로그인 실패
+    @GetMapping("/login/fail")
+    public String loginFail(Model model) {
+        System.out.println("로그인 실패======");
+        model.addAttribute("message", "아이디, 비밀번호를 확인 후 다시 로그인해주세요.");
+        model.addAttribute("url", "/");
+
+        return "member/error";
+    }
+
 
     // 로그아웃
     @GetMapping("/member/logout")

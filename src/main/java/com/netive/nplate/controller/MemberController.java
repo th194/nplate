@@ -57,57 +57,16 @@ public class MemberController {
         return "member/join";
     }
 
+
     // 회원 등록
-    // todo 기존꺼 삭제하기
     @PostMapping("/member/submit")
-    public String submit(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
+    public String registerMember(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
         try {
             // 생일 문자열 형식 변경
             String formatDate = memberDTO.getBirthday().replaceAll("-", "");
             memberDTO.setBirthday(formatDate);
 
-            // 비밀번호 암호회
-            String encPwd = memberUtils.encrypt(memberDTO.getPwd());
-            memberDTO.setPwd(encPwd);
-
-            int result = memberService.registerMember(memberDTO);
-
-            if (result > 0) {
-
-                if (file.isEmpty()) { // 파일 없는 경우
-                    fileService.saveDefaultFile(memberDTO.getId());
-                } else {
-                    fileService.saveFile(file, memberDTO.getId());
-                }
-
-                model.addAttribute("message", "가입이 완료되었습니다.");
-                model.addAttribute("url", "/");
-                return "member/index";
-            } else {
-                model.addAttribute("message", "else msg======");
-                model.addAttribute("url", "/member/error");
-                return "member/error";
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("message", "catch msg=======");
-            model.addAttribute("url", "/member/error");
-            return "member/error";
-        }
-    }
-
-
-    // 회원 등록
-    // todo 스프링 시큐리티 적용해서 만듦 작업중
-    @PostMapping("/member/spring/submit")
-    public String springSubmit(MemberDTO memberDTO, @RequestParam MultipartFile file, Model model) throws IOException {
-        try {
-            // 생일 문자열 형식 변경
-            String formatDate = memberDTO.getBirthday().replaceAll("-", "");
-            memberDTO.setBirthday(formatDate);
-
-            userService.springSubmit(memberDTO);
+            userService.registerMember(memberDTO);
 
             if (file.isEmpty()) { // 파일 없는 경우
                 fileService.saveDefaultFile(memberDTO.getId());
@@ -206,39 +165,6 @@ public class MemberController {
         model.addAttribute("message", null);
         model.addAttribute("url", null);
         return "member/error";
-    }
-
-
-    // todo (임시)스프링 시큐리티 임시 로그인 성공 페이지
-    @GetMapping("/login/success")
-    public String successPage(Model model, Authentication authentication, HttpServletRequest request) {
-
-        System.out.println("임시 로그인 성공 페이지======");
-
-        MemberDTO memberDTO = (MemberDTO) authentication.getPrincipal();
-
-        System.out.println("로그인 성공 멤버 디티오");
-        System.out.println(memberDTO.toString());
-
-
-        HttpSession session = request.getSession();
-
-        // 중복로그인 체크
-        SessionConfig.getSessionidCheck(SessionConstants.MEMBER_DTO, memberDTO.getId());
-
-        session.setAttribute(SessionConstants.MEMBER_DTO, memberDTO);
-        session.setAttribute(SessionConstants.MEMBER_ID, memberDTO.getId());
-        session.setAttribute(SessionConstants.IS_LOGIN, true);
-
-        if (Objects.equals(memberDTO.getRole(), "ROLE_ADMIN")) {
-            return "redirect:/admin";
-        } else if (Objects.equals(memberDTO.getRole(), "ROLE_USER")){
-            return "member/login-success";
-        } else {
-            session.invalidate();
-            return "redirect:/";
-        }
-        // todo 처리 수정해야함
     }
 
 

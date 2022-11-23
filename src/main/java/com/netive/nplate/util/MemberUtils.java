@@ -23,6 +23,7 @@ public class MemberUtils {
     @Autowired
     private MemberService memberService;
 
+    // todo 찾아서 암호처리 변경하기(스프링 시큐리티로)
     // 암호화 분리
     public String encrypt(String str) throws NoSuchAlgorithmException {
 

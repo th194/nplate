@@ -10,9 +10,6 @@ public interface MemberService {
     // 회원 목록
     List<MemberDTO> getMemberList();
 
-    // 회원 등록
-    int registerMember(MemberDTO memberDTO);
-
     // 회원 정보 보기
     MemberDTO getMemberInfo(String id);
 

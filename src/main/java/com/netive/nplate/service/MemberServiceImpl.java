@@ -22,11 +22,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public int registerMember(MemberDTO dto) {
-        return memberMapper.registerMember(dto);
-    }
-
-    @Override
     public MemberDTO getMemberInfo(String id) {
         return memberMapper.selectMemberById(id);
     }

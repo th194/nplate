@@ -50,7 +50,7 @@ public class AdminController {
         } catch(Exception e) {
 //            e.printStackTrace();
         }
-        return "member/admin-login"; // todo 처리 변경
+        return "member/error";
 
     }
 
