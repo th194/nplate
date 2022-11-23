@@ -76,7 +76,7 @@
 <!--							<h6 class="collapse-header">팔로잉</h6>-->
 							<span th:each="following: ${followingMembers}">
 								<a class="collapse-item"  th:href=" '/member/userInfo?id=' + ${following.id} ">
-									<img th:src=" '/member/info/profile?id=' + ${following.id}" th:width="30px" th:height="30px" style="border-radius: 20%;"/>
+									<img th:src=" '/member/info/profile?id=' + ${following.profileImg}" th:width="30px" th:height="30px" style="border-radius: 20%;"/>
 									<span style="margin-left: 0.2rem" th:text="${following.nickName} + '(@' + ${following.id} + ')'"></span>
 								</a>
 							</span>
@@ -204,7 +204,7 @@
 									<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
 									   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<span class="mr-2 d-none d-lg-inline text-gray-600 small" th:text="${memberInfo.nickName}"></span>
-										<img th:src=" '/member/info/profile?id=' + ${memberInfo.id}" th:width="30px" th:height="30px" style="border-radius: 20%;"/>
+										<img th:src=" '/member/info/profile?id=' + ${memberInfo.profileImg}" th:width="30px" th:height="30px" style="border-radius: 20%;"/>
 									</a>
 									<!-- Dropdown - User Information -->
 									<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

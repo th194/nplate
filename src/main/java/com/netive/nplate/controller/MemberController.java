@@ -8,6 +8,7 @@ import com.netive.nplate.util.BoardUtils;
 import com.netive.nplate.util.MemberUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -32,13 +33,7 @@ public class MemberController {
     private FileService fileService;
 
     @Autowired
-    private LikesService likesService;
-
-    @Autowired
     private FollowingService followingService;
-
-    @Autowired
-    private BoardService boardService;
 
     @Autowired
     private UserService userService;
@@ -48,6 +43,9 @@ public class MemberController {
 
     @Autowired
     private MemberUtils memberUtils;
+
+    @Value("${nplate.upload.path}")
+    private String fileDir;
 
 
     // 회원가입 페이지
@@ -66,13 +64,15 @@ public class MemberController {
             String formatDate = memberDTO.getBirthday().replaceAll("-", "");
             memberDTO.setBirthday(formatDate);
 
-            userService.registerMember(memberDTO);
-
             if (file.isEmpty()) { // 파일 없는 경우
-                fileService.saveDefaultFile(memberDTO.getId());
+//                fileService.saveDefaultFile(memberDTO.getId());
+                memberDTO.setProfileImg("default");
             } else {
                 fileService.saveFile(file, memberDTO.getId());
+                memberDTO.setProfileImg(memberDTO.getId());
             }
+
+            userService.registerMember(memberDTO);
 
             model.addAttribute("message", "가입이 완료되었습니다.");
             model.addAttribute("url", "/");
@@ -106,8 +106,14 @@ public class MemberController {
     // 이미지 처리(컨트롤러 분리해야함)
     @GetMapping(value="/member/info/profile",  produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getProfileImage(String id) throws IOException {
-        FileDTO fileDTO = fileService.getFileInfo(id);
-        String res = fileDTO.getSavedPath();
+        // id = 이미지 코드(profileImg)
+        String res;
+        if (id.equals("default")) {
+            res = fileDir + "user.jpg";
+        } else {
+            FileDTO fileDTO = fileService.getFileInfo(id);
+            res = fileDTO.getSavedPath();
+        }
         InputStream inputStream = Files.newInputStream(Paths.get(res));
         byte[] image = IOUtils.toByteArray(inputStream);
         inputStream.close();
@@ -121,8 +127,9 @@ public class MemberController {
         // 회원 DB 삭제처리
         memberService.deleteMember(id);
 
+        // todo 관리자페이지 회원 삭제 처리 수정해야함
         // 프로필 사진 파일 및 DB 삭제
-        fileService.deleteFile(id);
+//        fileService.deleteFile(id);
 
         return "redirect:/list";
     }

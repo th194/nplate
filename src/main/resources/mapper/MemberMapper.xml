@@ -27,7 +27,7 @@
         <![CDATA[
         INSERT INTO NETIVE_PROJECT01_MEMBER
         (MBER_ID, MBER_NM, MBER_SEXDSTN, MBER_BRTHDY, MBER_CTTPC, MBER_PASSWORD, MBER_EMAIL, MBER_AREA, MBER_SRBDE, MBER_NCNM, MBER_PROFL_PHOTO)
-        VALUES ( #{id}, #{name}, #{sexCd}, #{birthday}, #{tel}, #{pwd}, #{email}, #{area}, DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, #{id})
+        VALUES ( #{id}, #{name}, #{sexCd}, #{birthday}, #{tel}, #{pwd}, #{email}, #{area}, DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, #{profileImg})
         ]]>
     </insert>
 
@@ -72,15 +72,15 @@
 
     <!-- 팔로잉 멤버 닉네임 조회 -->
     <select id="getFollowingInfo" parameterType="hashmap" resultMap="memResult">
-        select MBER_ID, MBER_NCNM from NETIVE_PROJECT01_MEMBER where MBER_ID in
+        select MBER_ID, MBER_NCNM, MBER_PROFL_PHOTO from NETIVE_PROJECT01_MEMBER where MBER_ID in
         <foreach item="item" collection="followingIds" open="(" close=")" separator=",">
             #{item}
         </foreach>
     </select>
 
-    <!-- 팔로잉 멤버 닉네임 조회 -->
+    <!-- 회원 정보 보기(ID, 닉네임만 조회) -->
     <select id="getUserInfo" parameterType="String" resultMap="memResult">
-        select MBER_ID, MBER_NCNM from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
+        select MBER_ID, MBER_NCNM, MBER_PROFL_PHOTO from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
     </select>
 
 </mapper>

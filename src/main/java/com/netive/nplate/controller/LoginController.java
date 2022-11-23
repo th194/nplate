@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -373,31 +374,38 @@ public class LoginController {
     // 회원 탈퇴
     @PostMapping("/member/deleteAcc")
     public String delete(Model model, MemberDTO dto, HttpServletRequest request) throws IOException, NoSuchAlgorithmException {
+        // 세션
         HttpSession session = request.getSession();
 
-        // 비밀번호 암호화 처리 추가
-        String encPwd = memberUtils.encrypt(dto.getPwd());
+        // 비밀번호 암호화
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         try {
             if (session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
                 MemberDTO sessionDto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
 
-                if (Objects.equals(sessionDto.getId(), dto.getId()) && Objects.equals(sessionDto.getPwd(), encPwd)) {
+                // 기존 비밀번호와 입력한 비밀번호 일치여부 확인
+                boolean result = passwordEncoder.matches(dto.getPwd(), sessionDto.getPassword());
+                System.out.println("비밀번호 일치여부 확인 result: " + result);
+
+                if (Objects.equals(sessionDto.getId(), dto.getId()) && result) {
                     memberService.deleteMember(dto.getId()); // 회원 DB 삭제처리
-                    fileService.deleteFile(dto.getId()); // 프로필 사진 파일 및 DB 삭제
+
+                    //프로필 사진 파일 및 DB 삭제(기본 이미지가 아닌 경우에만)
+                    if (!sessionDto.getProfileImg().equals("default")) {
+                        fileService.deleteFile(dto.getId());
+                    }
 
                     model.addAttribute("message", "탈퇴가 완료되었습니다.");
                     model.addAttribute("url", "/");
-                    session.invalidate();
-
-                    return "member/index";
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return "redirect:/";
+        // 에러난 경우에도...
+        session.invalidate();
+        return "member/index";
     }
 
 
@@ -406,7 +414,11 @@ public class LoginController {
     public String update(MemberDTO memberDTO, @RequestParam MultipartFile file) throws IOException {
         // 프로필 사진 수정
         if (!file.isEmpty()) {
-            fileService.updateFile(file, memberDTO.getId());
+            if (memberDTO.getProfileImg().equals("default")) {
+                fileService.saveFile(file, memberDTO.getId());
+            } else {
+                fileService.updateFile(file, memberDTO.getId());
+            }
         }
         // 그 외 정보 수정
         memberService.updateInfo(memberDTO);
@@ -427,15 +439,19 @@ public class LoginController {
         // 세션
         HttpSession session = request.getSession();
 
-        // 비밀번호 암호화 처리
-        String encPwd = memberUtils.encrypt(dto.getPwd());
+        // 비밀번호 암호화
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         try {
             if (session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
                 MemberDTO sessionDto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
 
-                if (Objects.equals(sessionDto.getId(), dto.getId()) && Objects.equals(sessionDto.getPwd(), encPwd)) {
-                    dto.setPwd(memberUtils.encrypt(changePwd));
+                // 기존 비밀번호와 입력한 비밀번호 일치여부 확인
+                boolean result = passwordEncoder.matches(dto.getPwd(), sessionDto.getPassword());
+                System.out.println("비밀번호 일치여부 확인 result: " + result);
+
+                if (Objects.equals(sessionDto.getId(), dto.getId()) && result) {
+                    dto.setPwd(passwordEncoder.encode(changePwd));
                     memberService.updatePwd(dto);
 
                     session.invalidate();

@@ -72,6 +72,7 @@ public class MemberUtils {
             Map testMap = new HashMap<>();
             testMap.put("id", dto.getId());
             testMap.put("nickName", dto.getNickName());
+            testMap.put("profileImg", dto.getProfileImg());
             followings.add(testMap);
         }
 
