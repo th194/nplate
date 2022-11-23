@@ -550,7 +550,8 @@ pre code {
 .container-sm,
 .container-md,
 .container-lg,
-.container-xl {
+.container-xl,
+.map-size {
   width: 100%;
   padding-right: 0.75rem;
   padding-left: 0.75rem;
@@ -559,25 +560,25 @@ pre code {
 }
 
 @media (min-width: 576px) {
-  .container, .container-sm {
+  .container, .container-sm, .map-size {
     max-width: 540px;
   }
 }
 
 @media (min-width: 768px) {
-  .container, .container-sm, .container-md {
+  .container, .container-sm, .container-md, .map-size {
     max-width: 720px;
   }
 }
 
 @media (min-width: 992px) {
-  .container, .container-sm, .container-md, .container-lg {
+  .container, .container-sm, .container-md, .container-lg, .map-size {
     max-width: 960px;
   }
 }
 
 @media (min-width: 1200px) {
-  .container, .container-sm, .container-md, .container-lg, .container-xl {
+  .container, .container-sm, .container-md, .container-lg, .container-xl, .map-size {
     max-width: 1140px;
   }
 }
@@ -11350,9 +11351,8 @@ body.sidebar-toggled footer.sticky-footer {
 
 /* 지도 */
 .map-size {
-  left : 50px;
-  width: 835px;
   height: 300px;
+  left : 20px;
 }
 /* 지도 */
 

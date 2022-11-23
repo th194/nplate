@@ -74,6 +74,11 @@ public class BoardServiceImpl implements BoardService {
         return boardMapper.count(params);
     }
 
+    @Override
+    public int countById(PageDTO params) {
+        return boardMapper.countById(params);
+    }
+
     // 특정 ID 게시글 조회
     @Override
     public List<BoardDTO> getBordListById(SearchDTO dto) {

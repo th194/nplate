@@ -54,21 +54,93 @@ public class BoardController {
 
 	private JsonArray jsonArray = new JsonArray();
 
+	@GetMapping("/member/board/list")
+	public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model, HttpServletRequest request) {
+		System.out.println("내가 쓴 게시글 목록========");
+		HttpSession session = request.getSession();
+
+		if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+			try {
+				MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+				String memberId = dto.getId();
+				params.setMemberId(memberId); // 내 아이디 세팅
+
+				model.addAttribute("memberInfo", dto);
+				model.addAttribute("search", params);
+
+				// 좋아요
+				List<Long> likeNumbers;
+				if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+					likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+				} else {
+					likeNumbers = boardUtils.getLikeNumbers(memberId);
+				}
+				model.addAttribute("likeNumbers", likeNumbers);
+
+				// 팔로잉 처리
+				List<Map> followingMembers = new ArrayList<>();
+				if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+					followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+				} else {
+					List<String> followingIds = memberUtils.getFollowingMember(memberId);
+					if (followingIds.size() > 0) {
+						followingMembers = memberUtils.getFollowingsInfo(followingIds);
+					}
+					session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+					session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
+				}
+
+//                model.addAttribute("followingMembers", followingMembers);
+				return "bootstrap-template/list";
+
+			} catch (Exception e) {
+				// todo 에러 발생시 처리 추가
+				System.out.println("에러=======");
+				e.printStackTrace();
+				return "member/index";
+			}
+		} else {
+			return "member/index";
+		}
+	}
+
 	/**
 	 * 게시글 작성
 	 * @param idx
 	 * @param model
+	 * @param request
 	 * @return
 	 */
-	@GetMapping("/board/write.do")
-	public String openBoardWrite(@RequestParam(value = "idx", required = false) final Long idx, Model model) {
+	@GetMapping("/member/board/write")
+	public String openBoardWrite(@RequestParam(value = "idx", required = false) Long idx, Model model, HttpServletRequest request) {
+
+		HttpSession session = request.getSession();
+		MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+
+		model.addAttribute("memberInfo", memberDTO);
+
 		if (idx != null) {
+
 			BoardDTO board = boardService.getBoardDetail(idx);
 			model.addAttribute("board", board);
 		}
+		// 팔로잉 처리
+		String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
 
+		List<Map> followingMembers = new ArrayList<>();
+		if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+			followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+		} else {
+			List<String> followingIds = memberUtils.getFollowingMember(memberId);
+			if (followingIds.size() > 0) {
+				followingMembers = memberUtils.getFollowingsInfo(followingIds);
+			}
+			session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+			session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
+		}
 
-		
+		model.addAttribute("followingMembers", followingMembers);
+
 		return "bootstrap-template/write";
 	}
 

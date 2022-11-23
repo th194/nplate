@@ -47,29 +47,25 @@
 						<!-- Post header-->
 						<header class="mb-4">
 							<!-- Post title-->
-							<h1 class="fw-bolder mb-1" th:text="*{bbscttSj}"></h1>
+							<h1 class="fw-bolder mb-1" style="border-bottom: 0.05rem solid #858796;" th:text="*{bbscttSj}"></h1>
 							<!-- Post meta content-->
 							<div class="text-muted fst-italic mb-2">
-								<span class="fw-bold" th:text="*{bbscttWrter}"></span>
+								<span style="margin-left:30px;" th:text="*{bbscttWrter}"></span>
 								<span style="float:right;" th:text="*{bbscttRgsde}"></span>
-							</div>
-
-							<!-- <div class="text-muted fst-italic mb-2" th:text="*{bbscttWrter}"></div> -->
-
-							<div class="form-group" id="hashAfter">
-								<label for="rate1" class="col-sm-2 control-label">평점</label>
-								<fieldset>
-									<input type="radio" name="bbscttGrade" value="5" id="rate1">
-									<label for="rate1" class="grade">⭐</label>
-									<input type="radio" name="bbscttGrade" value="4" id="rate2">
-									<label for="rate2" class="grade">⭐</label>
-									<input type="radio" name="bbscttGrade" value="3" id="rate3">
-									<label for="rate3" class="grade">⭐</label>
-									<input type="radio" name="bbscttGrade" value="2" id="rate4">
-									<label for="rate4" class="grade">⭐</label>
-									<input type="radio" name="bbscttGrade" value="1" id="rate5">
-									<label for="rate5" class="grade">⭐</label>
-								</fieldset>
+								<span style="margin-left:30px;" id="hashAfter">
+									<fieldset>
+										<input type="radio" name="bbscttGrade" value="5" id="rate1">
+										<label for="rate1" class="grade">⭐</label>
+										<input type="radio" name="bbscttGrade" value="4" id="rate2">
+										<label for="rate2" class="grade">⭐</label>
+										<input type="radio" name="bbscttGrade" value="3" id="rate3">
+										<label for="rate3" class="grade">⭐</label>
+										<input type="radio" name="bbscttGrade" value="2" id="rate4">
+										<label for="rate4" class="grade">⭐</label>
+										<input type="radio" name="bbscttGrade" value="1" id="rate5">
+										<label for="rate5" class="grade">⭐</label>
+									</fieldset>
+                                </span>
 							</div>
 							<!-- Post categories-->
 						</header>
@@ -113,11 +109,7 @@
 	</div>
 	<!-- /.card-content -->
 	<hr>
-
-
-
 	<!-- 댓글 -->
-
 	<section class="mb-5">
 		<div class="card bg-light">
 			<div class="card-body">
@@ -126,7 +118,6 @@
 
 				</div>
 				<!-- 댓글 목록 -->
-
 				<!-- Comment form-->
 				<form class="mb-4" th:object="${board}">
 					<textarea id="answerCn" name="answerCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력"></textarea>
@@ -162,6 +153,7 @@
 			console.log('목록 uri = ' + uri);
 
 			$.get(uri, function (response) {
+				var profile = response.profile;
 				loginMember = response.member;
 				console.log('replyList => ',response.replyList);
 				if (response.replyList !== undefined) {
@@ -171,7 +163,7 @@
 						var rgsdeFormt = timeForToday(rgsde);
 						replyHtml += `
 							<div class="d-flex mb-2" data-index="${reply.answerNo}">
-                                <div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${reply.answerWrter}" alt="..." /></div>
+                                <div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="..." /></div>
                                 <div class="ms-3" style="width:70%">
                                     <div class="fw-bold">${reply.answerWrter}</div>
                                     ${reply.answerCn}
@@ -237,12 +229,12 @@
 				hashTagList = (board.bbscttHashtag).split(',');
 				hashTagList.forEach((value) => {
 					hashTagListDom += `
-							<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" href="#!">${value}</a>
+							<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" style="margin-left:30px;" href="#!">${value}</a>
 						`;
 				});
 			} else {
 				hashTagList = board.bbscttHashtag;
-				hashTagListDom += `<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" href="#!">${hashTagList}</a>`;
+				hashTagListDom += `<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" style="margin-left:30px;" href="#!">${hashTagList}</a>`;
 			}
 			$('#hashAfter').before(hashTagListDom);
 			hashTagListDom = '';

@@ -92,9 +92,17 @@ public class AdminController {
      * @return
      */
     @GetMapping("/admin/adminListById")
-    public String adminListById(String id) {
-
-        return null;
+    public String adminListById(@ModelAttribute("params") PageDTO params, @RequestParam(value = "id", required = false) String id, Model model) {
+        SearchDTO sDTO = new SearchDTO(id);
+        sDTO.setRecordSize(10);
+        params.setMemberId(id);
+        int count = boardService.countById(params);
+        Pagination pagination = new Pagination(count, params);
+        List<BoardDTO> list = boardService.getBordListById(sDTO);
+        PagingResponse<BoardDTO> boardList = new PagingResponse<>(list, pagination);
+        model.addAttribute("memberId", id);
+        model.addAttribute("boardList", boardList);
+        return "bootstrap-template/adminList";
     }
 
     /**

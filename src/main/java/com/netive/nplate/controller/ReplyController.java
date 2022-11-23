@@ -2,10 +2,12 @@ package com.netive.nplate.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.netive.nplate.domain.SessionConstants;
 import com.netive.nplate.domain.MemberDTO;
 import com.netive.nplate.domain.ReplyDTO;
+import com.netive.nplate.service.MemberService;
 import com.netive.nplate.service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -19,12 +21,15 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.URI;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class ReplyController {
     @Autowired
     private ReplyService replyService;
+
+    @Autowired
+    private MemberService memberService;
 
     /**
      * 댓글 목록
@@ -36,27 +41,43 @@ public class ReplyController {
     public JsonObject getReplyList(@PathVariable("bbscttNo") Long idx, @ModelAttribute("params") ReplyDTO params, HttpServletRequest request, Model model) {
 
         JsonObject jsonObj = new JsonObject();
-
+        Gson gson = new Gson();
         HttpSession session = request.getSession();
 
         System.out.println("로그인 체크 ====================== ");
         System.out.println((boolean) session.getAttribute(SessionConstants.IS_LOGIN));
         System.out.println("로그인 체크 ====================== ");
 
-        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN)) {
+        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+            try {
+                MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+                String id = dto.getId();
 
-            MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
-            String id = dto.getId();
-            System.out.println("로그인 id = " + id);
 
+                List<ReplyDTO> replyList = replyService.getReplyList(params);
 
-            List<ReplyDTO> replyList = replyService.getReplyList(params);
-            if(CollectionUtils.isEmpty(replyList) == false) {
-                JsonArray jsonArr = new Gson().toJsonTree(replyList).getAsJsonArray();
-                jsonObj.add("replyList", jsonArr);
+                if(CollectionUtils.isEmpty(replyList) == false) {
+                    JsonArray jsonArr = new Gson().toJsonTree(replyList).getAsJsonArray();
+                    jsonObj.add("replyList", jsonArr);
+                    String[] memberInfo = new String[replyList.size()];
+                    List<MemberDTO> memberList = new ArrayList<>();
+                    List<String> memberProfile = new ArrayList<>();
+
+                    // 댓글 리스트에 담겨있는 작성자 id로 작성자 정보 조회
+                    for (int i = 0; i < replyList.size(); i++ ) {
+                        memberInfo[i] = replyList.get(i).getAnswerWrter();
+                        memberList.add(memberService.getMemberInfo(memberInfo[i]));
+                        memberProfile.add(memberList.get(i).getProfileImg());
+                        JsonElement jEl = gson.toJsonTree(memberProfile);
+                        jsonObj.add("profile", jEl);
+                    }
+                }
+                jsonObj.addProperty("member", id);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            jsonObj.addProperty("member", id);
-
+        } else {
+            jsonObj.addProperty("message", "세션 만료");
         }
 
         return jsonObj;
@@ -76,14 +97,12 @@ public class ReplyController {
         HttpSession session = request.getSession();
 
 
-        System.out.println("========================request");
-        System.out.println(request);
-
         System.out.println("로그인 체크 ====================== ");
         System.out.println((boolean) session.getAttribute(SessionConstants.IS_LOGIN));
         System.out.println("로그인 체크 ====================== ");
-
-        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN)) {
+        System.out.println("params=========================");
+        System.out.println(params);
+        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
             try {
                 MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 String id = dto.getId();
@@ -100,8 +119,7 @@ public class ReplyController {
                 jsonObj.addProperty("message", "시스템 문제 발생");
             }
         } else {
-            // 세션없을때 member/index로 보냄
-            this.redirect();
+            jsonObj.addProperty("message", "세션 만료");
         }
 
         return jsonObj;
@@ -148,8 +166,7 @@ public class ReplyController {
                 jsonObj.addProperty("message", "시스템 문제 발생");
             }
         } else {
-            // 세션없을때 member/index로 보냄
-            this.redirect();
+            jsonObj.addProperty("message", "세션 만료");
         }
 
         return jsonObj;
@@ -175,11 +192,4 @@ public class ReplyController {
 
         return jsonObj;
     }
-
-    public ResponseEntity<?> redirect() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("member/index"));
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-    }
-
 }

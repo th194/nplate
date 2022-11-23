@@ -70,6 +70,7 @@ public class LoginController {
     public String myPage(HttpServletRequest request, Model model) {
         System.out.println("피드 주소로 이동===========================");
         HttpSession session = request.getSession();
+
         try {
             if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
                 model.addAttribute("memberInfo", session.getAttribute(SessionConstants.MEMBER_DTO));
@@ -98,6 +99,7 @@ public class LoginController {
                     if (followingIds.size() > 0) {
                         followingMembers = memberUtils.getFollowingsInfo(followingIds);
                     }
+
                     session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
                     session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
                 }
@@ -112,7 +114,7 @@ public class LoginController {
         } catch (Exception e) {
             // e.printStackTrace();
         }
-        session.invalidate();
+//        session.invalidate();
         return "redirect:/";
     }
 
@@ -170,106 +172,6 @@ public class LoginController {
         return "redirect:/";
     }
     
-    
-    // 내가 쓴 게시글 목록
-    @GetMapping("/member/board/list")
-    public String openBoardList(@ModelAttribute("params") final SearchDTO params, Model model, HttpServletRequest request) {
-        System.out.println("내가 쓴 게시글 목록========");
-        HttpSession session = request.getSession();
-
-        if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
-            try {
-                MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
-                String memberId = dto.getId();
-                params.setMemberId(memberId); // 내 아이디 세팅
-
-                model.addAttribute("memberInfo", dto);
-                model.addAttribute("search", params);
-
-                // 좋아요
-                List<Long> likeNumbers;
-                if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
-                    likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
-                } else {
-                    likeNumbers = boardUtils.getLikeNumbers(memberId);
-                }
-                model.addAttribute("likeNumbers", likeNumbers);
-
-                // 팔로잉 처리
-                List<Map> followingMembers = new ArrayList<>();
-                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
-                    followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
-                } else {
-                    List<String> followingIds = memberUtils.getFollowingMember(memberId);
-                    if (followingIds.size() > 0) {
-                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
-                    }
-                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
-                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
-                }
-
-                model.addAttribute("followingMembers", followingMembers);
-
-                return "bootstrap-template/list";
-
-            } catch (Exception e) {
-                // todo 에러 발생시 처리 추가
-                System.out.println("에러=======");
-                e.printStackTrace();
-                return "member/index";
-            }
-        } else {
-            return "member/index";
-        }
-    }
-
-
-    // 게시글 작성
-    @GetMapping("/member/board/write")
-    public String openBoardWrite(@RequestParam(value = "idx", required = false) Long idx, Model model, HttpServletRequest request) {
-
-        HttpSession session = request.getSession();
-        MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
-
-        model.addAttribute("memberInfo", memberDTO);
-
-        if (idx != null) {
-            BoardDTO board = boardSerive.getBoardDetail(idx);
-            model.addAttribute("board", board);
-        }
-
-//        if (idx == null) {
-//            model.addAttribute("board", new BoardDTO(memberDTO.getId()));
-//
-//        } else {
-//            BoardDTO boardDTO = boardSerive.getBoardDetail(idx);
-//            if(boardDTO == null) {
-//                return "redirect:member/board/list";
-//            }
-//            model.addAttribute("board", boardDTO);
-//        }
-
-
-        // 팔로잉 처리
-        String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-
-        List<Map> followingMembers = new ArrayList<>();
-        if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
-            followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
-        } else {
-            List<String> followingIds = memberUtils.getFollowingMember(memberId);
-            if (followingIds.size() > 0) {
-                followingMembers = memberUtils.getFollowingsInfo(followingIds);
-            }
-            session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
-            session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
-        }
-
-        model.addAttribute("followingMembers", followingMembers);
-
-        return "bootstrap-template/write";
-    }
-
 
     // 내 정보 보기
     @GetMapping("/member/myInfo")
