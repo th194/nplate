@@ -1,7 +1,9 @@
 package com.netive.nplate.service;
 
+import com.netive.nplate.domain.PageDTO;
 import com.netive.nplate.domain.ReplyDTO;
 import com.netive.nplate.mapper.ReplyMapper;
+import com.netive.nplate.paging.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +52,7 @@ public class ReplyServiceImpl implements ReplyService{
 
     // 댓글 목록
     @Override
-    public List<ReplyDTO> getReplyList(ReplyDTO params) {
+    public List<ReplyDTO> getReplyList(PageDTO params) {
         // 댓글 목록 담을 빈 배열 생성
         List<ReplyDTO> replyList = Collections.emptyList();
 
@@ -65,5 +67,11 @@ public class ReplyServiceImpl implements ReplyService{
 
         // 댓글 목록 리턴
         return replyList;
+    }
+
+    // 게시글 별 댓글 갯수
+    @Override
+    public int getReplyBoardCount(Long idx) {
+        return replyMapper.selectReplyBoardCount(idx);
     }
 }

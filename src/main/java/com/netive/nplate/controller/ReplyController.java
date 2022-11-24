@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.netive.nplate.domain.SessionConstants;
-import com.netive.nplate.domain.MemberDTO;
-import com.netive.nplate.domain.ReplyDTO;
+import com.netive.nplate.domain.*;
+import com.netive.nplate.paging.Pagination;
+import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.MemberService;
 import com.netive.nplate.service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class ReplyController {
      * @return
      */
     @GetMapping("/reply/{bbscttNo}")
-    public JsonObject getReplyList(@PathVariable("bbscttNo") Long idx, @ModelAttribute("params") ReplyDTO params, HttpServletRequest request, Model model) {
+    public JsonObject getReplyList(@PathVariable("bbscttNo") Long idx, @ModelAttribute("params") PageDTO params, HttpServletRequest request) {
 
         JsonObject jsonObj = new JsonObject();
         Gson gson = new Gson();
@@ -53,12 +53,18 @@ public class ReplyController {
                 MemberDTO dto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
                 String id = dto.getId();
 
+                int count = replyService.getReplyBoardCount(idx);
+                Pagination pagination = new Pagination(count, params);
+                params.setPagination(pagination);
 
                 List<ReplyDTO> replyList = replyService.getReplyList(params);
+                PagingResponse<ReplyDTO> replyListPage = new PagingResponse<>(pagination);
 
                 if(CollectionUtils.isEmpty(replyList) == false) {
-                    JsonArray jsonArr = new Gson().toJsonTree(replyList).getAsJsonArray();
+                    JsonArray jsonArr = gson.toJsonTree(replyList).getAsJsonArray();
+                    JsonElement pageInfo = gson.toJsonTree(replyListPage);
                     jsonObj.add("replyList", jsonArr);
+                    jsonObj.add("pagination", pageInfo);
                     String[] memberInfo = new String[replyList.size()];
                     List<MemberDTO> memberList = new ArrayList<>();
                     List<String> memberProfile = new ArrayList<>();

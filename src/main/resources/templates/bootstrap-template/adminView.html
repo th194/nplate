@@ -117,6 +117,10 @@
                 <div class="col-lg-12" id="replyList">
 
                 </div>
+                <!-- 댓글 페이징 -->
+                <ul class="pagination" style="justify-content: center">
+
+                </ul>
                 <!-- 댓글 목록 -->
                 <!-- Comment form-->
                 <form class="mb-4" th:object="${board}">
@@ -140,21 +144,22 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         console.log('관리자페이지========');
-
+        var board = [[${board}]];
         var loginMember;
 
         $(function () {
-            replyList();
+            var page = 1;
+            replyList(page);
         });
 
         /* 댓글 목록 S */
-        function replyList() {
+        function replyList(page) {
             var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
             var replyHtml = '';
 
-            console.log('목록 uri = ' + uri);
-
-            $.get(uri, function (response) {
+            $.get(uri,
+                {page : page, limitStart : page * 10},
+                function (response) {
                 loginMember = response.member;
                 console.log('replyList => ', response.replyList);
                 if (response.replyList !== undefined) {
@@ -186,12 +191,70 @@
                             `;
                 }
                 $('#replyList').html(replyHtml);
+                drawPage(response.pagination.pagination, page);
+                page++;
             }, 'json');
 
             /* 댓글 목록 S */
         }
 
-        var board = [[${board}]];
+        /* 댓글 페이징 S */
+        function drawPage(pagination, page) {
+            $('.pagination').empty();
+
+            var html = '';
+
+            // 첫 페이지, 이전 페이지
+            if (pagination.existPrevPage) {
+                html += `
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.startPage - 1});" aria-label="Previous">
+                        <span aria-hidden="true">&lsaquo;</span>
+                        </a>
+                    </li>
+                `;
+            }
+
+            // 페이지 번호
+            for (var i = pagination.startPage; i <= pagination.endPage; i++) {
+                var active = (i === page) ? 'active' : '';
+                html += `
+                <li  class="${active} paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${i});">${i}</a>
+                </li>
+                `;
+            }
+
+            if (pagination.existNextPage) {
+                html += `
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.endPage + 1});" aria-label="Next">
+                        <span aria-hidden="true">&rsaquo;</span>
+                    </a>
+                </li>
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.totalPageCount});" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                `;
+            }
+
+            $('.pagination').append(html);
+        }
+        /* 댓글 페이징 E */
+
+        /* 댓글 페이지 이동 S */
+        function movePage(page) {
+            replyList(page);
+        }
+
+        /* 댓글 페이지 이동 E */
 
         /* 화면 렌더링 */
         // 별점

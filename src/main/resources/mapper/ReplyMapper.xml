@@ -53,7 +53,7 @@
     </delete>
 
     <!-- 댓글 리스트 조회 -->
-    <select id="selectReplyList" parameterType="ReplyDTO" resultType="ReplyDTO">
+    <select id="selectReplyList" parameterType="PageDTO" resultType="ReplyDTO">
         SELECT
             <include refid="replyColumns"></include>
         FROM
@@ -61,13 +61,18 @@
         WHERE
             BBSCTT_NO = #{bbscttNo}
         ORDER BY
-            ANSWER_NO DESC,
             ANSWER_RGSDE DESC
+        Limit #{pagination.limitStart}, #{recordSize}
     </select>
 
     <!-- 댓글 총 갯수 -->
     <select id="selectReplyTotalCount" parameterType="ReplyDTO" resultType="int">
         SELECT COUNT(*) FROM NETIVE_PROJECT01_REPLY WHERE BBSCTT_NO = #{bbscttNo}
+    </select>
+
+    <!-- 게시글 별 댓글 총 갯수 -->
+    <select id="selectReplyBoardCount" parameterType="long" resultType="int">
+        SELECT COUNT(BBSCTT_NO) FROM NETIVE_PROJECT01_REPLY WHERE BBSCTT_NO = #{bbscttNo}
     </select>
 
 </mapper>

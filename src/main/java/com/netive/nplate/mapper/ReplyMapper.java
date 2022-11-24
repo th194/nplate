@@ -1,6 +1,8 @@
 package com.netive.nplate.mapper;
 
+import com.netive.nplate.domain.PageDTO;
 import com.netive.nplate.domain.ReplyDTO;
+import com.netive.nplate.paging.Pagination;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,6 +13,7 @@ public interface ReplyMapper {
     public ReplyDTO selectReplyDetail(Long idx);
     public int updateReply(ReplyDTO params);
     public int deleteReply(Long idx);
-    public List<ReplyDTO> selectReplyList(ReplyDTO params);
-    public int selectReplyTotalCount(ReplyDTO params);
+    public List<ReplyDTO> selectReplyList(PageDTO page);
+    public int selectReplyTotalCount(PageDTO params);
+    public int selectReplyBoardCount(Long idx);
 }

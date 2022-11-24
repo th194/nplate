@@ -114,7 +114,7 @@ public class LoginController {
         } catch (Exception e) {
             // e.printStackTrace();
         }
-//        session.invalidate();
+        session.invalidate();
         return "redirect:/";
     }
 
