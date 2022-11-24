@@ -117,6 +117,10 @@
 				<div class="col-lg-12" id="replyList">
 
 				</div>
+				<!-- 댓글 페이징 -->
+				<ul class="pagination" style="justify-content: center">
+
+				</ul>
 				<!-- 댓글 목록 -->
 				<!-- Comment form-->
 				<form class="mb-4" th:object="${board}">
@@ -140,68 +144,126 @@
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		var loginMember;
-
+		var board = [[${board}]];
 		$(function(){
-			replyList();
+			var page = 1;
+			replyList(page);
 		});
 
 		/* 댓글 목록 S */
-		function replyList() {
+		function replyList(page) {
 			var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
 			var replyHtml = '';
 
-			console.log('목록 uri = ' + uri);
-
-			$.get(uri, function (response) {
-				var profile = response.profile;
-				loginMember = response.member;
-				console.log('replyList => ',response.replyList);
-				if (response.replyList !== undefined) {
-					console.log('로그인 사용자 = ' + loginMember);
-					$(response.replyList).each(function (idx, reply) {
-						var rgsde = reply.answerRgsde;
-						var rgsdeFormt = timeForToday(rgsde);
-						replyHtml += `
-							<div class="d-flex mb-2" data-index="${reply.answerNo}">
-                                <div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="..." /></div>
-                                <div class="ms-3" style="width:70%">
-                                    <div class="fw-bold">${reply.answerWrter}</div>
-                                    ${reply.answerCn}
-                                </div>
-                                `;
-						// 로그인 한 사용자가 댓글 작성자와 같을 경우 수정/삭제 버튼 생성
-						if (loginMember == reply.answerWrter) {
+			$.get(uri,
+					{page : page, limitStart : page * 10},
+				function (response) {
+					loginMember = response.member;
+					console.log('replyList => ',response.replyList);
+					if (response.replyList !== undefined) {
+						$(response.replyList).each(function (idx, reply) {
+							var rgsde = reply.answerRgsde;
+							var rgsdeFormt = timeForToday(rgsde);
 							replyHtml += `
-                                    <div class="right-flex">
-                                        <a class="btn btn-info btn-circle btn-sm right-flex" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
-                                            <i class="fas fa-info-circle" aria-hidden="true"></i>
-                                        </a>
-                                    `;
-						}
-						replyHtml += `
-                                    <div class="right-flex" style="align-self: flex-end">${rgsdeFormt}</div>
-                                </div>
-                            </div>
-							`;
-					});
-				} else {
-					replyHtml += `
-								<p>아직 댓글이 없습니다.</p>
+								<div class="d-flex mb-2" data-index="${reply.answerNo}">
+									<div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="..." /></div>
+									<div class="ms-3" style="width:70%">
+										<div class="fw-bold">${reply.answerWrter}</div>
+										${reply.answerCn}
+									</div>
+									`;
+							// 로그인 한 사용자가 댓글 작성자와 같을 경우 수정/삭제 버튼 생성
+							if (loginMember == reply.answerWrter) {
+								replyHtml += `
+										<div class="right-flex">
+											<a class="btn btn-info btn-circle btn-sm right-flex" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
+												<i class="fas fa-info-circle" aria-hidden="true"></i>
+											</a>
+										`;
+							}
+							replyHtml += `
+										<div class="right-flex" style="align-self: flex-end">${rgsdeFormt}</div>
+									</div>
+								</div>
 								`;
-				}
-				$('#replyList').html(replyHtml);
-			}, 'json');
-
-			/* 댓글 목록 S */
+						});
+					} else {
+						replyHtml += `
+									<p>아직 댓글이 없습니다.</p>
+									`;
+					}
+					$('#replyList').html(replyHtml);
+					drawPage(response.pagination.pagination, page);
+					page++;
+				}, 'json');
+			/* 댓글 목록 E */
 		}
 
-		var board = [[${board}]];
+		/* 댓글 페이징 S */
+		function drawPage(pagination, page) {
+			$('.pagination').empty();
+
+			var html = '';
+
+			// 첫 페이지, 이전 페이지
+			if (pagination.existPrevPage) {
+				html += `
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.startPage - 1});" aria-label="Previous">
+                        <span aria-hidden="true">&lsaquo;</span>
+                        </a>
+                    </li>
+                `;
+			}
+
+			// 페이지 번호
+			for (var i = pagination.startPage; i <= pagination.endPage; i++) {
+				var active = (i === page) ? 'active' : '';
+				html += `
+                <li  class="${active} paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${i});">${i}</a>
+                </li>
+                `;
+			}
+
+			if (pagination.existNextPage) {
+				html += `
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.endPage + 1});" aria-label="Next">
+                        <span aria-hidden="true">&rsaquo;</span>
+                    </a>
+                </li>
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.totalPageCount});" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                `;
+			}
+
+			$('.pagination').append(html);
+		}
+		/* 댓글 페이징 E */
+
+		/* 댓글 페이지 이동 S */
+		function movePage(page) {
+			replyList(page);
+		}
+
+		/* 댓글 페이지 이동 E */
+
+
+
 
 		/* 화면 렌더링 */
 		// 별점
 		$('input[name=bbscttGrade]').attr('disabled', true);
 
-		console.log('별점 점수 ============================== ' + board.bbscttGrade);
 		switch (board.bbscttGrade) {
 			case 1 :
 				$('#rate5').attr('checked', true);
@@ -342,7 +404,6 @@
 		/* 댓글 등록 S */
 		function insertReply() {
 			var answerCn = document.getElementById('answerCn');
-			console.log('answerCn = ' + answerCn);
 			if ( answerCn.value == null || answerCn.value == '') {
 				alert('댓글을 입력해주세요.');
 				answerCn.focus();
@@ -401,7 +462,6 @@
 			var content = $('#modalAnswerCn').val();
 
 			var uri = '/reply/' + idx;
-			console.log('수정 uri = ' + uri);
 			var headers = {
 				'Content-Type': 'application/json',
 				'X-HTTP-Method-Override' : 'PATCH'
