@@ -60,4 +60,14 @@ public class MemberServiceImpl implements MemberService {
     public MemberDTO getUserInfo(String id) {
         return memberMapper.getUserInfo(id);
     }
+
+    @Override
+    public int putoutMember(String id) {
+        return memberMapper.putoutMember(id);
+    }
+
+    @Override
+    public int enableMember(String id) {
+        return memberMapper.enableMember(id);
+    }
 }

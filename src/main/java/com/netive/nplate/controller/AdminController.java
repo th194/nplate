@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
@@ -36,7 +38,7 @@ public class AdminController {
     @Autowired
     private FileService fileService;
 
-    // 관리자 로그인 페이지
+    // 관리자 첫페이지
     @GetMapping("/admin")
     public String adminLogin(HttpServletRequest request) {
         HttpSession session = request.getSession();
@@ -51,23 +53,45 @@ public class AdminController {
 //            e.printStackTrace();
         }
         return "member/error";
-
     }
 
 
     // 회원목록
     @GetMapping("/admin/member/list")
-    public String memberList(Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        String id = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-        if (Objects.equals(id, "admin")) {
-            List<MemberDTO> memberList = memberService.getMemberList();
-            model.addAttribute("memberList", memberList);
+    public String memberList(Model model) {
+        List<MemberDTO> memberList = memberService.getMemberList();
+        model.addAttribute("memberList", memberList);
+        return "bootstrap-template/admin-member-list";
+    }
 
-            return "bootstrap-template/admin-member-list";
-        } else {
-            return "redirect:/";
+
+    // 만료 회원목록
+    @GetMapping("/admin/member/expired")
+    public String expiredMembers(Model model) {
+        List<MemberDTO> memberList = memberService.getMemberList();
+        List<Map> sortList = new ArrayList<>();
+
+        for (MemberDTO memberDTO : memberList) {
+            if (!memberDTO.isAccountNonExpired()) {
+                Map<String, Object> member = new HashMap<>();
+                member.put("isAccountNonExpired", false);
+
+                member.put("id", memberDTO.getId());
+                member.put("name", memberDTO.getName());
+                member.put("nickName", memberDTO.getNickName());
+                member.put("srbde", memberDTO.getSrbde());
+
+                // 데이트 타입 포맷
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+                String strDate = simpleDateFormat.format(memberDTO.getExpiredDate());
+                member.put("expiredDate", strDate);
+
+                sortList.add(member);
+            }
         }
+        model.addAttribute("memberList", sortList);
+        
+        return "bootstrap-template/admin-expired-members";
     }
 
 
@@ -185,4 +209,46 @@ public class AdminController {
 
         return "redirect:/admin/adminList";
     }
+
+
+    // 관리자 회원 정보 보기
+    @GetMapping("/admin/member/info")
+    public String info(String id, Model model) throws IOException {
+        MemberDTO memberDTO = memberService.getMemberInfo(id);
+
+        // 생일 처리
+        String birthday = memberDTO.getBirthday();
+        String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
+        memberDTO.setBirthday(formatDay);
+
+        model.addAttribute("memberInfo", memberDTO);
+        model.addAttribute("area", Area.values());
+
+        return "bootstrap-template/admin-userInfo";
+    }
+
+
+    /**
+     * 관리자 회원 삭제(만료)
+     * 일반 회원 탈퇴의 경우 바로 계정이 삭제되지만, 관리자용 회원 삭제의 경우 만료일자가 오늘로 변경됨
+     * (DB에는 남아있으나 로그인 불가)
+     */
+    @GetMapping("/admin/member/delete")
+    public String deleteMember(String id) throws IOException {
+        memberService.putoutMember(id);
+        
+        // todo 만료계정 일정시간 지난 후 삭제하는 프로그램 추가
+        return "redirect:/admin/member/list";
+    }
+
+    
+    /**
+     * 관리자 회원 만료처리 취소
+     */
+    @GetMapping("/admin/member/enable")
+    public String enableMember(String id) throws IOException {
+        memberService.enableMember(id);
+        return "redirect:/admin/member/list";
+    }
+
 }

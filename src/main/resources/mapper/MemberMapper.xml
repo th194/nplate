@@ -14,6 +14,7 @@
         <result property="nickName" column="MBER_NCNM"/>
         <result property="profileImg" column="MBER_PROFL_PHOTO"/>
         <result property="role" column="MBER_ROLE"/>
+        <result property="expiredDate" column="MBER_EXPIRED_DATE"/>
     </resultMap>
 
     <select id="listMembers" resultMap="memResult">
@@ -82,5 +83,22 @@
     <select id="getUserInfo" parameterType="String" resultMap="memResult">
         select MBER_ID, MBER_NCNM, MBER_PROFL_PHOTO from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
     </select>
+
+
+    <update id="putoutMember" parameterType="String">
+        <![CDATA[
+        update NETIVE_PROJECT01_MEMBER
+        set MBER_EXPIRED_DATE = DATE_FORMAT(now(), '%Y-%m-%d')
+        where MBER_ID = #{id}
+        ]]>
+    </update>
+
+    <update id="enableMember" parameterType="String">
+        <![CDATA[
+        update NETIVE_PROJECT01_MEMBER
+        set MBER_EXPIRED_DATE = '9999-12-31'
+        where MBER_ID = #{id}
+        ]]>
+    </update>
 
 </mapper>

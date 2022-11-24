@@ -23,27 +23,6 @@ public class MemberUtils {
     @Autowired
     private MemberService memberService;
 
-    // todo 찾아서 암호처리 변경하기(스프링 시큐리티로)
-    // 암호화 분리
-    public String encrypt(String str) throws NoSuchAlgorithmException {
-
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(str.getBytes());
-        byte[] bytePwd = md.digest();
-
-        StringBuffer sb = new StringBuffer();
-        for (byte b : bytePwd) {
-            sb.append(String.format("%02x", b));
-        }
-
-        String encPwd = sb.toString();
-        System.out.println("암호화 비밀번호====");
-        System.out.println(encPwd);
-
-
-        return encPwd;
-    }
-
 
     // 팔로잉 한 사람 조회
     public List<String> getFollowingMember(String id) {

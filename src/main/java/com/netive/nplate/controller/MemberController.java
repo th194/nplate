@@ -1,6 +1,5 @@
 package com.netive.nplate.controller;
 
-import com.netive.nplate.configuration.SessionConfig;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.service.*;
 
@@ -10,7 +9,6 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -87,22 +85,6 @@ public class MemberController {
     }
 
 
-    // 회원 정보
-    @GetMapping("/member/info")
-    public String info(String id, Model model) throws IOException {
-        MemberDTO memberDTO = memberService.getMemberInfo(id);
-
-        // 생일 처리
-        String birthday = memberDTO.getBirthday();
-        String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
-        memberDTO.setBirthday(formatDay);
-
-        model.addAttribute("memberInfo", memberDTO);
-        model.addAttribute("area", Area.values());
-        return "member/info";
-    }
-
-
     // 이미지 처리(컨트롤러 분리해야함)
     @GetMapping(value="/member/info/profile",  produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getProfileImage(String id) throws IOException {
@@ -118,38 +100,6 @@ public class MemberController {
         byte[] image = IOUtils.toByteArray(inputStream);
         inputStream.close();
         return image;
-    }
-
-
-    // 회원삭제
-    @GetMapping("/member/delete")
-    public String delete(String id, Model model) throws IOException {
-        // 회원 DB 삭제처리
-        memberService.deleteMember(id);
-
-        // todo 관리자페이지 회원 삭제 처리 수정해야함
-        // 프로필 사진 파일 및 DB 삭제
-//        fileService.deleteFile(id);
-
-        return "redirect:/list";
-    }
-
-    // 회원정보 수정폼
-    @GetMapping("member/updateForm")
-    public String updateForm(String id, Model model) throws IOException {
-        MemberDTO memberDTO = memberService.getMemberInfo(id);
-        FileDTO fileDTO = fileService.getFileInfo(id);
-
-        // 생일 처리
-        String birthday = memberDTO.getBirthday();
-        String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
-        memberDTO.setBirthday(formatDay);
-
-        memberDTO.setProfileImg(fileDTO.getSavedPath());
-        model.addAttribute("memberInfo", memberDTO);
-        model.addAttribute("area", Area.values());
-
-        return "member/updateForm";
     }
 
 

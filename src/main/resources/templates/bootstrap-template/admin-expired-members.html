@@ -7,9 +7,7 @@
 
 <th:block layout:fragment="main-content">
 
-    <h1 class="h3 mb-2 text-gray-800">회원 목록</h1>
-<!--    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
-        For more information about DataTables, please visit the</p>-->
+    <h1 class="h3 mb-2 text-gray-800">만료 회원 목록</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -24,10 +22,10 @@
                         <th>아이디</th>
                         <th>이름</th>
                         <th>닉네임</th>
-                        <th>가입일</th>
                         <th>회원정보</th>
-                        <th>계정만료</th>
                         <th>만료여부</th>
+                        <th>만료일</th>
+                        <th>만료취소</th>
                     </tr>
                     </thead>
                     <tfoot>
@@ -35,10 +33,10 @@
                         <th>아이디</th>
                         <th>이름</th>
                         <th>닉네임</th>
-                        <th>가입일</th>
                         <th>회원정보</th>
-                        <th>계정만료</th>
                         <th>만료여부</th>
+                        <th>만료일</th>
+                        <th>만료취소</th>
                     </tr>
                     </tfoot>
                     <tbody>
@@ -46,12 +44,10 @@
                         <td th:text="${list.id}"></td>
                         <td th:text="${list.name}"></td>
                         <td th:text="${list.nickName}"></td>
-                        <td th:text="${list.srbde}"></td>
                         <td><a th:href=" '/admin/member/info?id=' + ${list.id}">보기</a></td>
-                        <td><a th:href=" '/admin/member/delete?id=' + ${list.id}">만료</a></td>
-                        <!-- 삭제 눌렀을때 확인창 있어야될것 같아..... -->
-                        <td th:if="${list.isAccountNonExpired}">활성화계정</td>
                         <td th:if="!${list.isAccountNonExpired}">만료됨</td>
+                        <td th:text="${list.expiredDate}"></td>
+                        <td><a th:href=" '/admin/member/enable?id=' + ${list.id}">만료취소</a></td>
                     </tr>
                     </tbody>
                 </table>

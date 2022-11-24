@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -26,7 +27,10 @@ public class MemberDTO implements UserDetails {
     private String nickName;    // 닉네임
     private String profileImg;  // 프로필사진
 
-    private String role;
+    // 스프링 시큐리티 관련
+    private String role;        // 회원 권한(ROLE_ADMIN, ROLE_USER)
+    private Date expiredDate;   // 계정 만료 날짜
+    private boolean isAccountNonExpired; // 계정 만료 여부(DB에는 없음)
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -42,10 +46,11 @@ public class MemberDTO implements UserDetails {
     public String getUsername() {
         return this.id;
     }
-
+    
+    // 계정 만료여부
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.expiredDate.after(new Date());
     }
 
     @Override

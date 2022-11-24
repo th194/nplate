@@ -15,6 +15,7 @@
         <result property="nickName" column="MBER_NCNM"/>
         <result property="profileImg" column="MBER_PROFL_PHOTO"/>
         <result property="role" column="MBER_ROLE"/>
+        <result property="expiredDate" column="MBER_EXPIRED_DATE"/>
     </resultMap>
 
     <select id="getLikes" parameterType="hashmap" resultType="BoardDTO">

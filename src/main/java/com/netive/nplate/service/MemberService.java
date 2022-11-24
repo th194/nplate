@@ -33,4 +33,10 @@ public interface MemberService {
 
     // 회원 정보 보기(ID, 닉네임만 조회)
     MemberDTO getUserInfo(String id);
+
+    // 회원 만료(관리자 페이지용 회원 삭제)
+    int putoutMember(String id);
+
+    // 회원 만료(관리자 페이지용 회원 삭제) 취소
+    int enableMember(String id);
 }
