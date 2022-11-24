@@ -73,6 +73,7 @@ public class LoginController {
 
         try {
             if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                System.out.println(session.getAttribute(SessionConstants.MEMBER_DTO));
                 model.addAttribute("memberInfo", session.getAttribute(SessionConstants.MEMBER_DTO));
                 String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
 

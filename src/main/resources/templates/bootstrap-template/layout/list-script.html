@@ -53,22 +53,36 @@
 						console.log('page = ' +page);
 						if (list.length > 0) {
 							list.forEach(obj=> {
-								html += `
+								if (obj.bbscttDeleteAt == 'Y') {
+									html += `
+										<div class="col mb-5 list">
+											<div class="card h-100">
+											<img class="card-img-top" src="/nplateImage/images/noImage.png" alt="...">
+												<div class="card-body">
+													<div class="text-center">
+														<h6 class="fw-bolder">관리자에 의해 삭제된 게시글 입니다.</h6>
+													</div>
+												</div>
+											</div>
+										</div>
+									`;
+								} else {
+									html += `
 										<div class="col mb-5 list">
 										<div class="card h-100">
 										<img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
 
-								// 좋아요 버튼
-								html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
+									// 좋아요 버튼
+									html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
 
-								if (likes.includes(obj.bbscttNo)) {
-									html += `<i class="bi bi-heart-fill"></i>`;
-								} else {
-									html += `<i class="bi bi-heart"></i>`;
-								}
+									if (likes.includes(obj.bbscttNo)) {
+										html += `<i class="bi bi-heart-fill"></i>`;
+									} else {
+										html += `<i class="bi bi-heart"></i>`;
+									}
 
 
-								html += `
+									html += `
 										</span>
 										<div class="card-body">
 										<div class="text-center">
@@ -79,31 +93,33 @@
 										</a>`;
 
 
-								// 별점
-								html += `<div class="d-flex justify-content-center small text-warning mb-2">`;
-								for (var i = 0; i < obj.bbscttGrade; i++) {
-									html += '<div class="bi-star-fill"></div>';
-								}
-
-								for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
-									html += `<div class="bi-star"></div>`;
-								}
-								html += `</div>`;
-
-
-								// 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
-								if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
-									var tag = obj.bbscttHashtag.split(',');
-
-									html += '<div class="text-xs">';
-									var showSize = tag.length > 3? 3 : tag.length;
-									for (var k = 0; k < showSize; k++) {
-										html += ' <a href="#" class="text-primary hash-tag">#' + tag[k] + '</a>';
+									// 별점
+									html += `<div class="d-flex justify-content-center small text-warning mb-2">`;
+									for (var i = 0; i < obj.bbscttGrade; i++) {
+										html += '<div class="bi-star-fill"></div>';
 									}
-									html += '</div>';
+
+									for (var j = 0; j < 5 - obj.bbscttGrade; j++) {
+										html += `<div class="bi-star"></div>`;
+									}
+									html += `</div>`;
+
+
+									// 해시태그(3개까지만 보이게 처리) - 해시태그 비어있을경우 처리 추가
+									if (obj.bbscttHashtag != null && obj.bbscttHashtag != '') {
+										var tag = obj.bbscttHashtag.split(',');
+
+										html += '<div class="text-xs">';
+										var showSize = tag.length > 3? 3 : tag.length;
+										for (var k = 0; k < showSize; k++) {
+											html += ' <a href="#" class="text-primary hash-tag">#' + tag[k] + '</a>';
+										}
+										html += '</div>';
+									}
+
+									html += `</div></div></div></div>`;
 								}
 
-								html += `</div></div></div></div>`;
 							});
 						} else {
 							// alert('데이터가 없습니다.');

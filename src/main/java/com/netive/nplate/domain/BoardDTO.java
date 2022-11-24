@@ -23,6 +23,7 @@ public class BoardDTO {
 	private String bbscttHashtag;		// 해시태그
 	private Double bbscttCchLa;			// 지도 위도
 	private Double bbscttCchLo;			// 지도 경도
+	private String bbscttDeleteAt;		// 댓글 삭제 여부
 
 	public BoardDTO() {
 	}

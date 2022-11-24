@@ -15,7 +15,8 @@
 		BBSCTT_STORE,
 		BBSCTT_HASHTAG,
 		BBSCTT_CCH_LA,
-		BBSCTT_CCH_LO
+		BBSCTT_CCH_LO,
+		BBSCTT_DELETE_AT
 	</sql>
 
 	<!-- 게시글 검색 -->
@@ -88,13 +89,21 @@
 	</delete>
 
 	<!-- 관리자용 게시글 삭제 -->
-	<delete id="deleteAdminBoard">
-		DELETE
-		FROM
-			NETIVE_PROJECT01_BOARD
-		WHERE
-		    BBSCTT_NO = #{bbscttNo}
-	</delete>
+<!--	<delete id="deleteAdminBoard">-->
+<!--		DELETE-->
+<!--		FROM-->
+<!--			NETIVE_PROJECT01_BOARD-->
+<!--		WHERE-->
+<!--		    BBSCTT_NO = #{bbscttNo}-->
+<!--	</delete>-->
+
+	<!-- 관리자가 게시글 삭제 시 update로 수정 -->
+	<update id="deleteAdminBoard" parameterType="String">
+		UPDATE NETIVE_PROJECT01_BOARD
+			SET
+				BBSCTT_DELETE_AT = "Y"
+		WHERE BBSCTT_NO = #{bbscttNo}
+	</update>
 
 	<!--게시글 목록-->
 	<select id="selectBoardList" parameterType="PageDTO" resultType="BoardDTO">
