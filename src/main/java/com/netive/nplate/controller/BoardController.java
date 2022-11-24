@@ -90,7 +90,7 @@ public class BoardController {
 					session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
 				}
 
-//                model.addAttribute("followingMembers", followingMembers);
+                model.addAttribute("followingMembers", followingMembers);
 				return "bootstrap-template/list";
 
 			} catch (Exception e) {
