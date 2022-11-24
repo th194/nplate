@@ -26,6 +26,7 @@
                         <th>만료여부</th>
                         <th>만료일</th>
                         <th>만료취소</th>
+                        <th>영구삭제</th>
                     </tr>
                     </thead>
                     <tfoot>
@@ -37,6 +38,7 @@
                         <th>만료여부</th>
                         <th>만료일</th>
                         <th>만료취소</th>
+                        <th>영구삭제</th>
                     </tr>
                     </tfoot>
                     <tbody>
@@ -48,6 +50,7 @@
                         <td th:if="!${list.isAccountNonExpired}">만료됨</td>
                         <td th:text="${list.expiredDate}"></td>
                         <td><a th:href=" '/admin/member/enable?id=' + ${list.id}">만료취소</a></td>
+                        <td><a href="#" th:member="${list.id}" th:onclick="deleteMember(this.getAttribute('member'))">영구삭제</a></td>
                     </tr>
                     </tbody>
                 </table>
@@ -55,16 +58,23 @@
         </div>
     </div>
 
-
 </th:block>
 
 <th:block layout:fragment="script">
 
-    <!--
     <script th:inline="javascript">
+        <!-- 계정 영구 삭제-->
+        function deleteMember(member) {
+            var result = confirm("계정을 삭제하시겠습니까?");
 
+            if (result) {
+                location.replace("/admin/member/delete?id=" + member);
+                alert("계정삭제됨");
+            } else {
+                alert("계정삭제취소");
+            }
+        }
     </script>
-    -->
 </th:block>
 
 

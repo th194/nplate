@@ -48,8 +48,7 @@
                         <td th:text="${list.nickName}"></td>
                         <td th:text="${list.srbde}"></td>
                         <td><a th:href=" '/admin/member/info?id=' + ${list.id}">보기</a></td>
-                        <td><a th:href=" '/admin/member/delete?id=' + ${list.id}">만료</a></td>
-                        <!-- 삭제 눌렀을때 확인창 있어야될것 같아..... -->
+                        <td><a th:href=" '/admin/member/putout?id=' + ${list.id}">만료</a></td>
                         <td th:if="${list.isAccountNonExpired}">활성화계정</td>
                         <td th:if="!${list.isAccountNonExpired}">만료됨</td>
                     </tr>

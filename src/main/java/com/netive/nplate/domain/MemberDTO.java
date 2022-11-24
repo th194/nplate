@@ -30,7 +30,7 @@ public class MemberDTO implements UserDetails {
     // 스프링 시큐리티 관련
     private String role;        // 회원 권한(ROLE_ADMIN, ROLE_USER)
     private Date expiredDate;   // 계정 만료 날짜
-    private boolean isAccountNonExpired; // 계정 만료 여부(DB에는 없음)
+    private boolean accountNonExpired; // 계정 만료 여부(DB에는 없음)
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

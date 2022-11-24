@@ -9,6 +9,7 @@ import com.netive.nplate.service.MemberService;
 import com.netive.nplate.util.MemberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -233,8 +235,8 @@ public class AdminController {
      * 일반 회원 탈퇴의 경우 바로 계정이 삭제되지만, 관리자용 회원 삭제의 경우 만료일자가 오늘로 변경됨
      * (DB에는 남아있으나 로그인 불가)
      */
-    @GetMapping("/admin/member/delete")
-    public String deleteMember(String id) throws IOException {
+    @GetMapping("/admin/member/putout")
+    public String putoutMember(String id) throws IOException {
         memberService.putoutMember(id);
         
         // todo 만료계정 일정시간 지난 후 삭제하는 프로그램 추가
@@ -251,4 +253,20 @@ public class AdminController {
         return "redirect:/admin/member/list";
     }
 
+
+    // 회원 계정 삭제
+    @GetMapping("/admin/member/delete")
+    public String deleteMember(String id) throws IOException {
+        MemberDTO memberDTO = memberService.getMemberInfo(id);
+
+        // 회원 DB 삭제처리
+        memberService.deleteMember(id);
+
+        //프로필 사진 파일 및 DB 삭제(기본 이미지가 아닌 경우에만)
+        if (!memberDTO.getProfileImg().equals("default")) {
+            fileService.deleteFile(id);
+        }
+
+        return "redirect:/admin/member/expired";
+    }
 }
