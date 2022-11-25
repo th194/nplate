@@ -32,8 +32,14 @@ public class LoginController {
         try {
             // 로그인 되어있으면 -> 피드
             // 로그인 되어있지 않으면 -> 로그인 페이지
-            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) { // 로그인 되어있으면
-                return "redirect:/feed";
+            MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && memberDTO != null) { // 로그인 되어있으면
+
+                if (memberDTO.getRole().equals("ROLE_ADMIN")) {
+                    return "redirect:/admin";
+                } else {
+                    return "redirect:/feed";
+                }
             }
         } catch (Exception e) {
             // e.printStackTrace();
@@ -98,34 +104,26 @@ public class LoginController {
 
     // 스프링 시큐리티 로그인 성공
     @GetMapping("/login/success")
-    public String loginSuccess(Model model, Authentication authentication, HttpServletRequest request) {
-
-        System.out.println("임시 로그인 성공 페이지======");
+    public String loginSuccess(Authentication authentication, HttpServletRequest request) {
+        System.out.println("로그인 성공======");
 
         MemberDTO memberDTO = (MemberDTO) authentication.getPrincipal();
-
-        System.out.println("로그인 성공 멤버 디티오");
-        System.out.println(memberDTO.toString());
-
-
         HttpSession session = request.getSession();
 
         // 중복로그인 체크
         SessionConfig.getSessionidCheck(SessionConstants.MEMBER_DTO, memberDTO.getId());
 
+        // 세션에 값 저장
         session.setAttribute(SessionConstants.MEMBER_DTO, memberDTO);
         session.setAttribute(SessionConstants.MEMBER_ID, memberDTO.getId());
         session.setAttribute(SessionConstants.IS_LOGIN, true);
 
         if (Objects.equals(memberDTO.getRole(), "ROLE_ADMIN")) {
             return "redirect:/admin";
-        } else if (Objects.equals(memberDTO.getRole(), "ROLE_USER")){
-            // 처리..
-        } else {
+        } else if (!Objects.equals(memberDTO.getRole(), "ROLE_USER")){
             session.invalidate();
         }
         return "redirect:/";
-        // todo 처리 수정해야함
     }
 
 
