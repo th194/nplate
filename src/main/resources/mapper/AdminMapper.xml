@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netive.nplate.mapper.AdminMapper">
+
+    <!-- 스프링 시큐리티 회원 여러명 등록(관리자)  -->
+    <insert id="addMembers" parameterType="MemberDTO">
+        <![CDATA[
+        INSERT INTO NETIVE_PROJECT01_MEMBER
+        (MBER_ID, MBER_NM, MBER_SEXDSTN, MBER_BRTHDY, MBER_CTTPC, MBER_PASSWORD, MBER_EMAIL, MBER_AREA, MBER_SRBDE, MBER_NCNM, MBER_PROFL_PHOTO)
+        VALUES ( #{id}, #{name}, 'F', DATE_FORMAT(now(), '%Y%m%d'), #{tel}, #{pwd}, 'default@email', '00', DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, 'default')
+        ]]>
+    </insert>
+
+</mapper>

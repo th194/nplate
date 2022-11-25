@@ -2,7 +2,6 @@ package com.netive.nplate.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +12,6 @@ import java.util.Date;
 
 @Getter
 @Setter
-@ToString
 public class MemberDTO implements UserDetails {
     private String id;          // 아이디
     private String name;        // 이름
@@ -31,6 +29,27 @@ public class MemberDTO implements UserDetails {
     private String role;        // 회원 권한(ROLE_ADMIN, ROLE_USER)
     private Date expiredDate;   // 계정 만료 날짜
     private boolean accountNonExpired; // 계정 만료 여부(DB에는 없음)
+
+    // lombok.ToString 사용하면 만료 관련 필드에 따라 오류 나는 경우가 있어서 따로 만듦
+    @Override
+    public String toString() {
+        return "MemberDTO{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", sexCd='" + sexCd + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", tel='" + tel + '\'' +
+                ", pwd='" + pwd + '\'' +
+                ", email='" + email + '\'' +
+                ", area='" + area + '\'' +
+                ", srbde='" + srbde + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", profileImg='" + profileImg + '\'' +
+                ", role='" + role + '\'' +
+                ", expiredDate=" + expiredDate +
+                ", accountNonExpired=" + accountNonExpired +
+                '}';
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

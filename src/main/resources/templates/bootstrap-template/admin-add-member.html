@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="bootstrap-template/layout/admin-basic">
+<th:block layout:fragment="title">
+    <title>여러명 한번에 추가(작업중)</title>
+</th:block>
+
+<th:block layout:fragment="main-content">
+    <div class="card-content">
+        <form id="addMembers" class="form-horizontal form-grade" method="post" action="/admin/member/add">
+            <div class="form-group">
+                <label for="id" class="col-sm-2 control-label">공통 ID</label>
+                <div class="col-sm-10">
+                    <input type="text" id="id" name="id" class="form-control" placeholder="공통 ID"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">공통 이름</label>
+                <div class="col-sm-10">
+                    <input type="text" id="name" name="name" class="form-control" placeholder="공통 이름"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="nickName" class="col-sm-2 control-label">공통 닉네임</label>
+                <div class="col-sm-10">
+                    <input type="text" id="nickName" name="nickName" class="form-control" placeholder="공통 닉네임"/>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="tel" class="col-sm-2 control-label">공통 휴대폰 번호</label>
+                <div class="col-sm-10">
+                    <input type="text" id="tel" name="tel" class="form-control" placeholder="공통 휴대폰 번호"/>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="pwd" class="col-sm-2 control-label">공통 비밀번호</label>
+                <div class="col-sm-10">
+                    <input type="password" id="pwd" name="pwd" class="form-control" placeholder="공통 비밀번호"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="count" class="col-sm-2 control-label">추가 개수</label>
+                <div class="col-sm-10">
+                    <input type="number" id="count" name="count" class="form-control" placeholder="추가 개수"/>
+                </div>
+            </div>
+
+            <div class="btn_wrap text-center">
+                <button type="submit" class="btn btn-primary waves-effect waves-light">추가</button>
+            </div>
+        </form>
+    </div>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        console.log('회원 추가 페이지========');
+    </script>
+</th:block>
+</html>

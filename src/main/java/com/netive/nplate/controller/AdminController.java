@@ -6,19 +6,17 @@ import com.netive.nplate.paging.PagingResponse;
 import com.netive.nplate.service.BoardService;
 import com.netive.nplate.service.FileService;
 import com.netive.nplate.service.MemberService;
+import com.netive.nplate.service.UserService;
 import com.netive.nplate.util.MemberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,21 +38,17 @@ public class AdminController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private UserService userService;
+    
+
     // 관리자 첫페이지
     @GetMapping("/admin")
-    public String adminLogin(HttpServletRequest request) {
+    public String adminMain(HttpServletRequest request) {
         HttpSession session = request.getSession();
         System.out.println("관리자 페이지 로그인 아이디: ");
         System.out.println(session.getAttribute(SessionConstants.MEMBER_ID));
-
-        try {
-            if (session.getAttribute(SessionConstants.MEMBER_ID) != null) {
-                return "bootstrap-template/admin";
-            }
-        } catch(Exception e) {
-//            e.printStackTrace();
-        }
-        return "member/error";
+        return "bootstrap-template/admin";
     }
 
 
@@ -84,7 +78,7 @@ public class AdminController {
                 member.put("srbde", memberDTO.getSrbde());
 
                 // 데이트 타입 포맷
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String strDate = simpleDateFormat.format(memberDTO.getExpiredDate());
                 member.put("expiredDate", strDate);
 
@@ -238,8 +232,6 @@ public class AdminController {
     @GetMapping("/admin/member/putout")
     public String putoutMember(String id) throws IOException {
         memberService.putoutMember(id);
-        
-        // todo 만료계정 일정시간 지난 후 삭제하는 프로그램 추가
         return "redirect:/admin/member/list";
     }
 
@@ -254,7 +246,7 @@ public class AdminController {
     }
 
 
-    // 회원 계정 삭제
+    // 회원 계정 영구 삭제
     @GetMapping("/admin/member/delete")
     public String deleteMember(String id) throws IOException {
         MemberDTO memberDTO = memberService.getMemberInfo(id);
@@ -268,5 +260,50 @@ public class AdminController {
         }
 
         return "redirect:/admin/member/expired";
+    }
+
+
+    // 회원 여러명 추가 폼
+    @GetMapping("/admin/member/addForm")
+    public String addMemberForm() {
+        return "bootstrap-template/admin-add-member";
+    }
+
+
+    // 회원 여러명 추가
+    @PostMapping("/admin/member/add")
+    public String addMembers(MemberDTO memberDTO, int count, Model model) {
+        try {
+            System.out.println("회원 여러명 추가===========");
+
+            // todo id, pwd 제외 다른 것들 기본 설정 어떻게 할지..
+            String id = memberDTO.getId();
+            String pwd = memberDTO.getPwd();
+            String name = memberDTO.getName();
+            String nickName = memberDTO.getNickName();
+            String tel = memberDTO.getTel();
+
+            // todo 개인정보 페이지에서 이름, 성별, 생일 수정 안되게 되어있는데 변경 가능하도록 수정
+            for (int i = 0; i < count; i++) {
+                MemberDTO addMember = new MemberDTO();
+                addMember.setId(id + "-" + i);
+                addMember.setPwd(pwd);
+                addMember.setName(name + "-" + i);
+                addMember.setNickName(nickName + "-" + i);
+                addMember.setTel(tel);
+                userService.addMembers(addMember);
+            }
+
+            /*model.addAttribute("message", "가입이 완료되었습니다.");
+            model.addAttribute("url", "/");*/
+
+            return "redirect:/admin/member/list";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "catch msg=======");
+            model.addAttribute("url", "/member/error");
+            return "member/error";
+        }
     }
 }

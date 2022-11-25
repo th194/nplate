@@ -1,6 +1,7 @@
 package com.netive.nplate.service;
 
 import com.netive.nplate.domain.MemberDTO;
+import com.netive.nplate.mapper.AdminMapper;
 import com.netive.nplate.mapper.LoginMapper;
 import com.netive.nplate.mapper.MemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,24 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     MemberMapper memberMapper;
+    
+    @Autowired
+    AdminMapper adminMapper;
 
+    // 스프링 시큐리티 회원 가입
     public void registerMember(MemberDTO memberDTO) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         memberDTO.setPwd(passwordEncoder.encode(memberDTO.getPwd()));
         memberMapper.registerMember(memberDTO);
+    }
+
+    // 관리자용 회원 여러명 추가
+    public void addMembers(MemberDTO memberDTO) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        memberDTO.setPwd(passwordEncoder.encode(memberDTO.getPwd()));
+        adminMapper.addMembers(memberDTO);
     }
 
     @Override
