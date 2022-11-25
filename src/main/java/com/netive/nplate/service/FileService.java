@@ -21,9 +21,6 @@ public interface FileService {
     // 프로필 이미지 삭제
     int deleteFile(String id) throws IOException;
 
-    // 회원 가입시 기본 프로필 이미지 지정
-    int saveDefaultFile(String id);
-
     // 게시글 번호로 파일 조회
     List<BoardFileDTO> selectBoardFile(Long idx);
 

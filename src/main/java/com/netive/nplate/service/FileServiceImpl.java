@@ -107,21 +107,6 @@ public class FileServiceImpl implements FileService {
         return fileMapper.deleteFile(id);
     }
 
-    @Override
-    public int saveDefaultFile(String id) {
-        // 원래 파일 이름
-        String name = "user.jpg";
-
-        // 파일 불러올 때 사용할 파일 경로
-        String savedPath = fileDir + name;
-
-        // 파일 dto 생성
-        FileDTO dto = new FileDTO(id, name, name, savedPath);
-
-        // 데이터베이스에 파일 이름 저장
-        return fileMapper.registerFile(dto);
-    }
-
     // 게시글 파일 목록 조회
     @Override
     public List<BoardFileDTO> selectBoardFile(Long idx) {

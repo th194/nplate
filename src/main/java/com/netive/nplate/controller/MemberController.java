@@ -8,7 +8,10 @@ import com.netive.nplate.util.MemberUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -63,13 +66,11 @@ public class MemberController {
             memberDTO.setBirthday(formatDate);
 
             if (file.isEmpty()) { // 파일 없는 경우
-//                fileService.saveDefaultFile(memberDTO.getId());
                 memberDTO.setProfileImg("default");
             } else {
                 fileService.saveFile(file, memberDTO.getId());
                 memberDTO.setProfileImg(memberDTO.getId());
             }
-
             userService.registerMember(memberDTO);
 
             model.addAttribute("message", "가입이 완료되었습니다.");
@@ -142,7 +143,6 @@ public class MemberController {
                 // 리스트 타입(유저페이지: 특정유저 글)
                 SearchDTO searchDTO = new SearchDTO(id);
                 model.addAttribute("search", searchDTO);
-
 
                 String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
 
@@ -242,5 +242,214 @@ public class MemberController {
         }
         System.out.println("언팔로잉 실패=========");
         return "fail";
+    }
+
+
+    // 내 정보 보기
+    @GetMapping("/member/myInfo")
+    public String myInfo(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        try {
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+
+                // 생일 처리
+                String birthday = memberDTO.getBirthday();
+                if (!birthday.contains("-")) {
+                    String formatDay = birthday.substring(0,4) + "-" + birthday.substring(4,6) + "-" + birthday.substring(6);
+                    memberDTO.setBirthday(formatDay);
+                }
+
+                model.addAttribute("memberInfo", memberDTO);
+                model.addAttribute("area", Area.values());
+
+                // 팔로잉 처리
+                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+
+                List<Map> followingMembers = new ArrayList<>();
+                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+                    followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+                } else {
+                    List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                    if (followingIds.size() > 0) {
+                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    }
+                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
+                }
+
+                model.addAttribute("followingMembers", followingMembers);
+
+                return "bootstrap-template/myInfo";
+            } else {
+                return "member/error";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.invalidate();
+            return "redirect:/";
+        }
+    }
+
+
+    // 회원정보 수정폼
+    @GetMapping("/member/updateForm")
+    public String infoUpdateForm(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        try {
+            System.out.println("로그인 여부");
+            System.out.println(session.getAttribute(SessionConstants.IS_LOGIN));
+
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+
+                // 생일 처리
+                String birthday = memberDTO.getBirthday();
+                if (!birthday.contains("-")) {
+                    String formatDay = birthday.substring(0, 4) + "-" + birthday.substring(4, 6) + "-" + birthday.substring(6);
+                    memberDTO.setBirthday(formatDay);
+                }
+
+                model.addAttribute("memberInfo", memberDTO);
+                model.addAttribute("area", Area.values());
+
+                // 팔로잉 처리
+                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+
+                List<Map> followingMembers = new ArrayList<>();
+                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+                    followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+                } else {
+                    List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                    if (followingIds.size() > 0) {
+                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    }
+                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
+                }
+
+                model.addAttribute("followingMembers", followingMembers);
+
+                return "bootstrap-template/updateForm";
+            } else {
+                return "member/error";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "member/error";
+        }
+    }
+
+
+    // 회원 탈퇴
+    @PostMapping("/member/deleteAcc")
+    public String delete(Model model, MemberDTO dto, HttpServletRequest request) throws IOException {
+        // 세션
+        HttpSession session = request.getSession();
+
+        // 비밀번호 암호화
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        try {
+            if (session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                MemberDTO sessionDto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+
+                // 기존 비밀번호와 입력한 비밀번호 일치여부 확인
+                boolean result = passwordEncoder.matches(dto.getPwd(), sessionDto.getPassword());
+                System.out.println("비밀번호 일치여부 확인 result: " + result);
+
+                if (Objects.equals(sessionDto.getId(), dto.getId()) && result) {
+                    memberService.deleteMember(dto.getId()); // 회원 DB 삭제처리
+
+                    //프로필 사진 파일 및 DB 삭제(기본 이미지가 아닌 경우에만)
+                    if (!sessionDto.getProfileImg().equals("default")) {
+                        fileService.deleteFile(dto.getId());
+                    }
+
+                    model.addAttribute("message", "탈퇴가 완료되었습니다.");
+                    model.addAttribute("url", "/");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 에러난 경우에도 세션 삭제
+        session.invalidate();
+        return "member/index";
+    }
+
+
+    // 회원 정보 수정
+    @PostMapping("/member/update")
+    public String update(MemberDTO memberDTO, @RequestParam MultipartFile file) throws IOException {
+        // 프로필 사진 수정
+        if (!file.isEmpty()) {
+            if (memberDTO.getProfileImg().equals("default")) {
+                fileService.saveFile(file, memberDTO.getId());
+            } else {
+                fileService.updateFile(file, memberDTO.getId());
+            }
+        }
+        // 그 외 정보 수정
+        memberService.updateInfo(memberDTO);
+        return "redirect:/member/myInfo"; // 처리 수정해야함
+    }
+
+
+    // 비밀번호 수정
+    @PostMapping("/member/changePwd")
+    public @ResponseBody ResponseEntity<String> updatePwd(MemberDTO dto, String changePwd, HttpServletRequest request) {
+        // 리턴 값 처리
+        ResponseEntity<String> resEnt;
+        String msg = "<script>";
+        msg += " alert('에러가 발생하였습니다. 잠시 후 다시 시도해주세요.');";
+        msg += " location.replace('/'); ";
+        msg += " </script>";
+
+        // 세션
+        HttpSession session = request.getSession();
+
+        // 비밀번호 암호화
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        try {
+            if (session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                MemberDTO sessionDto = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+
+                // 기존 비밀번호와 입력한 비밀번호 일치여부 확인
+                boolean result = passwordEncoder.matches(dto.getPwd(), sessionDto.getPassword());
+                System.out.println("비밀번호 일치여부 확인 result: " + result);
+
+                if (Objects.equals(sessionDto.getId(), dto.getId()) && result) {
+                    dto.setPwd(passwordEncoder.encode(changePwd));
+                    memberService.updatePwd(dto);
+
+                    session.invalidate();
+
+                    msg = "<script>";
+                    msg += " alert('비밀번호 변경이 완료되었습니다. 다시 로그인해주세요.');";
+                    msg += " location.replace('/'); ";
+                    msg += " </script>";
+
+                } else {
+                    // 비밀번호 틀린 경우의 처리
+                    System.out.println("아이디, 비밀번호 틀림");
+
+                    msg = "<script>";
+                    msg += " alert('아이디와 비밀번호를 확인 후 다시 입력해주세요.');";
+                    msg += " location.replace('/'); ";
+                    msg += " </script>";
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        resEnt = new ResponseEntity<>(msg, HttpStatus.CREATED);
+        return resEnt;
     }
 }
