@@ -37,4 +37,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    protected void configure(HttpSecurity http) throws Exception {
+        http.headers().frameOptions().sameOrigin();
+    }
 }
