@@ -34,9 +34,11 @@
 							<a class="collapse-item" href="/member/logout">로그아웃</a>
 
 							<h6 class="collapse-header">회원</h6>
-							<a class="collapse-item" href="/admin/member/list">회원목록</a>
+							<a class="collapse-item" href="/admin/member/list">회원목록(일반)</a>
+							<a class="collapse-item" href="/admin/member/manager">회원목록(매니저)</a>
 							<a class="collapse-item" href="/admin/member/expired">만료회원목록</a>
 							<a class="collapse-item" href="/admin/member/addForm">회원등록</a>
+
 
 							<h6 class="collapse-header">게시판</h6>
 							<a class="collapse-item" href="/admin/adminList">게시판 목록</a>
@@ -73,7 +75,8 @@
 
 								<!-- Nav Item - User Information -->
 								<li class="nav-item dropdown no-arrow">
-									<span class="mr-2 d-none d-lg-inline text-gray-600 small">관리자</span>
+									<span class="mr-2 d-none d-lg-inline text-gray-600 small">관리자:</span>
+									<span class="mr-2 d-lg-inline text-gray-600 small" th:text="${adminId}"></span>
 								</li>
 							</ul>
 						</nav>

@@ -3,10 +3,7 @@ package com.netive.nplate.controller;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.paging.Pagination;
 import com.netive.nplate.paging.PagingResponse;
-import com.netive.nplate.service.BoardService;
-import com.netive.nplate.service.FileService;
-import com.netive.nplate.service.MemberService;
-import com.netive.nplate.service.UserService;
+import com.netive.nplate.service.*;
 import com.netive.nplate.util.MemberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,22 +37,42 @@ public class AdminController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AdminService adminService;
     
 
     // 관리자 첫페이지
     @GetMapping("/admin")
-    public String adminMain(HttpServletRequest request) {
+    public String adminMain(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
+        String adminId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
         System.out.println("관리자 페이지 로그인 아이디: ");
         System.out.println(session.getAttribute(SessionConstants.MEMBER_ID));
+        
+        // todo 모든 admin 페이지에 추가해야 함
+        model.addAttribute("adminId", adminId);
         return "bootstrap-template/admin";
     }
 
 
-    // 회원목록
+    // 회원목록(일반유저)
     @GetMapping("/admin/member/list")
     public String memberList(Model model) {
-        List<MemberDTO> memberList = memberService.getMemberList();
+        List<MemberDTO> memberList = adminService.getMemberList("user"); // 일반 유저 조회
+//        List<MemberDTO> memberList = adminService.getMemberList("manager"); // 매니저
+//        List<MemberDTO> memberList = adminService.getMemberList("admin"); // 어드민 조회
+//        List<MemberDTO> memberList = adminService.getMemberList("expired"); // 만료회원 조회
+        model.addAttribute("memberList", memberList);
+        return "bootstrap-template/admin-member-list";
+    }
+
+
+    // 회원목록(매니저)
+    @GetMapping("/admin/member/manager")
+    public String managerList(Model model) {
+        List<MemberDTO> memberList = adminService.getMemberList("manager");
+
         model.addAttribute("memberList", memberList);
         return "bootstrap-template/admin-member-list";
     }
@@ -306,4 +323,30 @@ public class AdminController {
             return "member/error";
         }
     }
+
+
+    /**
+     * 권한 변경
+     */
+    @GetMapping("/admin/member/changeRole")
+    public @ResponseBody String changeMemberRole(String id) {
+        try {
+            // todo amdin 권한 계정만 가능하게
+            System.out.println("일반회원 권한 매니저로 변경========");
+            System.out.println("id" + id);
+
+            MemberDTO memberDTO = new MemberDTO();
+            memberDTO.setId(id);
+            memberDTO.setRole("ROLE_MANAGER");
+            int result = memberService.changeMemberRole(memberDTO);
+            if (result == 1) {
+                return "success";
+            }
+        } catch (Exception e) {
+            System.out.println("에러");
+            e.printStackTrace();
+        }
+        return "fail";
+    }
+
 }

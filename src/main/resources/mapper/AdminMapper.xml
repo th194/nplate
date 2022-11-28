@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.netive.nplate.mapper.AdminMapper">
+    <resultMap id="memResult" type="MemberDTO">
+        <result property="id" column="MBER_ID"/>
+        <result property="name" column="MBER_NM"/>
+        <result property="sexCd" column="MBER_SEXDSTN"/>
+        <result property="birthday" column="MBER_BRTHDY"/>
+        <result property="tel" column="MBER_CTTPC"/>
+        <result property="pwd" column="MBER_PASSWORD"/>
+        <result property="email" column="MBER_EMAIL"/>
+        <result property="area" column="MBER_AREA"/>
+        <result property="srbde" column="MBER_SRBDE"/>
+        <result property="nickName" column="MBER_NCNM"/>
+        <result property="profileImg" column="MBER_PROFL_PHOTO"/>
+        <result property="role" column="MBER_ROLE"/>
+        <result property="expiredDate" column="MBER_EXPIRED_DATE"/>
+    </resultMap>
+
+
 
     <!-- 스프링 시큐리티 회원 여러명 등록(관리자)  -->
     <insert id="addMembers" parameterType="MemberDTO">
@@ -10,5 +27,25 @@
         VALUES ( #{id}, #{name}, 'F', DATE_FORMAT(now(), '%Y%m%d'), #{tel}, #{pwd}, 'default@email', '00', DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, 'default')
         ]]>
     </insert>
+
+
+
+    <!-- 권한별 회원 조회(만료되지 않음) -->
+    <select id="listMembersTypeRole" parameterType="String" resultMap="memResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_MEMBER
+        where MBER_ROLE = #{role} and MBER_EXPIRED_DATE > STR_TO_DATE(now(), '%Y-%m-%d')
+        order by MBER_SRBDE
+        ]]>
+    </select>
+
+    <!-- 만료 회원 조회 -->
+    <select id="listExpiredMembers" resultMap="memResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_MEMBER
+        where MBER_EXPIRED_DATE <= STR_TO_DATE(now(), '%Y-%m-%d')
+        order by MBER_SRBDE
+        ]]>
+    </select>
 
 </mapper>

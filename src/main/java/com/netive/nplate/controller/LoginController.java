@@ -118,9 +118,9 @@ public class LoginController {
         session.setAttribute(SessionConstants.MEMBER_ID, memberDTO.getId());
         session.setAttribute(SessionConstants.IS_LOGIN, true);
 
-        if (Objects.equals(memberDTO.getRole(), "ROLE_ADMIN")) {
+        if (Objects.equals(memberDTO.getRole(), "ROLE_ADMIN") || Objects.equals(memberDTO.getRole(), "ROLE_MANAGER")) {
             return "redirect:/admin";
-        } else if (!Objects.equals(memberDTO.getRole(), "ROLE_USER")){
+        } else if (!Objects.equals(memberDTO.getRole(), "ROLE_USER")) {
             session.invalidate();
         }
         return "redirect:/";

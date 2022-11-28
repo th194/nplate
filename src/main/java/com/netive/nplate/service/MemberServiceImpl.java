@@ -70,4 +70,9 @@ public class MemberServiceImpl implements MemberService {
     public int enableMember(String id) {
         return memberMapper.enableMember(id);
     }
+
+    @Override
+    public int changeMemberRole(MemberDTO dto) {
+        return memberMapper.changeMemberRole(dto);
+    }
 }
