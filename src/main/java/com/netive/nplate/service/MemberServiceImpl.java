@@ -15,13 +15,6 @@ public class MemberServiceImpl implements MemberService {
     private MemberMapper memberMapper;
 
     @Override
-    public List<MemberDTO> getMemberList() {
-        List<MemberDTO> memberList;
-        memberList = memberMapper.listMembers();
-        return memberList;
-    }
-
-    @Override
     public MemberDTO getMemberInfo(String id) {
         return memberMapper.selectMemberById(id);
     }
@@ -59,20 +52,5 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberDTO getUserInfo(String id) {
         return memberMapper.getUserInfo(id);
-    }
-
-    @Override
-    public int putoutMember(String id) {
-        return memberMapper.putoutMember(id);
-    }
-
-    @Override
-    public int enableMember(String id) {
-        return memberMapper.enableMember(id);
-    }
-
-    @Override
-    public int changeMemberRole(MemberDTO dto) {
-        return memberMapper.changeMemberRole(dto);
     }
 }

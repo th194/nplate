@@ -17,12 +17,6 @@
         <result property="expiredDate" column="MBER_EXPIRED_DATE"/>
     </resultMap>
 
-    <select id="listMembers" resultMap="memResult">
-        <![CDATA[
-            select * from NETIVE_PROJECT01_MEMBER order by MBER_SRBDE
-        ]]>
-    </select>
-
     <!-- 스프링 시큐리티 회원 등록 -->
     <insert id="registerMember" parameterType="MemberDTO">
         <![CDATA[
@@ -83,30 +77,5 @@
     <select id="getUserInfo" parameterType="String" resultMap="memResult">
         select MBER_ID, MBER_NCNM, MBER_PROFL_PHOTO from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
     </select>
-
-
-    <update id="putoutMember" parameterType="String">
-        <![CDATA[
-        update NETIVE_PROJECT01_MEMBER
-        set MBER_EXPIRED_DATE = DATE_FORMAT(now(), '%Y-%m-%d')
-        where MBER_ID = #{id}
-        ]]>
-    </update>
-
-    <update id="enableMember" parameterType="String">
-        <![CDATA[
-        update NETIVE_PROJECT01_MEMBER
-        set MBER_EXPIRED_DATE = '9999-12-31'
-        where MBER_ID = #{id}
-        ]]>
-    </update>
-
-    <update id="changeMemberRole" parameterType="MemberDTO">
-        <![CDATA[
-        update NETIVE_PROJECT01_MEMBER
-        set MBER_ROLE = #{role}
-        where MBER_ID = #{id}
-        ]]>
-    </update>
 
 </mapper>

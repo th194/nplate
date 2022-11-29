@@ -63,6 +63,7 @@ public class AdminController {
 //        List<MemberDTO> memberList = adminService.getMemberList("manager"); // 매니저
 //        List<MemberDTO> memberList = adminService.getMemberList("admin"); // 어드민 조회
 //        List<MemberDTO> memberList = adminService.getMemberList("expired"); // 만료회원 조회
+//        List<MemberDTO> memberList = adminService.getMemberList("all"); // 모든회원 조회
         model.addAttribute("memberList", memberList);
         return "bootstrap-template/admin-member-list";
     }
@@ -74,35 +75,33 @@ public class AdminController {
         List<MemberDTO> memberList = adminService.getMemberList("manager");
 
         model.addAttribute("memberList", memberList);
-        return "bootstrap-template/admin-member-list";
+        return "bootstrap-template/admin-manager-list";
     }
 
 
     // 만료 회원목록
     @GetMapping("/admin/member/expired")
     public String expiredMembers(Model model) {
-        List<MemberDTO> memberList = memberService.getMemberList();
-        List<Map> sortList = new ArrayList<>();
+        List<MemberDTO> memberList = adminService.getMemberList("expired"); // 만료회원 조회
+        List<Map> members = new ArrayList<>();
 
         for (MemberDTO memberDTO : memberList) {
-            if (!memberDTO.isAccountNonExpired()) {
-                Map<String, Object> member = new HashMap<>();
-                member.put("isAccountNonExpired", false);
+            Map<String, Object> member = new HashMap<>();
+            member.put("isAccountNonExpired", false);
 
-                member.put("id", memberDTO.getId());
-                member.put("name", memberDTO.getName());
-                member.put("nickName", memberDTO.getNickName());
-                member.put("srbde", memberDTO.getSrbde());
+            member.put("id", memberDTO.getId());
+            member.put("name", memberDTO.getName());
+            member.put("nickName", memberDTO.getNickName());
+            member.put("srbde", memberDTO.getSrbde());
 
-                // 데이트 타입 포맷
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                String strDate = simpleDateFormat.format(memberDTO.getExpiredDate());
-                member.put("expiredDate", strDate);
+            // 데이트 타입 포맷
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String strDate = simpleDateFormat.format(memberDTO.getExpiredDate());
+            member.put("expiredDate", strDate);
 
-                sortList.add(member);
-            }
+            members.add(member);
         }
-        model.addAttribute("memberList", sortList);
+        model.addAttribute("memberList", members);
         
         return "bootstrap-template/admin-expired-members";
     }
@@ -248,7 +247,7 @@ public class AdminController {
      */
     @GetMapping("/admin/member/putout")
     public String putoutMember(String id) throws IOException {
-        memberService.putoutMember(id);
+        adminService.putoutMember(id);
         return "redirect:/admin/member/list";
     }
 
@@ -258,7 +257,7 @@ public class AdminController {
      */
     @GetMapping("/admin/member/enable")
     public String enableMember(String id) throws IOException {
-        memberService.enableMember(id);
+        adminService.enableMember(id);
         return "redirect:/admin/member/list";
     }
 
@@ -293,7 +292,7 @@ public class AdminController {
         try {
             System.out.println("회원 여러명 추가===========");
 
-            // todo id, pwd 제외 다른 것들 기본 설정 어떻게 할지..
+            // todo id, pwd 제외 다른 것들 기본 설정 어떻게 할지
             String id = memberDTO.getId();
             String pwd = memberDTO.getPwd();
             String name = memberDTO.getName();
@@ -331,14 +330,10 @@ public class AdminController {
     @GetMapping("/admin/member/changeRole")
     public @ResponseBody String changeMemberRole(String id) {
         try {
-            // todo amdin 권한 계정만 가능하게
             System.out.println("일반회원 권한 매니저로 변경========");
             System.out.println("id" + id);
 
-            MemberDTO memberDTO = new MemberDTO();
-            memberDTO.setId(id);
-            memberDTO.setRole("ROLE_MANAGER");
-            int result = memberService.changeMemberRole(memberDTO);
+            int result = adminService.changeMemberRole(id);
             if (result == 1) {
                 return "success";
             }

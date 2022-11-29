@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface MemberService {
-
-    // 회원 목록
-    List<MemberDTO> getMemberList();
-
     // 회원 정보 보기
     MemberDTO getMemberInfo(String id);
 
@@ -33,13 +29,4 @@ public interface MemberService {
 
     // 회원 정보 보기(ID, 닉네임만 조회)
     MemberDTO getUserInfo(String id);
-
-    // 회원 만료(관리자 페이지용 회원 삭제)
-    int putoutMember(String id);
-
-    // 회원 만료(관리자 페이지용 회원 삭제) 취소
-    int enableMember(String id);
-
-    // 회원 권한 변경
-    int changeMemberRole(MemberDTO dto);
 }

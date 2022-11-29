@@ -16,6 +16,7 @@ public class SecurityConfig {
         http.csrf().disable();
         http.authorizeRequests()
                 .antMatchers("/admin/member/delete/**").access("hasRole('ROLE_ADMIN')")
+                .antMatchers("/admin/member/changeRole/**").access("hasRole('ROLE_ADMIN')")
                 .antMatchers("/admin/**").access("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
                 .anyRequest().permitAll();
 

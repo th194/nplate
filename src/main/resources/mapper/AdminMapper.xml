@@ -18,7 +18,6 @@
     </resultMap>
 
 
-
     <!-- 스프링 시큐리티 회원 여러명 등록(관리자)  -->
     <insert id="addMembers" parameterType="MemberDTO">
         <![CDATA[
@@ -27,8 +26,6 @@
         VALUES ( #{id}, #{name}, 'F', DATE_FORMAT(now(), '%Y%m%d'), #{tel}, #{pwd}, 'default@email', '00', DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, 'default')
         ]]>
     </insert>
-
-
 
     <!-- 권한별 회원 조회(만료되지 않음) -->
     <select id="listMembersTypeRole" parameterType="String" resultMap="memResult">
@@ -48,4 +45,37 @@
         ]]>
     </select>
 
+    <!-- 전체 회원 조회 -->
+    <select id="listMembers" resultMap="memResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_MEMBER order by MBER_SRBDE
+        ]]>
+    </select>
+
+    <!-- 회원 만료(관리자 페이지용 회원 삭제) -->
+    <update id="putoutMember" parameterType="String">
+        <![CDATA[
+        update NETIVE_PROJECT01_MEMBER
+        set MBER_EXPIRED_DATE = DATE_FORMAT(now(), '%Y-%m-%d')
+        where MBER_ID = #{id}
+        ]]>
+    </update>
+
+    <!-- 회원 만료 취소 -->
+    <update id="enableMember" parameterType="String">
+        <![CDATA[
+        update NETIVE_PROJECT01_MEMBER
+        set MBER_EXPIRED_DATE = '9999-12-31'
+        where MBER_ID = #{id}
+        ]]>
+    </update>
+
+    <!-- 회원 권한 변경(일반 -> 매니저) -->
+    <update id="changeMemberRole" parameterType="String">
+        <![CDATA[
+        update NETIVE_PROJECT01_MEMBER
+        set MBER_ROLE = 'ROLE_MANAGER'
+        where MBER_ID = #{id}
+        ]]>
+    </update>
 </mapper>

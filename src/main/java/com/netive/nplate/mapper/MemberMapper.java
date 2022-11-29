@@ -8,10 +8,6 @@ import java.util.Map;
 
 @Mapper
 public interface MemberMapper {
-
-    // 회원 목록
-    List<MemberDTO> listMembers();
-
     // 회원 등록(스프링 시큐리티)
     int registerMember(MemberDTO dto);
 
@@ -38,15 +34,4 @@ public interface MemberMapper {
 
     // 회원 정보 보기(ID, 닉네임만 조회)
     MemberDTO getUserInfo(String id);
-
-    // 회원 만료(관리자 페이지용 회원 삭제)
-    int putoutMember(String id);
-
-    // 회원 만료(관리자 페이지용 회원 삭제) 취소
-    int enableMember(String id);
-
-    // 회원 권한 변경
-    int changeMemberRole(MemberDTO dto);
-
-    // todo adminMapper로 옮겨야 하는 것들 옮기기(전체적으로)
 }
