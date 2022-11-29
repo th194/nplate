@@ -20,10 +20,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //        //보안상의 문제로 전체를 허용하는 것보다 직접 하나씩 지정해주어야 한다고 한다.
 //    }
 
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/stomp/chat").setAllowedOrigins("http://localhost:8080").withSockJS();
+        registry.addEndpoint("/stomp/chat").withSockJS();
     }
 
     @Override

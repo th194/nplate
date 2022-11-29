@@ -33,4 +33,6 @@ public interface BoardService {
 	List<BoardDTO> getBordListByIds(Map map);
 	// 서치 키워드로 조회
 	List<BoardDTO> getBordListByKeyword(SearchDTO dto);
+	// 게시글 번호로 게시글 작성자 조회
+	public String getBoardWriterByIdx(String idx);
 }

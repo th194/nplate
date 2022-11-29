@@ -96,4 +96,10 @@ public class BoardServiceImpl implements BoardService {
     public List<BoardDTO> getBordListByKeyword(SearchDTO dto) {
         return boardMapper.getBordListByKeyword(dto);
     }
+
+    // 게시글 번호로 게시글 작성자 조회
+    @Override
+    public String getBoardWriterByIdx(String idx) {
+        return boardMapper.selectWriterByIdx(idx);
+    }
 }

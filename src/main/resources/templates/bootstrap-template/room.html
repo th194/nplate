@@ -36,50 +36,50 @@
             var roomId = room.roomId;
             var username = [[${username}]];
 
-            console.log(roomName + ", " + roomId + ", " + username);
+            console.log('username = ' + JSON.stringify(username));
 
-            var sockJs = new SockJS("/stomp/chat");
+            console.log(roomName + ', ' + roomId + ', ' + username.username);
+
+            var sockJs = new SockJS('/stomp/chat');
             //1. SockJS를 내부에 들고있는 stomp를 내어줌
             var stomp = Stomp.over(sockJs);
 
             //2. connection이 맺어지면 실행
             stomp.connect({}, function (){
-                console.log("STOMP Connection")
+                console.log('STOMP Connection')
 
                 //4. subscribe(path, callback)으로 메세지를 받을 수 있음
-                stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
+                stomp.subscribe('/sub/chat/room/' + roomId, function (chat) {
                     var content = JSON.parse(chat.body);
-
+                    console.log('채팅 컨텐츠 = ' + content);
                     var writer = content.writer;
                     var str = '';
 
-                    if(writer === username){
-                        str += "<div class='col-6'>";
-                        str += "<div class='alert alert-secondary'>";
-                        str += "<b>" + writer + " : " + content.message + "</b>";
-                        str += "</div></div>";
-                        $("#msgArea").append(str);
+                    if(writer === username.username){
+                        str += `<div class="col-6">
+                            <div class="alert alert-secondary">
+                            <b> ${username.username} : ${content.message} </b>
+                            </div></div>
+                        `;
+                    } else{
+                        str += `<div class="col-6">
+                        <div class="alert alert-warning">
+                        <b> ${username.username} : ${content.message} </b>
+                        </div></div>
+                        `;
                     }
-                    else{
-                        str += "<div class='col-6'>";
-                        str += "<div class='alert alert-warning'>";
-                        str += "<b>" + writer + " : " + content.message + "</b>";
-                        str += "</div></div>";
-                        $("#msgArea").append(str);
-                    }
-
-                    $("#msgArea").append(str);
+                    $('#msgArea').append(str);
                 });
 
-                //3. send(path, header, message)로 메세지를 보낼 수 있음
-                stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username}))
+                stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username.username}))
             });
 
-            $("#button-send").on("click", function(e){
-                var msg = document.getElementById("msg");
+            $('#button-send').on('click', function(e){
+                var msg = document.getElementById('msg');
 
-                console.log(username + ":" + msg.value);
-                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writer: username}));
+                console.log('콘솔메시지 = ' + JSON.stringify(username.username) + ':' + msg.value);
+                //3. send(path, header, message)로 메세지를 보낼 수 있음
+                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writer: username.username}));
                 msg.value = '';
             });
         });

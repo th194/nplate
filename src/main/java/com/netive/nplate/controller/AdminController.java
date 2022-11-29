@@ -197,25 +197,13 @@ public class AdminController {
      */
     @PostMapping("/admin/delete")
     public String adminBoardDelete(HttpServletRequest request) {
-
         String fileNmTemp = "";
         String[] delMsg = request.getParameterValues("delArr");
-        int size = delMsg.length;
 
+        // delMsg 길이와 delWriter 길이는 같다.
+        int size = delMsg.length;
         // 삭제할 게시글 수만큼 loop
         for ( int i = 0; i < size; i ++) {
-//            Long idx = Long.parseLong(delMsg[i]);
-//            List<BoardFileDTO> boardFileList = fileService.selectBoardFile(idx);
-//            // 파일 갯수만큼 loop
-//            for ( int j = 0; j < boardFileList.size(); j ++) {
-//                fileNmTemp = boardFileList.get(j).getFileNmTemp();
-//
-//                File rmFile = new File(filePath + fileNmTemp);
-//                // 서버에서 파일 삭제
-//                if (rmFile.exists()) {
-//                    rmFile.delete();
-//                }
-//            }
             boardService.deleteAdminBoard(delMsg[i]);
         }
 

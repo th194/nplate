@@ -1,7 +1,6 @@
 package com.netive.nplate.controller;
 
 import com.netive.nplate.common.ChatRoomRepository;
-import com.netive.nplate.domain.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,15 +27,8 @@ public class RoomController {
      */
     @GetMapping("/rooms")
     public ModelAndView rooms() {
-        log.info("채팅방 목록 조회 All");
         ModelAndView mv = new ModelAndView("bootstrap-template/rooms");
-
         mv.addObject("list", repository.findAllRooms());
-
-        System.out.println("rooms mv====================");
-        System.out.println(mv);
-        System.out.println("rooms mv====================");
-
         return mv;
     }
 
@@ -48,8 +40,6 @@ public class RoomController {
      */
     @PostMapping("/room")
     public String create(@RequestParam String name, RedirectAttributes rttr) {
-
-        log.info("채팅방 개설");
         rttr.addFlashAttribute("roomName", repository.createChatRoomDTO(name));
         return "redirect:/chat/rooms";
     }

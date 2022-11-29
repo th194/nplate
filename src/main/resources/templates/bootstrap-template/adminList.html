@@ -101,7 +101,7 @@
                             <tr>
                                 <td>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="${val.bbscttNo}" name="subCheck" id="${val.bbscttNo}"/>
+                                        <input class="form-check-input" type="checkbox" data-val="${val.bbscttWrter}" value="${val.bbscttNo}" name="subCheck" id="${val.bbscttNo}"/>
                                         <label class="form-check-label" for="${val.bbscttNo}"></label>
                                     </div>
                                 </td>
@@ -109,7 +109,7 @@
                                 <td><a class="gallery" data-image="${val.bbscttImage}" href="javascript:void(0)" onclick="goViewPage(${val.bbscttNo})">${val.bbscttSj}</a></td>
                                 <td>
                                     <div class="dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <a class="nav-link dropdown-toggle delWrter" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                             <span class="mr-2 d-none d-lg-inline text-gray-600 small">${val.bbscttWrter}</span>
                                         </a>
                                         <!-- Dropdown - User Information -->
@@ -291,13 +291,16 @@
         function deleteAll() {
             var delArr = [];
             var delList = $('input[name=subCheck]');
-
+            var delWriterArr = [];
             for (var i = 0; i < delList.length; i++) {
                 if(delList[i].checked) {
                     delArr.push(delList[i].value);
+                    delWriterArr.push(delList[i].dataset.val);
+                    message += `관리자에 의해 ${delList[i].value} 번 게시물이 삭제되었습니다.`;
                 }
             }
             console.log(delArr);
+            console.log(delWriterArr);
             if(delArr.length == 0) {
                 alert('선택된 게시글이 없습니다.');
             } else {
@@ -306,11 +309,19 @@
                         url : '/admin/delete',
                         type : 'POST',
                         traditional : true,
-                        data : {delArr : delArr},
-                        success : function() {
-                            location.replace('/admin/adminList');
+                        data : {delArr : delArr, delWriterArr : delWriterArr},
+                        success : function(result) {
+                            // location.replace('/admin/adminList');
+                            setTimeout(() => {
+                                for (var i in delWriterArr) {
+                                    console.log('스톰프 호출['+i+']');
+                                    socket.send('/pub/chat/message', {}, JSON.stringify({writer : delWriterArr[i], bbsNo : delArr[i]}));
+                                }
+                                console.log('게시글 삭제함수 스톰프 실행');
+                            }, 1000);
                         }
-                    })
+                    });
+
                 }
             }
         }

@@ -135,6 +135,13 @@
 		    BBSCTT_WRTER = #{memberId}
 	</select>
 
+	<!-- 게시글 번호로 게시글 작성자 조회 -->
+	<select id="selectWriterByIdx" parameterType="String" resultType="String">
+		SELECT BBSCTT_WRTER
+		FROM NETIVE_PROJECT01_BOARD
+		WHERE BBSCTT_NO = #{bbscttNo}
+	</select>
+
 	<!-- 게시글 조회수 증가 -->
 	<update id="cntPlus" parameterType="long">
 		UPDATE NETIVE_PROJECT01_BOARD

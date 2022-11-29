@@ -20,9 +20,6 @@ public class ChatRoomRepository {
         // 채팅방 생성 순서 최근 순으로 반환
         List<ChatRoomDTO> result = new ArrayList<>(chatRoomDTOMap.values());
         Collections.reverse(result);
-        System.out.println("채팅방 리스트");
-        System.out.println(result);
-        System.out.println("채팅방 리스트");
         return result;
     }
 

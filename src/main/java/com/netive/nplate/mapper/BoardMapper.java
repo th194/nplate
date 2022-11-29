@@ -35,4 +35,6 @@ public interface BoardMapper {
 	List<BoardDTO> getBordListByKeyword(SearchDTO dto);
 	// 관리자가 게시글 삭제
 	void deleteAdminBoard(String params);
+	// 게시글 번호로 게시글 작성자 조회
+	public String selectWriterByIdx(String idx);
 }

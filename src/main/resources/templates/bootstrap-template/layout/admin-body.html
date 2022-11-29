@@ -139,6 +139,41 @@
 				location.href = '/board/search?' + new URLSearchParams(queryParams).toString();
 			}
 			/* 페이지 이동 E */
+
+			/* 웹소켓 전역으로 설정 S */
+				let socket = new SockJS('/stomp/chat');
+				socket.onopen = function() {
+					console.log('커넥션 연결 : connection opened.');
+				}
+
+				socket.onmessage = function(e) {
+					let data = e.data;
+					console.log('Receive Message : ' + data + '\n');
+					$.ajax({
+						url : '', // url 지정
+						type : 'POST',
+						dataType : 'text',
+						success : function(result) {
+							if ( data == '0') {
+
+							} else {
+								// 여기가 성공
+								//ajax 성공시 UI 생성해줄 곳
+							}
+						},
+						error : function(err) {
+							console.log('커넥션 에이작스 에러 : ', err);
+						}
+					});
+					socket.onclose = function() {
+						console.log('커넥션 끊김 :  connection closed.');
+
+					}
+					socket.onerror = function(err) {
+						console.log('커넥션 에러 : connection error.', err);
+					}
+				}
+			/* 웹소켓 전역으로 설정 E */
 		</script>
 
 		<!-- 리스트에서만 쓰는 스크립트 -->
