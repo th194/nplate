@@ -206,15 +206,12 @@
 					data: { id: testId, idx: index },
 					success: function (data) {
 						if (data === 'success') {
-							alert('좋아요 추가 성공');
+							// alert('좋아요 추가 성공');
 
-							// 알람 전송 후 화면 리플레이스
-							const promise = new Promise(() => {
-								stompClient.send('/pub/'+writer, {}, JSON.stringify({writer : writer, bbsNo : index, alarmType : 'like', member: testId}));
-							});
-							promise.then(() => {
-								location.replace(location.pathname + location.search);
-							})
+							// 알람 전송
+							stompClient.send('/pub/'+writer, {}, JSON.stringify({writer : writer, bbsNo : index, alarmType : 'like', member: testId}));
+
+							location.replace(location.pathname + location.search)
 							// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
 						} else {
 							alert('좋아요 추가 실패');

@@ -392,7 +392,7 @@
 						// 삭제용
 						if( val.alarmType == 'delete') {
 							alarmHtml = `
-								<a class="dropdown-item d-flex align-items-center" href="#">
+								<a class="dropdown-item d-flex align-items-center">
 									<div class="mr-3">
 										<div class="icon-circle bg-warning">
 											<i class="fas fa-exclamation-triangle text-white"></i>
@@ -407,7 +407,7 @@
 						// 팔로잉
 						} else if (val.alarmType == 'following') {
 							alarmHtml +=`
-								<a class="dropdown-item d-flex align-items-center" href="#">
+								<a class="dropdown-item d-flex align-items-center" href="/member/userInfo?id=${val.writer}">
 									<div class="mr-3">
 										<div class="icon-circle bg-primary">
 											<i class="fas fa-file-alt text-white"></i>
@@ -422,7 +422,7 @@
 						// 좋아요
 						} else if (val.alarmType == 'like') {
 							alarmHtml +=`
-								<a class="dropdown-item d-flex align-items-center" href="#">
+								<a class="dropdown-item d-flex align-items-center" href="/board/view.do?idx=${val.bbsNo}">
 									<div class="mr-3">
 										<div class="icon-circle bg-primary">
 											<i class="fas fa-file-alt text-white"></i>
