@@ -310,20 +310,22 @@
                         traditional : true,
                         data : {delArr : delArr, delWriterArr : delWriterArr},
                         success : function(result) {
-                            let socket = new SockJS('/stomp/chat');
-                            let stompClient = null;
+                            var socket = new SockJS('/stomp/chat');
+                            var stompClient = null;
                             stompClient = Stomp.over(socket);
                             stompClient.connect({}, function (frame) {
                             });
-                            const promise = new Promise(() => {
+                            const promise = new Promise((resolve, reject) => {
                                 setTimeout(() => {
                                     for (let i in delWriterArr) {
                                         stompClient.send('/pub/'+delWriterArr[i], {}, JSON.stringify({writer : delWriterArr[i], bbsNo : delArr[i], alarmType : 'delete'}));
                                     }
-                                }, 1000);
+                                }, 1000, resolve());
                             });
                             promise.then(() => {
-                                location.replace('/admin/adminList' + location.search);
+                                setTimeout(() => {
+                                    location.replace('/admin/adminList' + location.search);
+                                }, 1000)
                             });
 
                         }
