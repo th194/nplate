@@ -1,12 +1,12 @@
 package com.netive.nplate.controller;
 
-import com.netive.nplate.domain.AlarmDTO;
 import com.netive.nplate.domain.ChatMessageDTO;
 import com.netive.nplate.domain.SearchDTO;
 import com.netive.nplate.domain.SessionConstants;
 import com.netive.nplate.util.BoardUtils;
 import com.netive.nplate.util.MemberUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -89,30 +89,31 @@ public class ChatController {
 //        return "bootstrap-template/chat";
 //    }
 
-    @MessageMapping(value = "/chat/enter")
-    public void enter(ChatMessageDTO message) {
-        message.setMessage(message.getWriter() + " 님이 채팅방에 참여하였습니다.");
-        template.convertAndSend("/sub/chat/room" + message.getRoomId(), message);
-    }
+//    @MessageMapping(value = "/chat/enter")
+//    public void enter(ChatMessageDTO message) {
+//        message.setMessage(message.getWriter() + " 님이 채팅방에 참여하였습니다.");
+//        template.convertAndSend("/sub/chat/room" + message.getRoomId(), message);
+//    }
 
-    @MessageMapping(value = "/chat/message")
-    public void message(ChatMessageDTO message) {
-        message.setMessage("관리자에 의해 " + message.getBbsNo() + "번 게시물이 삭제되었습니다.");
-        System.out.println("/chat/message=========================");
+//    @MessageMapping(value = "/chat/message")
+//    public void message(ChatMessageDTO message) {
+//        String alarmType = message.getAlarmType();
+//        template.convertAndSend("/sub/chat/room/", message);
+//    }
+
+    @MessageMapping(value = "/{memberId}")
+    public void sendMessage(@DestinationVariable("memberId") String memberId, ChatMessageDTO message) {
+        System.out.println("알림기능 컨트롤러 호출 sendMessage()");
+        System.out.println(memberId);
+        if(message.getAlarmType().equals("delete")) {
+            message.setMessage("관리자에 의해 " + message.getBbsNo() + "번 게시물이 삭제되었습니다.");
+        } else if (message.getAlarmType().equals("like")) {
+            message.setMessage(message.getMember() + " 님이 " + message.getBbsNo() + "번 게시물을 좋아합니다.");
+        } else if (message.getAlarmType().equals("following")) {
+            message.setMessage(message.getMember() + " 님이 회원님을 팔로잉합니다.");
+        }
+
         System.out.println(message.toString());
-        System.out.println("/chat/message=========================");
-//        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
-        template.convertAndSend("sub/chat/room/", message);
-    }
-
-    @MessageMapping(value = "/chat/boardDelete")
-    public void greeting(AlarmDTO alarm) throws Exception {
-        System.out.println("alarm데이터====================");
-        System.out.println(alarm);
-        System.out.println("alarm데이터====================");
-        System.out.println("게시글 삭제 웹소켓 메시지 실행");
-//        String name = alarm.getName();
-        String name = "admin";
-        template.convertAndSend("/sub/boardDelete/" + alarm.getName(), name);
+        template.convertAndSend("/sub/"+memberId, message);
     }
 }

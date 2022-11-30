@@ -81,7 +81,13 @@
                 success: function (data) {
                     if (data === 'success') {
                         alert('팔로잉 성공');
-                        location.reload(); // 버튼 바꾸기 위해 새로고침 해줌
+                        const promise = new Promise(() => {
+                            stompClient.send('/pub/' + id, {}, JSON.stringify({writer: id, alarmType : 'following', member : memberInfo.id}));
+                        });
+                        promise.then(() => {
+                            location.reload(); // 버튼 바꾸기 위해 새로고침 해줌
+                        });
+
                     } else {
                         alert('팔로잉 실패');
                     }

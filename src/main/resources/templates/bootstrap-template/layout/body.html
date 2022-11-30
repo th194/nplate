@@ -152,15 +152,16 @@
 									   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<i class="fas fa-bell fa-fw"></i>
 										<!-- Counter - Alerts -->
-										<span class="badge badge-danger badge-counter">3+</span>
+										<span class="badge badge-danger badge-counter" id="alarmCount"></span>
 									</a>
 									<!-- Dropdown - Alerts -->
 									<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
 										 aria-labelledby="alertsDropdown">
-										<h6 class="dropdown-header">
+										<h6 class="dropdown-header" id="alarm">
 											Alerts Center
 										</h6>
-										<a class="dropdown-item d-flex align-items-center" href="#">
+										<!-- 게시글 삭제용 알림 UI -->
+										<!--<a class="dropdown-item d-flex align-items-center" href="#">
 											<div class="mr-3">
 												<div class="icon-circle bg-primary">
 													<i class="fas fa-file-alt text-white"></i>
@@ -170,19 +171,23 @@
 												<div class="small text-gray-500">December 12, 2019</div>
 												<span class="font-weight-bold">A new monthly report is ready to download!</span>
 											</div>
-										</a>
-										<a class="dropdown-item d-flex align-items-center" href="#">
-											<div class="mr-3">
-												<div class="icon-circle bg-success">
-													<i class="fas fa-donate text-white"></i>
-												</div>
-											</div>
-											<div>
-												<div class="small text-gray-500">December 7, 2019</div>
-												$290.29 has been deposited into your account!
-											</div>
-										</a>
-										<a class="dropdown-item d-flex align-items-center" href="#">
+										</a>-->
+
+<!--										&lt;!&ndash; 작성자 팔로잉 알림 UI &ndash;&gt;-->
+<!--										<a class="dropdown-item d-flex align-items-center" href="#">-->
+<!--											<div class="mr-3">-->
+<!--												<div class="icon-circle bg-success">-->
+<!--													<i class="fas fa-donate text-white"></i>-->
+<!--												</div>-->
+<!--											</div>-->
+<!--											<div>-->
+<!--												<div class="small text-gray-500">December 7, 2019</div>-->
+<!--												$290.29 has been deposited into your account!-->
+<!--											</div>-->
+<!--										</a>-->
+
+<!--										&lt;!&ndash; 게시글 좋아요 알림 UI&ndash;&gt;-->
+										<!--<a class="dropdown-item d-flex align-items-center" href="#">
 											<div class="mr-3">
 												<div class="icon-circle bg-warning">
 													<i class="fas fa-exclamation-triangle text-white"></i>
@@ -192,9 +197,10 @@
 												<div class="small text-gray-500">December 2, 2019</div>
 												Spending Alert: We've noticed unusually high spending for your account.
 											</div>
-										</a>
+										</a>-->
 										<a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
 									</div>
+
 								</li>
 
 								<div class="topbar-divider d-none d-sm-block"></div>
@@ -345,6 +351,7 @@
 
 
 		<script th:inline="javascript">
+			var memberInfo = [[${memberInfo}]];
 			// 팔로잉 없을 경우 팔로잉 메뉴 가리기
 			$(document).ready(function (){
 				var followingMembers = [[${followingMembers}]]; // 팔로잉멤버
@@ -367,58 +374,79 @@
 
 
 			/* 웹소켓 전역으로 설정 S */
-				let socket = new SockJS('/stomp/chat');
-				const stompClient = Stomp.over(socket);
+			let msgArr = [];
+			let stompClient = null;
+			let socket = new SockJS('/stomp/chat');
+			stompClient = Stomp.over(socket);
 
+			stompClient.connect({}, function(frame) {
 
+				stompClient.subscribe('/sub/'+memberInfo.id, function(msg) {
 
-				socket.onopen = function(e) {
-					console.log('e > ', e);
-					stompClient.subscribe('/sub/alarm', function(msg){
-						console.log(msg);
+					msgArr.push(JSON.parse(msg.body));
+					$('#alarmCount').text(msgArr.length);
+
+					let alarmHtml = '';
+					msgArr.forEach((val) => {
+						console.log(val.alarmType);
+						// 삭제용
+						if( val.alarmType == 'delete') {
+							alarmHtml = `
+								<a class="dropdown-item d-flex align-items-center" href="#">
+									<div class="mr-3">
+										<div class="icon-circle bg-warning">
+											<i class="fas fa-exclamation-triangle text-white"></i>
+										</div>
+									</div>
+									<div>
+										<div class="small text-gray-500">방금 전</div>
+										${val.message}
+									</div>
+								</a>
+							`;
+						// 팔로잉
+						} else if (val.alarmType == 'following') {
+							alarmHtml +=`
+								<a class="dropdown-item d-flex align-items-center" href="#">
+									<div class="mr-3">
+										<div class="icon-circle bg-primary">
+											<i class="fas fa-file-alt text-white"></i>
+										</div>
+									</div>
+									<div>
+										<div class="small text-gray-500">방금 전</div>
+										${val.message}
+									</div>
+								</a>
+							`;
+						// 좋아요
+						} else if (val.alarmType == 'like') {
+							alarmHtml +=`
+								<a class="dropdown-item d-flex align-items-center" href="#">
+									<div class="mr-3">
+										<div class="icon-circle bg-primary">
+											<i class="fas fa-file-alt text-white"></i>
+										</div>
+									</div>
+									<div>
+										<div class="small text-gray-500">방금 전</div>
+										${val.message}
+									</div>
+								</a>
+							`;
+						}
+
 					});
-					console.log('커넥션 연결 : connection opened.');
-				}
+					$('#alarm').after(alarmHtml);
+
+					$('#alertsDropdown').click(function(){
+						$(this).find('span').text('');
+					});
+				});
+			});
 
 
-				socket.onmessage = function(e) {
-					let data = e.data;
-					console.log('Receive Message : ' + data + '\n');
-					// $.ajax({
-					// 	url : '', // url 지정
-					// 	type : 'POST',
-					// 	dataType : 'text',
-					// 	success : function(result) {
-					// 		console.log('result = ', result);
-					// 		let dropHtml = '';
-					//
-					// 		dropHtml += `
-					// 			<a class="dropdown-item d-flex align-items-center" href="#">
-					// 				<div class="mr-3">
-					// 					<div class="icon-circle bg-primary">
-					// 						<i class="fas fa-file-alt text-white"></i>
-					// 					</div>
-					// 				</div>
-					// 				<div>
-					// 					<div class="small text-gray-500">날짜 받아오기</div>
-					// 					<span class="font-weight-bold">확인 가능한 알림이 있습니다.</span>
-					// 				</div>
-					// 			</a>
-					// 		`;
-					// 		$('.dropdown-header').append(dropHtml);
-					// 	},
-					// 	error : function(err) {
-					// 		console.log('커넥션 에이작스 에러 : ', err);
-					// 	}
-					// });
-					socket.onclose = function() {
-						console.log('커넥션 끊김 :  connection closed.');
 
-					}
-					socket.onerror = function(err) {
-						console.log('커넥션 에러 : connection error.', err);
-					}
-				}
 			/* 웹소켓 전역으로 설정 E */
 		</script>
 

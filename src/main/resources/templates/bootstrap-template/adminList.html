@@ -296,7 +296,6 @@
                 if(delList[i].checked) {
                     delArr.push(delList[i].value);
                     delWriterArr.push(delList[i].dataset.val);
-                    message += `관리자에 의해 ${delList[i].value} 번 게시물이 삭제되었습니다.`;
                 }
             }
             console.log(delArr);
@@ -311,14 +310,22 @@
                         traditional : true,
                         data : {delArr : delArr, delWriterArr : delWriterArr},
                         success : function(result) {
-                            // location.replace('/admin/adminList');
-                            setTimeout(() => {
-                                for (var i in delWriterArr) {
-                                    console.log('스톰프 호출['+i+']');
-                                    socket.send('/pub/chat/message', {}, JSON.stringify({writer : delWriterArr[i], bbsNo : delArr[i]}));
-                                }
-                                console.log('게시글 삭제함수 스톰프 실행');
-                            }, 1000);
+                            let socket = new SockJS('/stomp/chat');
+                            let stompClient = null;
+                            stompClient = Stomp.over(socket);
+                            stompClient.connect({}, function (frame) {
+                            });
+                            const promise = new Promise(() => {
+                                setTimeout(() => {
+                                    for (let i in delWriterArr) {
+                                        stompClient.send('/pub/'+delWriterArr[i], {}, JSON.stringify({writer : delWriterArr[i], bbsNo : delArr[i], alarmType : 'delete'}));
+                                    }
+                                }, 1000);
+                            });
+                            promise.then(() => {
+                                location.replace('/admin/adminList' + location.search);
+                            });
+
                         }
                     });
 

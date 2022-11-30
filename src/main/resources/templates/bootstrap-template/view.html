@@ -193,8 +193,10 @@
 									`;
 					}
 					$('#replyList').html(replyHtml);
-					drawPage(response.pagination.pagination, page);
-					page++;
+					if(response.replyList != null && response.replyList != '') {
+						drawPage(response.pagination.pagination, page);
+						page++;
+					}
 				}, 'json');
 			/* 댓글 목록 E */
 		}
@@ -606,9 +608,6 @@
 			return `${valueFormatter}`;
 		}
 		/* 날짜 계산 E */
-
-
-		/*[- end of function -]*/
 		/*]]>*/
 	</script>
 </th:block>

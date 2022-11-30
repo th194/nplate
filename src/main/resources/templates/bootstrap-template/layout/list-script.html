@@ -73,7 +73,7 @@
 										<img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
 
 									// 좋아요 버튼
-									html += `<span class="d-flex text-danger mb-2 like-btn" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
+									html += `<span class="d-flex text-danger mb-2 like-btn" data-val="${obj.bbscttWrter}" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
 
 									if (likes.includes(obj.bbscttNo)) {
 										html += `<i class="bi bi-heart-fill"></i>`;
@@ -173,6 +173,7 @@
 			var likeId = $(this).attr('id'); // 좋아요버튼 아이디
 			var index = + likeId.substring(likeId.indexOf('_')+1); // 게시물아이디(index)
 			var $heart = $(this).find('i'); // 하트 아이콘
+			var writer = $(this).data('val');
 
 			if ( $heart.hasClass('bi-heart-fill') ) { // 이걸로 해도 되고.... 글번호 포함하고 있는지 여부로 해도되고...
 				// 좋아요 취소 ajax
@@ -206,7 +207,14 @@
 					success: function (data) {
 						if (data === 'success') {
 							alert('좋아요 추가 성공');
-							location.replace(location.pathname + location.search);
+
+							// 알람 전송 후 화면 리플레이스
+							const promise = new Promise(() => {
+								stompClient.send('/pub/'+writer, {}, JSON.stringify({writer : writer, bbsNo : index, alarmType : 'like', member: testId}));
+							});
+							promise.then(() => {
+								location.replace(location.pathname + location.search);
+							})
 							// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
 						} else {
 							alert('좋아요 추가 실패');
