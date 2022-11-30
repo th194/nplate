@@ -206,8 +206,7 @@
 					data: { id: testId, idx: index },
 					success: function (data) {
 						if (data === 'success') {
-							// alert('좋아요 추가 성공');
-
+							alert('좋아요 추가 성공');
 							// 알람 전송
 							stompClient.send('/pub/'+writer, {}, JSON.stringify({writer : writer, bbsNo : index, alarmType : 'like', member: testId}));
 
