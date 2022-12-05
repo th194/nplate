@@ -5,11 +5,14 @@
 		/* 무한 스크롤 위한 페이지 작업 S */
 		var page = 0;
 		var isFlag = true;
+		var scrollHeight = 0;
+		var scrollY = localStorage.getItem('scrolly');
 		$(function() {
 			drawList();
 		});
 		$(window).scroll(function() {
 			if ($(window).scrollTop() >= $(document).height() - $(window).height()) { // 스크롤 감지
+				scrollHeight = $(document).scrollTop();
 				drawList();
 			}
 		});
@@ -24,6 +27,7 @@
 
 		// 조회 목록
 		function drawList() {
+			var backUrl = document.referrer; // 이전 페이지 정보 있는지 (url)
 			console.log('isFlag = ' + isFlag);
 			var likes = [[${likeNumbers}]]; // 좋아요 누른 글 번호
 			var search = [[${search}]];
@@ -44,7 +48,6 @@
 					success : function (result) {
 						var list = result.response;                // 목록
 						var html = '';
-
 						if (list.length < 30) {
 							isFlag = false;
 						} else {
@@ -154,6 +157,9 @@
 
 							$('#recentTag').html(recentTag);
 						}
+						if(backUrl != '') {
+							window.scrollTo(0, scrollY);
+						}
 					},
 
 					error   : function (err) {
@@ -164,6 +170,7 @@
 					}
 				});
 			}
+			localStorage.removeItem('scrolly');
 		}
 		/* 게시글 리스트 조회 E */
 
@@ -175,7 +182,8 @@
 			var $heart = $(this).find('i'); // 하트 아이콘
 			var writer = $(this).data('val');
 			var subject = $(this).data('subject');
-			console.log('subject = ' + subject);
+			scrollY = this.scrollY || document.documentElement.scrollTop;
+			localStorage.setItem('scrolly', scrollY);
 
 			if ( $heart.hasClass('bi-heart-fill') ) { // 이걸로 해도 되고.... 글번호 포함하고 있는지 여부로 해도되고...
 				// 좋아요 취소 ajax
@@ -209,19 +217,15 @@
 					success: function (data) {
 						console.log(data.result);
 						if (data.result === 'success') {
-							console.log('if data ====> ', data);
 							var likeInfo = data.likeInfo;
 							var date = moment(likeInfo[0].likeRgsde).format('YYYY-MM-DD HH:mm:ss');
-
-							console.log('likeInfo ====> ', date);
 							alert('좋아요 추가 성공');
 							// 알람 전송
 							stompClient.send('/pub/'+writer, {}, JSON.stringify({writer : writer, bbsSj : subject, bbsNo : index, alarmType : 'like', member: testId, date : date}));
 
-							// location.replace(location.pathname + location.search)
+							location.replace(location.pathname + location.search);
 							// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
 						} else {
-							console.log('else data ====> ', data);
 							alert('좋아요 추가 실패');
 						}
 					},
