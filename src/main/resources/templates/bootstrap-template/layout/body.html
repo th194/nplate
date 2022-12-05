@@ -351,6 +351,7 @@
 
 
 		<script th:inline="javascript">
+			moment.locale('ko');
 			var memberInfo = [[${memberInfo}]];
 			// 팔로잉 없을 경우 팔로잉 메뉴 가리기
 			$(document).ready(function (){
@@ -389,6 +390,7 @@
 					let alarmHtml = '';
 					msgArr.forEach((val) => {
 						console.log(val.alarmType);
+						var date = timeForToday(val.date);
 						// 삭제용
 						if( val.alarmType == 'delete') {
 							alarmHtml = `
@@ -399,7 +401,7 @@
 										</div>
 									</div>
 									<div>
-										<div class="small text-gray-500">방금 전</div>
+										<div class="small text-gray-500">${date}</div>
 										${val.message}
 									</div>
 								</a>
@@ -414,7 +416,7 @@
 										</div>
 									</div>
 									<div>
-										<div class="small text-gray-500">방금 전</div>
+										<div class="small text-gray-500">${date}</div>
 										${val.message}
 									</div>
 								</a>
@@ -429,7 +431,21 @@
 										</div>
 									</div>
 									<div>
-										<div class="small text-gray-500">방금 전</div>
+										<div class="small text-gray-500">${date}</div>
+										${val.message}
+									</div>
+								</a>
+							`;
+						} else if (val.alarmType == 'reply') {
+							alarmHtml +=`
+								<a class="dropdown-item d-flex align-items-center" href="/board/view.do?idx=${val.bbsNo}">
+									<div class="mr-3">
+										<div class="icon-circle bg-primary">
+											<i class="fas fa-file-alt text-white"></i>
+										</div>
+									</div>
+									<div>
+										<div class="small text-gray-500">${date}</div>
 										${val.message}
 									</div>
 								</a>
@@ -448,6 +464,32 @@
 
 
 			/* 웹소켓 전역으로 설정 E */
+
+			/* 날짜 계산 S */
+			function timeForToday(value) {
+				const today = new Date();
+				const timeValue = new Date(value);
+				let valueFormatter = moment(value).format('YYYY.MM.DD');
+
+				const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+				if (betweenTime < 1) return '방금 전';
+				if (betweenTime < 60) {
+					return `${betweenTime}분전`;
+				}
+
+				const betweenTimeHour = Math.floor(betweenTime / 60);
+				if (betweenTimeHour < 24) {
+					return `${betweenTimeHour}시간 전`;
+				}
+
+				// const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+				// if (betweenTimeDay < 365) {
+				// 	return `${betweenTimeDay}일전`;
+				// }
+
+				return `${valueFormatter}`;
+			}
+			/* 날짜 계산 E */
 		</script>
 
 		<!-- 리스트에서만 쓰는 스크립트 -->

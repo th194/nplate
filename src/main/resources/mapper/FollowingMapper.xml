@@ -5,6 +5,7 @@
         <result property="index" column="FOLLOWING_NO"/>
         <result property="memberId" column="MBER_ID"/>
         <result property="followingId" column="FOLLOWING_ID"/>
+        <result property="followingRgsde" column="FOLLOWING_RGSDE"/>
     </resultMap>
 
     <insert id="followMember" parameterType="FollowingDTO">

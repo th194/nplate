@@ -16,4 +16,6 @@ public interface LikesMapper {
 
     // 좋아요 삭제
     int deleteLike(LikesDTO dto);
+
+    List<LikesDTO> getLikeOne(Long idx);
 }

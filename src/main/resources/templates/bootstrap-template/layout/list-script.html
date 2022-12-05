@@ -73,7 +73,7 @@
 										<img class="card-img-top" src="${obj.bbscttImage}" alt="..." />`
 
 									// 좋아요 버튼
-									html += `<span class="d-flex text-danger mb-2 like-btn" data-val="${obj.bbscttWrter}" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
+									html += `<span class="d-flex text-danger mb-2 like-btn" data-subject="${obj.bbscttSj}" data-val="${obj.bbscttWrter}" id="like_${obj.bbscttNo}" style="position: absolute; top: 0.5rem; right: 0.5rem">`;
 
 									if (likes.includes(obj.bbscttNo)) {
 										html += `<i class="bi bi-heart-fill"></i>`;
@@ -174,6 +174,8 @@
 			var index = + likeId.substring(likeId.indexOf('_')+1); // 게시물아이디(index)
 			var $heart = $(this).find('i'); // 하트 아이콘
 			var writer = $(this).data('val');
+			var subject = $(this).data('subject');
+			console.log('subject = ' + subject);
 
 			if ( $heart.hasClass('bi-heart-fill') ) { // 이걸로 해도 되고.... 글번호 포함하고 있는지 여부로 해도되고...
 				// 좋아요 취소 ajax
@@ -200,23 +202,31 @@
 				// 좋아요 추가 ajax
 				$.ajax({
 					type: "get",
-					dataType: "text",
+					dataType: "json",
 					async: false,
 					url: "/board/addLike",
 					data: { id: testId, idx: index },
 					success: function (data) {
-						if (data === 'success') {
+						console.log(data.result);
+						if (data.result === 'success') {
+							console.log('if data ====> ', data);
+							var likeInfo = data.likeInfo;
+							var date = moment(likeInfo[0].likeRgsde).format('YYYY-MM-DD HH:mm:ss');
+
+							console.log('likeInfo ====> ', date);
 							alert('좋아요 추가 성공');
 							// 알람 전송
-							stompClient.send('/pub/'+writer, {}, JSON.stringify({writer : writer, bbsNo : index, alarmType : 'like', member: testId}));
+							stompClient.send('/pub/'+writer, {}, JSON.stringify({writer : writer, bbsSj : subject, bbsNo : index, alarmType : 'like', member: testId, date : date}));
 
-							location.replace(location.pathname + location.search)
+							// location.replace(location.pathname + location.search)
 							// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
 						} else {
+							console.log('else data ====> ', data);
 							alert('좋아요 추가 실패');
 						}
 					},
-					error: function () {
+					error: function (err) {
+						console.log('err ===> ', err);
 						alert('좋아요 추가 실패');
 					}
 				});

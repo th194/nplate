@@ -74,15 +74,19 @@
 
             $.ajax({
                 type: "get",
-                dataType: "text",
+                dataType: "json",
                 async: false,
                 url: "/member/following",
                 data: { id: id },
                 success: function (data) {
-                    if (data === 'success') {
+                    console.log('data ====> ', data);
+                    if (data.result === 'success') {
+                        var followInfo = data.followInfo;
+                        var date = moment(followInfo[0].followingRgsde).format('YYYY-MM-DD HH:mm:ss');
                         alert('팔로잉 성공');
-                        const promise = new Promise(() => {
-                            stompClient.send('/pub/' + id, {}, JSON.stringify({writer: id, alarmType : 'following', member : memberInfo.id}));
+                        const promise = new Promise((resolve) => {
+                            stompClient.send('/pub/' + id, {}, JSON.stringify({writer: id, alarmType : 'following', member : memberInfo.id, date : date}));
+                            resolve();
                         });
                         promise.then(() => {
                             location.reload(); // 버튼 바꾸기 위해 새로고침 해줌

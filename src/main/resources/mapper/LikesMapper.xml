@@ -5,6 +5,7 @@
         <result property="index" column="LIKE_NO"/>
         <result property="id" column="MBER_ID"/>
         <result property="bbscttNo" column="BBSCTT_NO"/>
+        <result property="likeRgsde" column="LIKE_RGSDE"/>
     </resultMap>
 
     <insert id="addLike" parameterType="LikesDTO">
@@ -18,6 +19,12 @@
     <select id="getLikes" parameterType="String" resultMap="likeResult">
         <![CDATA[
         select * from NETIVE_PROJECT01_LIKES where MBER_ID = #{id}
+        ]]>
+    </select>
+
+    <select id="getLikeOne" parameterType="Long" resultMap="likeResult">
+        <![CDATA[
+        select * from NETIVE_PROJECT01_LIKES where BBSCTT_NO = #{bbscttNo}
         ]]>
     </select>
 

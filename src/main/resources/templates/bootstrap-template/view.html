@@ -430,10 +430,12 @@
 				dataType : 'json',
 				data : JSON.stringify(params),
 				success : function(result) {
+					var date = moment().format('YYYY-MM-DD HH:mm:ss');
 					if (result.result == false) {
 						alert('댓글 등록 실패');
 						return false;
 					}
+					stompClient.send('/pub/' + board.bbscttWrter, {}, JSON.stringify({writer: board.bbscttWrter, alarmType : 'reply', member : loginMember, date : date}));
 					replyList();
 					answerCn.value = '';
 				},
@@ -539,12 +541,12 @@
 
 			$.ajax({
 				type: "get",
-				dataType: "text",
+				dataType: "json",
 				async: false,
 				url: "/member/following",
 				data: { id: id },
 				success: function (data) {
-					if (data === 'success') {
+					if (data.result === 'success') {
 						alert('팔로잉 성공');
 						location.reload(); // 버튼 바꾸기 위해 새로고침 해줌
 					} else {
@@ -582,32 +584,6 @@
 			});
 		}
 		/* 팔로잉하기 E */
-
-		/* 날짜 계산 S */
-		function timeForToday(value) {
-			const today = new Date();
-			const timeValue = new Date(value);
-			let valueFormatter = moment(value).format('YYYY.MM.DD');
-
-			const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
-			if (betweenTime < 1) return '방금전';
-			if (betweenTime < 60) {
-				return `${betweenTime}분전`;
-			}
-
-			const betweenTimeHour = Math.floor(betweenTime / 60);
-			if (betweenTimeHour < 24) {
-				return `${betweenTimeHour}시간전`;
-			}
-
-			// const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
-			// if (betweenTimeDay < 365) {
-			// 	return `${betweenTimeDay}일전`;
-			// }
-
-			return `${valueFormatter}`;
-		}
-		/* 날짜 계산 E */
 		/*]]>*/
 	</script>
 </th:block>

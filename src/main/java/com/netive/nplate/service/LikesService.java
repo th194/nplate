@@ -14,4 +14,6 @@ public interface LikesService {
     // 좋아요 삭제
     int deleteLike(LikesDTO dto);
 
+    // 좋아요 한 게시물 1개
+    List<LikesDTO> getLikeOne(Long idx);
 }

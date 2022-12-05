@@ -193,7 +193,8 @@ public class MemberController {
 
     // 회원 팔로잉
     @GetMapping("/member/following")
-    public @ResponseBody String followingMember(HttpServletRequest request, String id) {
+    public @ResponseBody HashMap<String, Object> followingMember(HttpServletRequest request, String id) {
+        HashMap<String, Object> resMap = new HashMap<>();
         System.out.println("회원 팔로잉 컨트롤러 시작=========");
         System.out.println("팔로잉 할 아이디" + id);
 
@@ -208,13 +209,18 @@ public class MemberController {
                 System.out.println("팔로잉 성공=========");
                 session.setAttribute(SessionConstants.FOLLOWING_IDS, null);
                 session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, null);
-                return "success";
+
+                List<FollowingDTO> followList = followingService.getFollowingMember(memberId);
+
+                resMap.put("result", "success");
+                resMap.put("followInfo", followList);
             } else {
                 System.out.println("팔로잉 실패=========");
+                resMap.put("result", "fail");
             }
         }
         System.out.println("팔로잉 실패=========");
-        return "fail";
+        return resMap;
     }
 
 

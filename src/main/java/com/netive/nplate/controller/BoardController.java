@@ -537,7 +537,8 @@ public class BoardController {
 
 	// 게시물 좋아요 추가
 	@GetMapping("/board/addLike")
-	public @ResponseBody String likePost(HttpServletRequest request, Long idx) {
+	public @ResponseBody HashMap<String, Object> likePost(HttpServletRequest request, Long idx) {
+		HashMap<String, Object> resMap = new HashMap<String, Object>();
 		System.out.println("좋아요 추가 컨트롤러 시작=========");
 		HttpSession session = request.getSession();
 		String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
@@ -546,13 +547,17 @@ public class BoardController {
 
 		LikesDTO likesDTO = new LikesDTO(memberId, idx);
 		int result = likesService.addLike(likesDTO);
+		List<LikesDTO> likeInfo = likesService.getLikeOne(idx);
 		if (result > 0) {
 			System.out.println("좋아요 추가 성공=========");
 			session.setAttribute(SessionConstants.LIKE_NUMBERS, null);
-			return "success";
+			resMap.put("result", "success");
+			resMap.put("likeInfo", likeInfo);
+			return resMap;
 		} else {
 			System.out.println("좋아요 추가 실패=========");
-			return "fail";
+			resMap.put("result", "fail");
+			return resMap;
 		}
 	}
 

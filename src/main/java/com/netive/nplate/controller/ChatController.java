@@ -108,9 +108,17 @@ public class ChatController {
         if(message.getAlarmType().equals("delete")) {
             message.setMessage("관리자에 의해 " + message.getBbsNo() + "번 게시물이 삭제되었습니다.");
         } else if (message.getAlarmType().equals("like")) {
-            message.setMessage(message.getMember() + " 님이 " + message.getBbsNo() + "번 게시물을 좋아합니다.");
+            String subject = "";
+            if(message.getBbsSj().length() > 8) {
+                subject = message.getBbsSj().substring(0, 7) + "...";
+            } else {
+                subject = message.getBbsSj();
+            }
+            message.setMessage(message.getMember() + " 님이 " + subject + " 게시물을 좋아합니다.");
         } else if (message.getAlarmType().equals("following")) {
             message.setMessage(message.getMember() + " 님이 회원님을 팔로잉합니다.");
+        } else if (message.getAlarmType().equals("reply")) {
+            message.setMessage(message.getMember() + " 님이 회원님의 게시물에 댓글을 남겼습니다.");
         }
 
         System.out.println(message.toString());
