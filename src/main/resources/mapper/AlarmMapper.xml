@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netive.nplate.mapper.AlarmMapper">
+
+    <sql id="alarmColumns">
+        NTCN_NO,
+        NTCN_RECEIVE_MBER,
+        NTCN_SEND_MBER,
+        NTCN_KND,
+        NTCN_TRGT_NO,
+        NTCN_TRGT_SJ,
+        NTCN_CN,
+        NTCN_COURS,
+        NTCN_OCCRRNC_DT,
+        NTCN_CNFIRM_DT,
+        NTCN_CNFIRM_AT
+    </sql>
+
+    <!-- 알람 정보 등록 -->
+    <insert id="registerAlarm" parameterType="AlarmDTO">
+        INSERT INTO NETIVE_PROJECT01_NOTIFICATION
+        ( NTCN_RECEIVE_MBER, NTCN_SEND_MBER, NTCN_KND, NTCN_TRGT_NO, NTCN_TRGT_SJ, NTCN_CN, NTCN_COURS )
+        VALUES
+        (#{ntcnReceiveMber}, #{ntcnSendMber}, #{ntcnKnd}, IFNULL(#{ntcnTrgtNo}, NULL) ,IFNULL(#{ntcnTrgtSj}, NULL), #{ntcnCn}, IFNULL(#{ntcnCours}, NULL))
+    </insert>
+
+
+    <!-- 받는 사람 알람 조회 -->
+    <select id="selectAlarm" parameterType="String" resultType="AlarmDTO">
+        SELECT * FROM NETIVE_PROJECT01_NOTIFICATION WHERE NTCN_RECEIVE_MBER = #{ntcnReceiveMber} AND NTCN_CNFIRM_AT = "N"
+    </select>
+
+    <!-- 알람 업데이트 -->
+    <update id="updateAlarm" parameterType="AlarmDTO">
+        UPDATE NETIVE_PROJECT01_NOTIFICATION
+            SET NTCN_CNFIRM_AT = "Y", NTCN_CNFIRM_DT = NOW()
+        WHERE NTCN_NO = #{ntcnNo}
+    </update>
+
+    <!-- 알람 삭제 -->
+    <delete id="deleteAlarm" parameterType="AlarmDTO">
+        DELETE FROM NETIVE_PROJECT01_NOTIFICATION WHERE NTCN_SEND_MBER = #{ntcnSendMber} AND NTCN_TRGT_NO = #{ntcnTrgtNo}
+    </delete>
+</mapper>

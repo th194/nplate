@@ -68,12 +68,11 @@ public class ChatController {
                 }
 
                 model.addAttribute("followingMembers", followingMembers);
-
-                return "bootstrap-template/list";
+//                return "bootstrap-template/alarm";
             }
 
         } catch (Exception e) {
-            // e.printStackTrace();
+            e.printStackTrace();
         }
         return "bootstrap-template/alarm";
     }

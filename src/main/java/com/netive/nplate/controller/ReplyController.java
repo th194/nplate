@@ -72,7 +72,7 @@ public class ReplyController {
                     // 댓글 리스트에 담겨있는 작성자 id로 작성자 정보 조회
                     for (int i = 0; i < replyList.size(); i++ ) {
                         memberInfo[i] = replyList.get(i).getAnswerWrter();
-                        memberList.add(memberService.getMemberInfo(memberInfo[i]));
+                        memberList.add(memberService.getUserInfo(memberInfo[i]));
                         memberProfile.add(memberList.get(i).getProfileImg());
                         JsonElement jEl = gson.toJsonTree(memberProfile);
                         jsonObj.add("profile", jEl);

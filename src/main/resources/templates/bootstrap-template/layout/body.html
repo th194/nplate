@@ -384,85 +384,103 @@
 
 				stompClient.subscribe('/sub/'+memberInfo.id, function(msg) {
 
-					msgArr.push(JSON.parse(msg.body));
-					$('#alarmCount').text(msgArr.length);
+					var messageInfo = JSON.parse(msg.body);
+					msgArr.push(messageInfo);
+					$('#alarmCount').text('N');
+					var alarmHtml = '';
+					$.ajax({
+						url : '/alarm/info',
+						type : 'GET',
+						success : function(result) {
 
-					let alarmHtml = '';
-					msgArr.forEach((val) => {
-						console.log(val.alarmType);
-						var date = timeForToday(val.date);
-						// 삭제용
-						if( val.alarmType == 'delete') {
-							alarmHtml = `
-								<a class="dropdown-item d-flex align-items-center">
-									<div class="mr-3">
-										<div class="icon-circle bg-warning">
-											<i class="fas fa-exclamation-triangle text-white"></i>
-										</div>
-									</div>
-									<div>
-										<div class="small text-gray-500">${date}</div>
-										${val.message}
-									</div>
-								</a>
-							`;
-						// 팔로잉
-						} else if (val.alarmType == 'following') {
-							alarmHtml +=`
-								<a class="dropdown-item d-flex align-items-center" href="/member/userInfo?id=${val.writer}">
-									<div class="mr-3">
-										<div class="icon-circle bg-primary">
-											<i class="fas fa-file-alt text-white"></i>
-										</div>
-									</div>
-									<div>
-										<div class="small text-gray-500">${date}</div>
-										${val.message}
-									</div>
-								</a>
-							`;
-						// 좋아요
-						} else if (val.alarmType == 'like') {
-							alarmHtml +=`
-								<a class="dropdown-item d-flex align-items-center" href="/board/view.do?idx=${val.bbsNo}">
-									<div class="mr-3">
-										<div class="icon-circle bg-primary">
-											<i class="fas fa-file-alt text-white"></i>
-										</div>
-									</div>
-									<div>
-										<div class="small text-gray-500">${date}</div>
-										${val.message}
-									</div>
-								</a>
-							`;
-						} else if (val.alarmType == 'reply') {
-							alarmHtml +=`
-								<a class="dropdown-item d-flex align-items-center" href="/board/view.do?idx=${val.bbsNo}">
-									<div class="mr-3">
-										<div class="icon-circle bg-primary">
-											<i class="fas fa-file-alt text-white"></i>
-										</div>
-									</div>
-									<div>
-										<div class="small text-gray-500">${date}</div>
-										${val.message}
-									</div>
-								</a>
-							`;
+							console.log('result ====> ', result);
+							msgArr.push(result);
+							msgArr.forEach((val) => {
+								console.log(val.ntcnKnd);
+								var date = timeForToday(val.ntcnOccrrncDt);
+								// 알람 확인 여부가 N인 것만
+								if ( val.ntcnCnfirmAt == 'N' ) {
+									// 삭제용
+									if( val.ntcnKnd == 'delete') {
+										alarmHtml = `
+										<a class="dropdown-item d-flex align-items-center delete-click">
+											<div class="mr-3">
+												<div class="icon-circle bg-warning">
+													<i class="fas fa-exclamation-triangle text-white"></i>
+												</div>
+											</div>
+											<div>
+												<div class="small text-gray-500">${date}</div>
+												${val.ntcnCn}
+											</div>
+										</a>
+									`;
+										// 팔로잉
+									} else if (val.ntcnKnd == 'following') {
+										alarmHtml +=`
+										<a class="dropdown-item d-flex align-items-center delete-click" href="/member/userInfo?id=${val.writer}">
+											<div class="mr-3">
+												<div class="icon-circle bg-primary">
+													<i class="fas fa-file-alt text-white"></i>
+												</div>
+											</div>
+											<div>
+												<div class="small text-gray-500">${date}</div>
+												${val.ntcnCn}
+											</div>
+										</a>
+									`;
+										// 좋아요
+									} else if (val.ntcnKnd == 'like') {
+										alarmHtml +=`
+										<a class="dropdown-item d-flex align-items-center delete-click" href="/board/view.do?idx=${val.bbsNo}">
+											<div class="mr-3">
+												<div class="icon-circle bg-primary">
+													<i class="fas fa-file-alt text-white"></i>
+												</div>
+											</div>
+											<div>
+												<div class="small text-gray-500">${date}</div>
+												${val.ntcnCn}
+											</div>
+										</a>
+									`;
+									} else if (val.ntcnKnd == 'reply') {
+										alarmHtml +=`
+										<a class="dropdown-item d-flex align-items-center delete-click" href="/board/view.do?idx=${val.bbsNo}">
+											<div class="mr-3">
+												<div class="icon-circle bg-primary">
+													<i class="fas fa-file-alt text-white"></i>
+												</div>
+											</div>
+											<div>
+												<div class="small text-gray-500">${date}</div>
+												${val.ntcnCn}
+											</div>
+										</a>
+									`;
+									}
+								}
+							});
+						},
+						error : function(err) {
+							console.log('err ====> ', err);
 						}
+					})
 
-					});
+
+
 					$('#alarm').after(alarmHtml);
+					msgArr.pop();
 
 					$('#alertsDropdown').click(function(){
 						$(this).find('span').text('');
 					});
+					// $('.delete-click').click(function(){
+					// 	$(this).remove();
+					// })
 				});
 			});
-
-
-
 			/* 웹소켓 전역으로 설정 E */
 
 			/* 날짜 계산 S */

@@ -1,37 +1,133 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="bootstrap-template/layout/basic">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="bootstrap-template/layout/basic">
 <th:block layout:fragment="title">
-    <title>채팅방</title>
+    <title>알림센터</title>
 </th:block>
 
 <th:block layout:fragment="main-content">
-<!--    <div class="col-xl-3 col-md-6 mb-4" th:each="room : ${list}">-->
-<!--        <a th:href="@{/chat/room(roomId=${room.roomId})}" style="text-decoration-line: none">-->
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">알림</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">관리자에 의해 삭제된 게시글이 있습니다.</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-<!--        </a>-->
-<!--    </div>-->
-    <form th:action="@{/chat/room}" method="post">
-        <input type="text" name="name" class="form-control">
-        <button class="btn btn-secondary" id="btnCreate">개설하기</button>
-    </form>
+    <div class="col" id="cardBody">
+
+    </div>
 </th:block>
 
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
+        var memberInfo = [[${memberInfo}]];
+        console.log('memberInfo = ', memberInfo);
+            //     $('#alarmCount').text();
+
+        var alarmHtml = '';
+                $.ajax({
+                    url : '/alarm/info',
+                    type : 'GET',
+                    success : function(result) {
+
+                        result.forEach((val) => {
+                            var date = timeForToday(val.ntcnOccrrncDt);
+                            // 알람 확인 여부가 N인 것만
+                            if ( val.ntcnCnfirmAt == 'N' ) {
+                                // 삭제용
+                                if( val.ntcnKnd == 'delete') {
+                                    alarmHtml = `
+                                        <a href="#">
+                                            <div class="card border-left-warning shadow h-100 py-2">
+                                                <div class="card-body">
+                                                    <div class="row no-gutters align-items-center">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">알림</div>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800">관리자에 의해 삭제된 게시글이 있습니다.</div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <br>
+                                    `;
+                                // 팔로잉
+                                } else if (val.ntcnKnd == 'following') {
+                                    alarmHtml +=`
+                                        <a href="#">
+                                            <div class="card border-left-info shadow h-100 py-2">
+                                                <div class="card-body">
+                                                    <div class="row no-gutters align-items-center">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">알림</div>
+                                                            <div class="row no-gutters align-items-center">
+                                                                <div class="col-auto">
+                                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">회원님을 팔로잉합니다.
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <br>
+                                    `;
+                                // 좋아요
+                                } else if (val.ntcnKnd == 'like') {
+                                    alarmHtml +=`
+                                        <a href="#">
+                                            <div class="card border-left-primary shadow h-100 py-2">
+                                                <div class="card-body">
+                                                    <div class="row no-gutters align-items-center">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                                Earnings (Monthly)
+                                                            </div>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <br>
+                                    `;
+                                // 댓글용
+                                } else if (val.ntcnKnd == 'reply') {
+                                    alarmHtml +=`
+                                        <a href="#">
+                                            <div class="card border-left-success shadow h-100 py-2">
+                                                <div class="card-body">
+                                                    <div class="row no-gutters align-items-center">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                                Earnings (Annual)
+                                                            </div>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <br>
+                                    `;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                $('#cardBody').after(alarmHtml);
+                msgArr.pop();
+
+                $('#alertsDropdown').click(function(){
+                    $(this).find('span').text('');
+                });
     </script>
 </th:block>
 </html>

@@ -5,14 +5,12 @@
 		/* 무한 스크롤 위한 페이지 작업 S */
 		var page = 0;
 		var isFlag = true;
-		var scrollHeight = 0;
 		var scrollY = localStorage.getItem('scrolly');
 		$(function() {
 			drawList();
 		});
 		$(window).scroll(function() {
 			if ($(window).scrollTop() >= $(document).height() - $(window).height()) { // 스크롤 감지
-				scrollHeight = $(document).scrollTop();
 				drawList();
 			}
 		});
@@ -196,8 +194,23 @@
 					success: function (data) {
 						if (data === 'success') {
 							alert('좋아요 취소 성공');
-							location.replace(location.pathname + location.search);
-							// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
+
+							$.ajax({
+								url : '/alarm/delete',
+								type : 'GET',
+								data : {idx : index},
+								success : function(result) {
+									console.log('result ====> ', result);
+									alert('알람 삭제 성공');
+									location.replace(location.pathname + location.search);
+									// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
+								},
+								error : function(err) {
+									console.log('err ====> ', err);
+									alert('알람 삭제 실패');
+								}
+							});
+
 						} else {
 							alert('좋아요 취소 실패');
 						}
@@ -221,9 +234,37 @@
 							var date = moment(likeInfo[0].likeRgsde).format('YYYY-MM-DD HH:mm:ss');
 							alert('좋아요 추가 성공');
 							// 알람 전송
-							stompClient.send('/pub/'+writer, {}, JSON.stringify({writer : writer, bbsSj : subject, bbsNo : index, alarmType : 'like', member: testId, date : date}));
+							stompClient.send('/pub/'+writer, {}, JSON.stringify({
+										writer : writer,
+										bbsSj : subject,
+										bbsNo : index,
+										alarmType : 'like',
+										member: testId,
+										date : date
+									}));
 
-							location.replace(location.pathname + location.search);
+							var alarmData = {
+								ntcnReceiveMber : writer,			// 알람 받는 사람 id
+								ntcnSendMber 	: testId,			// 알람 보내는 사람 id
+								ntcnKnd			: 'like',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+								ntcnTrgtNo		: index,			// 알람 타겟 게시글 번호
+								ntcnTrgtSj		: subject			// 알람 타겟 게시글 제목
+							};
+
+							// 알람정보 DB에 저장
+							$.ajax({
+								url : '/alarm/register',
+								type : 'POST',
+								data : alarmData,
+								success : function() {
+									location.replace(location.pathname + location.search);
+								},
+								error : function(err) {
+									console.log('알람 등록 err =====> ', err);
+								}
+							})
+
+
 							// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
 						} else {
 							alert('좋아요 추가 실패');
