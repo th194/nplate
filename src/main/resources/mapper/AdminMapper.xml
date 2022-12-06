@@ -23,7 +23,7 @@
         <![CDATA[
         INSERT INTO NETIVE_PROJECT01_MEMBER
         (MBER_ID, MBER_NM, MBER_SEXDSTN, MBER_BRTHDY, MBER_CTTPC, MBER_PASSWORD, MBER_EMAIL, MBER_AREA, MBER_SRBDE, MBER_NCNM, MBER_PROFL_PHOTO)
-        VALUES ( #{id}, #{name}, 'F', DATE_FORMAT(now(), '%Y%m%d'), #{tel}, #{pwd}, 'default@email', '00', DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, 'default')
+        VALUES ( #{id}, #{name}, 'D', DATE_FORMAT(now(), '%Y%m%d'), #{tel}, #{pwd}, 'default@email', '00', DATE_FORMAT(now(), '%Y%m%d'), #{nickName}, 'default')
         ]]>
     </insert>
 

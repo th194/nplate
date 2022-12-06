@@ -32,12 +32,6 @@
         ]]>
     </select>
 
-    <select id="login" parameterType="MemberDTO" resultMap="memResult">
-        <![CDATA[
-        select * from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id} and MBER_PASSWORD = #{pwd}
-        ]]>
-    </select>
-
     <delete id="deleteMember" parameterType="String">
         <![CDATA[
         delete from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
@@ -47,7 +41,7 @@
     <update id="updateInfo" parameterType="MemberDTO">
         <![CDATA[
         update NETIVE_PROJECT01_MEMBER
-        set MBER_CTTPC = #{tel},  MBER_EMAIL = #{email}, MBER_AREA = #{area}, MBER_NCNM = #{nickName}
+        set MBER_CTTPC = #{tel},  MBER_EMAIL = #{email}, MBER_AREA = #{area}, MBER_NCNM = #{nickName}, MBER_SEXDSTN = #{sexCd}
         where MBER_ID = #{id}
         ]]>
     </update>
@@ -73,7 +67,7 @@
         </foreach>
     </select>
 
-    <!-- 회원 정보 보기(ID, 닉네임만 조회) -->
+    <!-- 회원 정보 보기(ID, 닉네임, 프로필 이미지 코드만 조회) -->
     <select id="getUserInfo" parameterType="String" resultMap="memResult">
         select MBER_ID, MBER_NCNM, MBER_PROFL_PHOTO from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
     </select>

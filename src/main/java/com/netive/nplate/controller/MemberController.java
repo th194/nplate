@@ -257,8 +257,15 @@ public class MemberController {
         HttpSession session = request.getSession();
 
         try {
-            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
-                MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN)) {
+                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+
+                MemberDTO memberDTO;
+                if ( session.getAttribute(SessionConstants.MEMBER_DTO) == null ) {
+                    memberDTO = memberService.getMemberInfo(memberId);
+                } else {
+                    memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+                }
 
                 // 생일 처리
                 String birthday = memberDTO.getBirthday();
@@ -271,8 +278,6 @@ public class MemberController {
                 model.addAttribute("area", Area.values());
 
                 // 팔로잉 처리
-                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-
                 List<Map> followingMembers = new ArrayList<>();
                 if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
                     followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
@@ -281,6 +286,7 @@ public class MemberController {
                     if (followingIds.size() > 0) {
                         followingMembers = memberUtils.getFollowingsInfo(followingIds);
                     }
+
                     session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
                     session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
                 }
@@ -391,7 +397,7 @@ public class MemberController {
 
     // 회원 정보 수정
     @PostMapping("/member/update")
-    public String update(MemberDTO memberDTO, @RequestParam MultipartFile file) throws IOException {
+    public String update(MemberDTO memberDTO, @RequestParam MultipartFile file, HttpServletRequest request) throws IOException {
         // 프로필 사진 수정
         if (!file.isEmpty()) {
             if (memberDTO.getProfileImg().equals("default")) {
@@ -400,8 +406,19 @@ public class MemberController {
                 fileService.updateFile(file, memberDTO.getId());
             }
         }
+
         // 그 외 정보 수정
-        memberService.updateInfo(memberDTO);
+        HttpSession session = request.getSession();
+        MemberDTO sessionDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+        if (!sessionDTO.getSexCd().equals("D")) {
+            memberDTO.setSexCd(sessionDTO.getSexCd());
+        }
+
+        int result = memberService.updateInfo(memberDTO);
+        if (result > 0) {
+
+            session.setAttribute(SessionConstants.MEMBER_DTO, null);
+        }
         return "redirect:/member/myInfo"; // 처리 수정해야함
     }
 

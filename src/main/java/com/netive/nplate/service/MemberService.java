@@ -9,9 +9,6 @@ public interface MemberService {
     // 회원 정보 보기
     MemberDTO getMemberInfo(String id);
 
-    // 로그인
-    MemberDTO login(String id, String pwd);
-
     // 회원 탈퇴
     int deleteMember(String id);
 
@@ -27,6 +24,6 @@ public interface MemberService {
     // 회원(팔로잉) 닉네임 조회
     List<MemberDTO> getFollowingInfo(Map map);
 
-    // 회원 정보 보기(ID, 닉네임만 조회)
+    // 회원 정보 보기(ID, 닉네임, 프로필 이미지 코드만 조회)
     MemberDTO getUserInfo(String id);
 }

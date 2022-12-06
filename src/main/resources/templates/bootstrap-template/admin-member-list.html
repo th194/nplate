@@ -55,7 +55,7 @@
                                     <i class="bi bi-person-check mr-2 text-gray-400"></i>
                                     권한변경
                                 </a>
-                                <a class="dropdown-item" th:href=" '/admin/member/putout?id=' + ${list.id}">
+                                <a class="dropdown-item" href="#" th:member="${list.id}" th:onclick="putoutMember(this.getAttribute('member'))">
                                     <i class="bi bi-person-dash mr-2 text-gray-400"></i>
                                     계정만료
                                 </a>
@@ -107,14 +107,43 @@
                         }
                     },
                     error: function () {
-                        alert("admin 권한 경우에만 권한 변경이 가능합니다.");
+                        alert("admin 권한인 경우에만 권한 변경이 가능합니다.");
                     }
                 });
             } else {
                 alert("권한 변경 취소");
             }
+        }
 
+        <!-- 계정만료 -->
+        function putoutMember(member) {
+            console.log('계정만료');
+            console.log(member);
 
+            var result = confirm("선택한 계정을 만료시킵니다.");
+
+            if (result) {
+                $.ajax({
+                    type: "get",
+                    dataType: "text",
+                    async: false,
+                    url: "/admin/member/putout",
+                    data: { id: member },
+                    success: function (data) {
+                        if (data === "success") {
+                            alert("계정 만료 성공");
+                            location.reload(); // 새로고침
+                        } else {
+                            alert("계정 만료 실패");
+                        }
+                    },
+                    error: function () {
+
+                    }
+                });
+            } else {
+                alert("계정 만료 취소");
+            }
         }
 
 

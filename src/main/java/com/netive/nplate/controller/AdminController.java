@@ -234,9 +234,14 @@ public class AdminController {
      * (DB에는 남아있으나 로그인 불가)
      */
     @GetMapping("/admin/member/putout")
-    public String putoutMember(String id) throws IOException {
-        adminService.putoutMember(id);
-        return "redirect:/admin/member/list";
+    public @ResponseBody String putoutMember(String id) {
+        int result = adminService.putoutMember(id);
+
+        if (result == 1) {
+            return "success";
+        }
+
+        return "fail";
     }
 
     
@@ -244,7 +249,7 @@ public class AdminController {
      * 관리자 회원 만료처리 취소
      */
     @GetMapping("/admin/member/enable")
-    public String enableMember(String id) throws IOException {
+    public String enableMember(String id) {
         adminService.enableMember(id);
         return "redirect:/admin/member/list";
     }

@@ -20,11 +20,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO login(String id, String pwd) {
-        return memberMapper.login(id, pwd);
-    }
-
-    @Override
     public int deleteMember(String id) {
         return memberMapper.deleteMember(id);
     }
