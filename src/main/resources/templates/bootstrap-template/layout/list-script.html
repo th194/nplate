@@ -197,8 +197,8 @@
 
 							$.ajax({
 								url : '/alarm/delete',
-								type : 'GET',
-								data : {idx : index},
+								type : 'POST',
+								data : {ntcnTrgtSj : subject}, //  게시글 제목
 								success : function(result) {
 									console.log('result ====> ', result);
 									alert('알람 삭제 성공');

@@ -21,13 +21,13 @@
         INSERT INTO NETIVE_PROJECT01_NOTIFICATION
         ( NTCN_RECEIVE_MBER, NTCN_SEND_MBER, NTCN_KND, NTCN_TRGT_NO, NTCN_TRGT_SJ, NTCN_CN, NTCN_COURS )
         VALUES
-        (#{ntcnReceiveMber}, #{ntcnSendMber}, #{ntcnKnd}, IFNULL(#{ntcnTrgtNo}, NULL) ,IFNULL(#{ntcnTrgtSj}, NULL), #{ntcnCn}, IFNULL(#{ntcnCours}, NULL))
+        (#{ntcnReceiveMber}, #{ntcnSendMber}, #{ntcnKnd}, IFNULL(#{ntcnTrgtNo}, NULL), #{ntcnTrgtSj}, #{ntcnCn}, IFNULL(#{ntcnCours}, NULL))
     </insert>
 
 
     <!-- 받는 사람 알람 조회 -->
     <select id="selectAlarm" parameterType="String" resultType="AlarmDTO">
-        SELECT * FROM NETIVE_PROJECT01_NOTIFICATION WHERE NTCN_RECEIVE_MBER = #{ntcnReceiveMber} AND NTCN_CNFIRM_AT = "N"
+        SELECT * FROM NETIVE_PROJECT01_NOTIFICATION WHERE NTCN_RECEIVE_MBER = #{ntcnReceiveMber} AND NTCN_CNFIRM_AT = "N" ORDER BY NTCN_OCCRRNC_DT DESC
     </select>
 
     <!-- 알람 업데이트 -->
@@ -39,6 +39,8 @@
 
     <!-- 알람 삭제 -->
     <delete id="deleteAlarm" parameterType="AlarmDTO">
-        DELETE FROM NETIVE_PROJECT01_NOTIFICATION WHERE NTCN_SEND_MBER = #{ntcnSendMber} AND NTCN_TRGT_NO = #{ntcnTrgtNo}
+        DELETE FROM NETIVE_PROJECT01_NOTIFICATION
+            WHERE NTCN_SEND_MBER = #{ntcnSendMber}
+            AND NTCN_TRGT_SJ = #{ntcnTrgtSj}
     </delete>
 </mapper>

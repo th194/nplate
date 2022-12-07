@@ -85,7 +85,21 @@
                         var date = moment(followInfo[0].followingRgsde).format('YYYY-MM-DD HH:mm:ss');
                         alert('팔로잉 성공');
                         const promise = new Promise((resolve) => {
+
                             stompClient.send('/pub/' + id, {}, JSON.stringify({writer: id, alarmType : 'following', member : memberInfo.id, date : date}));
+
+                            var alarmData = {
+                                ntcnReceiveMber : id,			            // 알람 받는 사람 id
+                                ntcnSendMber 	: memberInfo.id,			// 알람 보내는 사람 id
+                                ntcnKnd			: 'following',			    // 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+                                ntcnTrgtSj      : memberInfo.id             // 팔로잉때는 게시글 제목이 없으므로 알람 보내는 사람 id 넣어준다.
+                            };
+
+                            $.ajax({
+                                url : '/alarm/register',
+                                type : 'POST',
+                                data : alarmData
+                            })
                             resolve();
                         });
                         promise.then(() => {
@@ -115,6 +129,13 @@
                 data: { id: id },
                 success: function (data) {
                     if (data === 'success') {
+
+                        $.ajax({
+                            url : '/alarm/delete',
+                            type : 'POST',
+                            data : {ntcnKnd : 'following'}
+                        })
+
                         alert('언팔로잉 성공');
                         location.reload();
                     } else {

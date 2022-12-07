@@ -100,18 +100,25 @@ public class AlarmController {
     public HashMap<String, Object> registerAlarm(AlarmDTO alarmDTO) {
 
         HashMap<String, Object> resMap = new HashMap<>();
+        String subject = "";
+        if(alarmDTO.getNtcnTrgtSj().length() > 8 && alarmDTO.getNtcnTrgtSj() != null) {
+            subject = alarmDTO.getNtcnTrgtSj().substring(0, 7) + "...";
+        } else {
+            subject = alarmDTO.getNtcnTrgtSj();
+        }
 
         if(alarmDTO.getNtcnKnd().equals("following")) {
+            alarmDTO.setNtcnTrgtSj(alarmDTO.getNtcnTrgtSj() + "_f");
             alarmDTO.setNtcnCn(" 님이 회원님을 팔로잉 합니다.");
             alarmDTO.setNtcnCours("/member/userInfo?id=" + alarmDTO.getNtcnSendMber());
         } else if (alarmDTO.getNtcnKnd().equals("like")) {
-            alarmDTO.setNtcnCn(" 님이 " + alarmDTO.getNtcnTrgtSj() + " 게시물을 좋아합니다.");
+            alarmDTO.setNtcnCn(" 님이 " + subject + " 게시물을 좋아합니다.");
             alarmDTO.setNtcnCours("/board/view.do?idx=" + alarmDTO.getNtcnTrgtNo());
         } else if (alarmDTO.getNtcnKnd().equals("reply")) {
-            alarmDTO.setNtcnCn(" 님이 " + alarmDTO.getNtcnTrgtSj() + " 게시물에 댓글을 남겼습니다.");
+            alarmDTO.setNtcnCn(" 님이 " + subject + " 게시물에 댓글을 남겼습니다.");
             alarmDTO.setNtcnCours("/board/view.do?idx=" + alarmDTO.getNtcnTrgtNo());
         } else if (alarmDTO.getNtcnKnd().equals("delete")) {
-            alarmDTO.setNtcnCn("관리자에 의해 " + alarmDTO.getNtcnTrgtSj() + " 게시물이 삭제되었습니다.");
+            alarmDTO.setNtcnCn("관리자에 의해 " + subject + " 게시물이 삭제되었습니다.");
         }
         boolean result = alarmService.registerAlarm(alarmDTO);
         resMap.put("result", result);
@@ -134,19 +141,21 @@ public class AlarmController {
     /**
      * 알람 삭제
      * @param request
-     * @param idx
+     * @param alarmDTO
      * @return
      */
-    @GetMapping("/alarm/delete")
-    public HashMap<String, Object> deleteAlarm(HttpServletRequest request, Long idx) {
+    @PostMapping("/alarm/delete")
+    public HashMap<String, Object> deleteAlarm(HttpServletRequest request, AlarmDTO alarmDTO) {
         HashMap<String, Object> resMap = new HashMap<>();
         HttpSession session = request.getSession();
-        AlarmDTO alarm = new AlarmDTO();
-        String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
-        alarm.setNtcnSendMber(memberId);
-        alarm.setNtcnTrgtNo(idx);
 
-        boolean result = alarmService.deleteAlarm(alarm);
+        String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+        alarmDTO.setNtcnSendMber(memberId);
+        String kind = alarmDTO.getNtcnKnd();
+        if (kind != null) {
+            alarmDTO.setNtcnTrgtSj(memberId+"_f");
+        }
+        boolean result = alarmService.deleteAlarm(alarmDTO);
         resMap.put("result", result);
         return resMap;
     }

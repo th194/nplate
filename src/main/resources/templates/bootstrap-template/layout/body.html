@@ -147,60 +147,14 @@
 								</li>
 
 								<!-- Nav Item - Alerts -->
-								<li class="nav-item dropdown no-arrow mx-1">
-									<a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+								<li class="nav-item dropdown no-arrow mx-1" id="alarmCenter">
+									<a class="nav-link dropdown-toggle" href="javascript:void(0)" id="alertsDropdown" role="button"
 									   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<i class="fas fa-bell fa-fw"></i>
 										<!-- Counter - Alerts -->
 										<span class="badge badge-danger badge-counter" id="alarmCount"></span>
 									</a>
-									<!-- Dropdown - Alerts -->
-									<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-										 aria-labelledby="alertsDropdown">
-										<h6 class="dropdown-header" id="alarm">
-											Alerts Center
-										</h6>
-										<!-- 게시글 삭제용 알림 UI -->
-										<!--<a class="dropdown-item d-flex align-items-center" href="#">
-											<div class="mr-3">
-												<div class="icon-circle bg-primary">
-													<i class="fas fa-file-alt text-white"></i>
-												</div>
-											</div>
-											<div>
-												<div class="small text-gray-500">December 12, 2019</div>
-												<span class="font-weight-bold">A new monthly report is ready to download!</span>
-											</div>
-										</a>-->
-
-<!--										&lt;!&ndash; 작성자 팔로잉 알림 UI &ndash;&gt;-->
-<!--										<a class="dropdown-item d-flex align-items-center" href="#">-->
-<!--											<div class="mr-3">-->
-<!--												<div class="icon-circle bg-success">-->
-<!--													<i class="fas fa-donate text-white"></i>-->
-<!--												</div>-->
-<!--											</div>-->
-<!--											<div>-->
-<!--												<div class="small text-gray-500">December 7, 2019</div>-->
-<!--												$290.29 has been deposited into your account!-->
-<!--											</div>-->
-<!--										</a>-->
-
-<!--										&lt;!&ndash; 게시글 좋아요 알림 UI&ndash;&gt;-->
-										<!--<a class="dropdown-item d-flex align-items-center" href="#">
-											<div class="mr-3">
-												<div class="icon-circle bg-warning">
-													<i class="fas fa-exclamation-triangle text-white"></i>
-												</div>
-											</div>
-											<div>
-												<div class="small text-gray-500">December 2, 2019</div>
-												Spending Alert: We've noticed unusually high spending for your account.
-											</div>
-										</a>-->
-										<a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-									</div>
-
+									<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"></div>
 								</li>
 
 								<div class="topbar-divider d-none d-sm-block"></div>
@@ -375,110 +329,16 @@
 
 
 			/* 웹소켓 전역으로 설정 S */
-			let msgArr = [];
 			let stompClient = null;
 			let socket = new SockJS('/stomp/chat');
 			stompClient = Stomp.over(socket);
 
 			stompClient.connect({}, function(frame) {
-
 				stompClient.subscribe('/sub/'+memberInfo.id, function(msg) {
-
-					var messageInfo = JSON.parse(msg.body);
-					msgArr.push(messageInfo);
 					$('#alarmCount').text('N');
-					var alarmHtml = '';
-					$.ajax({
-						url : '/alarm/info',
-						type : 'GET',
-						success : function(result) {
-
-							console.log('result ====> ', result);
-							msgArr.push(result);
-							msgArr.forEach((val) => {
-								console.log(val.ntcnKnd);
-								var date = timeForToday(val.ntcnOccrrncDt);
-								// 알람 확인 여부가 N인 것만
-								if ( val.ntcnCnfirmAt == 'N' ) {
-									// 삭제용
-									if( val.ntcnKnd == 'delete') {
-										alarmHtml = `
-										<a class="dropdown-item d-flex align-items-center delete-click">
-											<div class="mr-3">
-												<div class="icon-circle bg-warning">
-													<i class="fas fa-exclamation-triangle text-white"></i>
-												</div>
-											</div>
-											<div>
-												<div class="small text-gray-500">${date}</div>
-												${val.ntcnCn}
-											</div>
-										</a>
-									`;
-										// 팔로잉
-									} else if (val.ntcnKnd == 'following') {
-										alarmHtml +=`
-										<a class="dropdown-item d-flex align-items-center delete-click" href="/member/userInfo?id=${val.writer}">
-											<div class="mr-3">
-												<div class="icon-circle bg-primary">
-													<i class="fas fa-file-alt text-white"></i>
-												</div>
-											</div>
-											<div>
-												<div class="small text-gray-500">${date}</div>
-												${val.ntcnCn}
-											</div>
-										</a>
-									`;
-										// 좋아요
-									} else if (val.ntcnKnd == 'like') {
-										alarmHtml +=`
-										<a class="dropdown-item d-flex align-items-center delete-click" href="/board/view.do?idx=${val.bbsNo}">
-											<div class="mr-3">
-												<div class="icon-circle bg-primary">
-													<i class="fas fa-file-alt text-white"></i>
-												</div>
-											</div>
-											<div>
-												<div class="small text-gray-500">${date}</div>
-												${val.ntcnCn}
-											</div>
-										</a>
-									`;
-									} else if (val.ntcnKnd == 'reply') {
-										alarmHtml +=`
-										<a class="dropdown-item d-flex align-items-center delete-click" href="/board/view.do?idx=${val.bbsNo}">
-											<div class="mr-3">
-												<div class="icon-circle bg-primary">
-													<i class="fas fa-file-alt text-white"></i>
-												</div>
-											</div>
-											<div>
-												<div class="small text-gray-500">${date}</div>
-												${val.ntcnCn}
-											</div>
-										</a>
-									`;
-									}
-								}
-							});
-						},
-						error : function(err) {
-							console.log('err ====> ', err);
-						}
-					})
-
-
-
-					$('#alarm').after(alarmHtml);
-					msgArr.pop();
-
 					$('#alertsDropdown').click(function(){
 						$(this).find('span').text('');
 					});
-					// $('.delete-click').click(function(){
-					// 	$(this).remove();
-					// })
 				});
 			});
 			/* 웹소켓 전역으로 설정 E */
@@ -492,7 +352,7 @@
 				const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
 				if (betweenTime < 1) return '방금 전';
 				if (betweenTime < 60) {
-					return `${betweenTime}분전`;
+					return `${betweenTime}분 전`;
 				}
 
 				const betweenTimeHour = Math.floor(betweenTime / 60);
@@ -502,12 +362,16 @@
 
 				// const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
 				// if (betweenTimeDay < 365) {
-				// 	return `${betweenTimeDay}일전`;
+				// 	return `${betweenTimeDay}일 전`;
 				// }
 
 				return `${valueFormatter}`;
 			}
 			/* 날짜 계산 E */
+
+			$('#alarmCenter').click(function() {
+				location.href = '/alarm';
+			});
 		</script>
 
 		<!-- 리스트에서만 쓰는 스크립트 -->
