@@ -50,7 +50,31 @@
 							<h1 class="fw-bolder mb-1" style="border-bottom: 0.05rem solid #858796;" th:text="*{bbscttSj}"></h1>
 							<!-- Post meta content-->
 							<div class="text-muted fst-italic mb-2">
-								<span style="margin-left:30px;" th:text="*{bbscttWrter}"></span>
+								<!-- 작성자 아이디 드랍다운 -->
+								<span class="dropdown no-arrow">
+									<a class="dropdown-toggle" href="#" id="userDropdown1" role="button"
+									   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span style="margin-left:30px;" th:text="*{bbscttWrter}"></span>
+									</a>
+									<div class="dropdown-menu" aria-labelledby="userDropdown1">
+										<a class="dropdown-item" th:href="'/member/userInfo?id=' + *{bbscttWrter}">
+											<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+											개인 페이지
+										</a>
+										<div class="dropdown-divider" th:if="${memberInfo.id} != *{bbscttWrter}"></div>
+										<a class="dropdown-item following-btn" href="#" th:if="!${isFollowing} and ${memberInfo.id} != *{bbscttWrter}"
+										   th:following="*{bbscttWrter}" th:onclick="following(this.getAttribute('following'))">
+											<i class="bi bi-person-plus mr-2 text-gray-400"></i>
+											팔로잉
+										</a>
+										<a class="dropdown-item" href="#" th:if="${isFollowing} and ${memberInfo.id} != *{bbscttWrter}"
+										   th:following="*{bbscttWrter}" th:onclick="unfollowing(this.getAttribute('following'))">
+											<i class="bi bi-person-x mr-2 text-gray-400"></i>
+											언팔로잉
+										</a>
+									</div>
+								</span>
+
 								<span style="float:right;" th:text="*{bbscttRgsde}"></span>
 								<span style="margin-left:30px;" id="hashAfter">
 									<fieldset>
@@ -298,7 +322,7 @@
 				});
 			} else {
 				hashTagList = board.bbscttHashtag;
-				hashTagListDom += `<a class="badge bg-secondary text-gray-100 text-decoration-none link-light" style="margin-left:30px;" href="#!">${hashTagList}</a>`;
+				hashTagListDom += `<a class="badge bg-secondary text-gray-100 text-decoration-none link-light hash-tag" style="margin-left:30px;" href="#!">${hashTagList}</a>`;
 			}
 			$('#hashAfter').before(hashTagListDom);
 			hashTagListDom = '';
@@ -632,6 +656,27 @@
 			});
 		}
 		/* 팔로잉하기 E */
+
+
+		/* 해시태그 검색 S */
+		// 해시태그 클릭 이벤트 추가
+		var tags = document.querySelectorAll('.hash-tag');
+		tags.forEach( (tag) => {
+			tag.onclick = clickTag;
+		});
+
+		function clickTag() {
+			console.log('해시태그 클릭===========');
+			var hashTag = $(this).html();
+			console.log('hashTag:' + hashTag);
+
+			var queryParams = {
+				keyword : hashTag,
+				searchType : 'hashtag'
+			}
+			location.href = '/board/search?' + new URLSearchParams(queryParams).toString();
+		}
+		/* 해시태그 검색 E */
 		/*]]>*/
 	</script>
 </th:block>
