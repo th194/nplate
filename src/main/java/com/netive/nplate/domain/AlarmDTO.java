@@ -14,6 +14,7 @@ public class AlarmDTO {
     private String ntcnKnd;                                     // 알람 종류 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
     private Long ntcnTrgtNo;                                    // 알람 타겟 게시글 번호 (게시글 번호)
     private String ntcnTrgtSj;                                  // 알람 타겟 제목 (게시글 제목)
+    private String ntcnTrgtAnswerNo;                             // 알람 타겟 댓글 번호
     private String ntcnCn;                                      // 알람 내용
     private String ntcnCours;                                   // 게시글 경로
     private String ntcnOccrrncDt;                               // 알람 발생 일시

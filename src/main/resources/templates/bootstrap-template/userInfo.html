@@ -91,8 +91,7 @@
                             var alarmData = {
                                 ntcnReceiveMber : id,			            // 알람 받는 사람 id
                                 ntcnSendMber 	: memberInfo.id,			// 알람 보내는 사람 id
-                                ntcnKnd			: 'following',			    // 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
-                                ntcnTrgtSj      : memberInfo.id             // 팔로잉때는 게시글 제목이 없으므로 알람 보내는 사람 id 넣어준다.
+                                ntcnKnd			: 'following'			    // 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
                             };
 
                             $.ajax({
@@ -133,7 +132,7 @@
                         $.ajax({
                             url : '/alarm/delete',
                             type : 'POST',
-                            data : {ntcnKnd : 'following'}
+                            data : {ntcnKnd : 'following', ntcnReceiveMber : id}
                         })
 
                         alert('언팔로잉 성공');

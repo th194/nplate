@@ -11,7 +11,7 @@
     </sql>
 
     <!-- 댓글 등록 -->
-    <insert id="insertReply" parameterType="ReplyDTO">
+    <insert id="insertReply" parameterType="ReplyDTO" useGeneratedKeys="true" keyProperty="answerNo">
         INSERT INTO NETIVE_PROJECT01_REPLY
         (
             <include refid="replyColumns"></include>

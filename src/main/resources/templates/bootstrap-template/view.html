@@ -430,6 +430,7 @@
 				dataType : 'json',
 				data : JSON.stringify(params),
 				success : function(result) {
+					console.log('댓글 등록 result ====> ', result);
 					var date = moment().format('YYYY-MM-DD HH:mm:ss');
 					if (result.result == false) {
 						alert('댓글 등록 실패');
@@ -443,7 +444,8 @@
 						ntcnSendMber 	: loginMember,			// 알람 보내는 사람 id
 						ntcnKnd			: 'reply',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
 						ntcnTrgtNo		: board.bbscttNo,			// 알람 타겟 게시글 번호
-						ntcnTrgtSj		: board.bbscttSj			// 알람 타겟 게시글 제목
+						ntcnTrgtSj		: board.bbscttSj,			// 알람 타겟 게시글 제목
+						ntcnTrgtAnswerNo : result.answerNo
 					};
 
 					$.ajax({
@@ -540,7 +542,7 @@
 					$.ajax({
 						url : '/alarm/delete',
 						type : 'POST',
-						data : {ntcnTrgtSj : board.bbscttSj}
+						data : {ntcnTrgtAnswerNo : idx, ntcnKnd : 'reply'}
 					})
 
 					replyList();
@@ -617,7 +619,7 @@
 						$.ajax({
 							url : '/alarm/delete',
 							type : 'POST',
-							data : {ntcnKnd : 'following'}
+							data : {ntcnKnd : 'following', ntcnReceiveMber : id}
 						});
 						alert('언팔로잉 성공');
 						location.reload();

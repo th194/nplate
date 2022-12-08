@@ -165,19 +165,9 @@ public class BoardController {
 					String fileNmTemp = _jsonData.get("FILE_NM_TEMP").getAsString();		// 임시 파일명
 					String fileCours = _jsonData.get("FILE_COURS").getAsString();			// 경로
 
-					// 게시글 등록 시에 스마트 에디터에서 사진 업로드 하면
-					// 업로드 된 사진 정보가 jsonArray 담겨있다.
-					// 문제 되는 상황을 예로 들면
-					// 처음 이미지 업로드는 2개 파일 선택 하고
-					// 후에 하나의 이미지 파일을 에디터에서 지웠을 경우에
-					// jsonArray에는 처음에 두 개 올린 파일의 정보가 담겨 있다.
-					// 따라서 해당 게시글 내용에서 fileNm이 포함된 파일만 업로드한다.
 					if(content.contains(fileNm)) {
 						fileService.saveBoardFile(fileNm, fileNmTemp, fileCours, idx);
 					} else {
-						// smarteditorMultiUpload.do에 의해 에디터에 이미지 올릴경우
-						// 서버에 바로 저장 되므로
-						// 게시글 저장 될 시 없는 파일은 서버에서 삭제해준다.
 						File file = new File(filePath + fileNmTemp);
 
 						if(file.exists()) {

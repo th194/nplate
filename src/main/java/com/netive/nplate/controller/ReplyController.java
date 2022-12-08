@@ -115,8 +115,10 @@ public class ReplyController {
                 System.out.println("로그인 id = " + id);
 
                 boolean isRegisterd = replyService.registerReply(params);
+                Long idx = params.getAnswerNo(); // 댓글 저장 후의 댓글 번호
                 jsonObj.addProperty("result", isRegisterd);
                 jsonObj.addProperty("member", id);
+                jsonObj.addProperty("answerNo", idx);
 
 
             } catch (DataAccessException dae) {
