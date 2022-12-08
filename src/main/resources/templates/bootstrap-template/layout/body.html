@@ -315,6 +315,24 @@
 				}
 			});
 
+			/* 새 알람 있는지 확인 S */
+			$.ajax({
+				url : '/alarm/info',
+				type : 'GET',
+				success : function(result) {
+					var alarmInfo = result.result;
+					for (var i = 0; i < alarmInfo.length; i ++) {
+						if (alarmInfo[i].ntcnCnfirmAt == 'N') {
+							$('#alarmCount').text('N');
+						}
+					}
+				},
+				error : function(err) {
+					console.log('알람정보 err ===> ', err);
+				}
+			});
+			/* 새 알람 있는지 확인 E */
+
 			/* 페이지 이동 S */
 			function movePage() {
 				var form = document.getElementById('searchForm');
@@ -336,9 +354,6 @@
 			stompClient.connect({}, function(frame) {
 				stompClient.subscribe('/sub/'+memberInfo.id, function(msg) {
 					$('#alarmCount').text('N');
-					$('#alertsDropdown').click(function(){
-						$(this).find('span').text('');
-					});
 				});
 			});
 			/* 웹소켓 전역으로 설정 E */
