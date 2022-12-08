@@ -436,23 +436,23 @@
 						alert('댓글 등록 실패');
 						return false;
 					}
+					if ( board.bbscttWrter != loginMember) {
+						stompClient.send('/pub/' + board.bbscttWrter, {}, JSON.stringify({writer: board.bbscttWrter, alarmType : 'reply', member : loginMember, date : date}));
 
-					stompClient.send('/pub/' + board.bbscttWrter, {}, JSON.stringify({writer: board.bbscttWrter, alarmType : 'reply', member : loginMember, date : date}));
+						var alarmData = {
+							ntcnReceiveMber : board.bbscttWrter,			// 알람 받는 사람 id
+							ntcnKnd			: 'reply',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+							ntcnTrgtNo		: board.bbscttNo,			// 알람 타겟 게시글 번호
+							ntcnTrgtSj		: board.bbscttSj,			// 알람 타겟 게시글 제목
+							ntcnTrgtAnswerNo : result.answerNo
+						};
 
-					var alarmData = {
-						ntcnReceiveMber : board.bbscttWrter,			// 알람 받는 사람 id
-						ntcnSendMber 	: loginMember,			// 알람 보내는 사람 id
-						ntcnKnd			: 'reply',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
-						ntcnTrgtNo		: board.bbscttNo,			// 알람 타겟 게시글 번호
-						ntcnTrgtSj		: board.bbscttSj,			// 알람 타겟 게시글 제목
-						ntcnTrgtAnswerNo : result.answerNo
-					};
-
-					$.ajax({
-						url : '/alarm/register',
-						type : 'POST',
-						data : alarmData
-					});
+						$.ajax({
+							url : '/alarm/register',
+							type : 'POST',
+							data : alarmData
+						});
+					}
 					replyList();
 					answerCn.value = '';
 				},
@@ -578,7 +578,6 @@
 
 							var alarmData = {
 								ntcnReceiveMber : id,			            // 알람 받는 사람 id
-								ntcnSendMber 	: memberInfo.id,			// 알람 보내는 사람 id
 								ntcnKnd			: 'following',			    // 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
 								ntcnTrgtSj      : memberInfo.id             // 팔로잉때는 게시글 제목이 없으므로 알람 보내는 사람 id 넣어준다.
 							};

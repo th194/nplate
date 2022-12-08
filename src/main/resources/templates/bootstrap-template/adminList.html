@@ -101,7 +101,7 @@
                             <tr>
                                 <td>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" data-val="${val.bbscttWrter}" value="${val.bbscttNo}" name="subCheck" id="${val.bbscttNo}"/>
+                                        <input class="form-check-input" type="checkbox" data-sj="${val.bbscttSj}" data-val="${val.bbscttWrter}" value="${val.bbscttNo}" name="subCheck" id="${val.bbscttNo}"/>
                                         <label class="form-check-label" for="${val.bbscttNo}"></label>
                                     </div>
                                 </td>
@@ -292,14 +292,14 @@
             var delArr = [];
             var delList = $('input[name=subCheck]');
             var delWriterArr = [];
+            var delSjArr = [];
             for (var i = 0; i < delList.length; i++) {
                 if(delList[i].checked) {
                     delArr.push(delList[i].value);
                     delWriterArr.push(delList[i].dataset.val);
+                    delSjArr.push(delList[i].dataset.sj);
                 }
             }
-            console.log(delArr);
-            console.log(delWriterArr);
             if(delArr.length == 0) {
                 alert('선택된 게시글이 없습니다.');
             } else {
@@ -320,6 +320,19 @@
                                 setTimeout(() => {
                                     for (let i in delWriterArr) {
                                         stompClient.send('/pub/'+delWriterArr[i], {}, JSON.stringify({writer : delWriterArr[i], bbsNo : delArr[i], alarmType : 'delete', date : date}));
+
+                                        var alarmData = {
+                                            ntcnReceiveMber : delWriterArr[i],			// 알람 받는 사람 id
+                                            ntcnKnd			: 'delete',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+                                            ntcnTrgtNo		: delArr[i],			// 알람 타겟 게시글 번호
+                                            ntcnTrgtSj      : delSjArr[i]
+                                        };
+
+                                        $.ajax({
+                                            url : '/alarm/register',
+                                            type : 'POST',
+                                            data : alarmData
+                                        });
                                     }
                                 }, 1000, resolve());
                             });

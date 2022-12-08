@@ -234,37 +234,31 @@
 							var date = moment(likeInfo[0].likeRgsde).format('YYYY-MM-DD HH:mm:ss');
 							alert('좋아요 추가 성공');
 							// 알람 전송
-							stompClient.send('/pub/'+writer, {}, JSON.stringify({
-										writer : writer,
-										bbsSj : subject,
-										bbsNo : index,
-										alarmType : 'like',
-										member: testId,
-										date : date
-									}));
+							if (writer != testId) {
+								stompClient.send('/pub/'+writer, {}, JSON.stringify({
+									writer : writer,
+									bbsSj : subject,
+									bbsNo : index,
+									alarmType : 'like',
+									member: testId,
+									date : date
+								}));
 
-							var alarmData = {
-								ntcnReceiveMber : writer,			// 알람 받는 사람 id
-								ntcnSendMber 	: testId,			// 알람 보내는 사람 id
-								ntcnKnd			: 'like',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
-								ntcnTrgtNo		: index,			// 알람 타겟 게시글 번호
-								ntcnTrgtSj		: subject			// 알람 타겟 게시글 제목
-							};
+								var alarmData = {
+									ntcnReceiveMber : writer,			// 알람 받는 사람 id
+									ntcnKnd			: 'like',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+									ntcnTrgtNo		: index,			// 알람 타겟 게시글 번호
+									ntcnTrgtSj		: subject			// 알람 타겟 게시글 제목
+								};
 
-							// 알람정보 DB에 저장
-							$.ajax({
-								url : '/alarm/register',
-								type : 'POST',
-								data : alarmData,
-								success : function() {
-									location.replace(location.pathname + location.search);
-								},
-								error : function(err) {
-									console.log('알람 등록 err =====> ', err);
-								}
-							})
-
-
+								// 알람정보 DB에 저장
+								$.ajax({
+									url : '/alarm/register',
+									type : 'POST',
+									data : alarmData
+								});
+							}
+							location.replace(location.pathname + location.search);
 							// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
 						} else {
 							alert('좋아요 추가 실패');

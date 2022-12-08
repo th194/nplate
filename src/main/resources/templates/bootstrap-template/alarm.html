@@ -31,7 +31,7 @@
                                 // 삭제용
                                 if( val.ntcnKnd == 'delete' ) {
                                     alarmHtml += `
-                                        <a href="javascript:void(0)">
+                                        <a href="javascript:void(0)" data-val="${val.ntcnNo}" data-delete="delete" class="updateAlarm">
                                             <div class="card border-left-warning shadow h-100 py-2">
                                                 <div class="card-body">
                                                     <div class="row no-gutters align-items-center">
@@ -128,7 +128,12 @@
                         url : '/alarm/update',
                         type : 'POST',
                         data : {ntcnNo : value}
-                    })
+                    });
+
+                    if($(this).data('delete')) {
+                        location.reload();
+                    }
+
                 });
     </script>
 </th:block>

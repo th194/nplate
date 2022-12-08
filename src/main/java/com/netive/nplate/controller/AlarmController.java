@@ -97,8 +97,11 @@ public class AlarmController {
      * @return
      */
     @PostMapping("/alarm/register")
-    public HashMap<String, Object> registerAlarm(AlarmDTO alarmDTO) {
+    public HashMap<String, Object> registerAlarm(HttpServletRequest request, AlarmDTO alarmDTO) {
         HashMap<String, Object> resMap = new HashMap<>();
+        HttpSession session = request.getSession();
+        String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+        alarmDTO.setNtcnSendMber(memberId);         // 세션 정보로 알람 보내는사람 id 세팅
         String kind = alarmDTO.getNtcnKnd();            // 알람 종류
         String getSj = alarmDTO.getNtcnTrgtSj();
         String subject = "";
