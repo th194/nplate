@@ -60,8 +60,6 @@
             NETIVE_PROJECT01_REPLY
         WHERE
             BBSCTT_NO = #{bbscttNo}
-        ORDER BY
-            ANSWER_RGSDE DESC
         Limit #{pagination.limitStart}, #{recordSize}
     </select>
 

@@ -5,37 +5,6 @@
 	<title>this is view page</title>
 </th:block>
 
-<th:block layout:fragment="modal">
-	<div id="replyModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="replyModal" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<form>
-						<div class="form-group">
-							<label for="modalAnswerWrter" class="col-form-label">작성자</label>
-							<input type="text" id="modalAnswerWrter" class="form-control" placeholder="작성자를 입력해주세요." disabled="disabled" />
-						</div>
-						<div class="form-group">
-							<label for="modalAnswerCn" class="col-form-label">내용</label>
-							<textarea id="modalAnswerCn" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" id="btnModalCancel" class="btn btn-default waves-effect waves-light" data-dismiss="modal">취소하기</button>
-					<button type="button" id="btnReplyUpdate" class="btn btn-primary waves-effect waves-light">수정하기</button>
-					<button type="button" id="btnReplyDelete" class="btn btn-danger waves-effect waves-light">삭제하기</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</th:block>
-
 <th:block layout:fragment="main-content">
 	<form class="form-horizontal form-view form-grade" th:object="${board}">
 		<!-- Page content-->
@@ -133,33 +102,32 @@
 	</div>
 	<!-- /.card-content -->
 	<hr>
+
 	<!-- 댓글 -->
-	<section class="mb-5">
-		<div class="card bg-light">
-			<div class="card-body">
-				<!-- 댓글 목록 -->
-				<div class="col-lg-12" id="replyList">
-
-				</div>
-				<!-- 댓글 페이징 -->
-				<ul class="pagination" style="justify-content: center">
-
-				</ul>
-				<!-- 댓글 목록 -->
-				<!-- Comment form-->
-				<form class="mb-4" th:object="${board}">
-					<textarea id="answerCn" name="answerCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력"></textarea>
-					<a href="javascript:void(0)" class="btn btn-light btn-icon-split" th:onclick="insertReply()" style="float:right">
-						<span class="icon text-gray-600">
-							<i class="fas fa-arrow-right"></i>
-						</span>
-						<span class="text">댓글 등록</span>
-					</a>
-				</form>
-			</div>
-
+	<div class="blog comments" >
+		<!-- 댓글 목록 -->
+		<div id="replyList" class="comment">
 		</div>
-	</section>
+
+		<!-- 댓글 페이징 -->
+		<ul class="pagination" style="justify-content: center">
+
+		</ul>
+
+		<!-- 댓글 폼 -->
+		<div class="reply-form">
+			<form action="">
+				<div class="row">
+					<div class="col form-group">
+						<textarea id="answerCn" name="answerCn" class="form-control" placeholder="내용을 입력해주세요."></textarea>
+					</div>
+				</div>
+				<button type="button" class="btn btn-primary" th:onclick="insertReply()" style="float:right">댓글 등록</button>
+			</form>
+		</div>
+	</div>
+
+
 	<!-- 댓글 -->
 
 </th:block>
@@ -167,6 +135,8 @@
 <th:block layout:fragment="script">
 	<script th:inline="javascript">
 		/*<![CDATA[*/
+		var $dom;				// 기존 댓글
+		var $domBtn;			// 기존 댓글 수정/삭제 버튼
 		var loginMember;
 		var board = [[${board}]];
 		$(function(){
@@ -189,27 +159,36 @@
 							var rgsde = reply.answerRgsde;
 							var rgsdeFormt = timeForToday(rgsde);
 							replyHtml += `
-								<div class="d-flex mb-2" data-index="${reply.answerNo}">
-									<div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="..." /></div>
-									<div class="ms-3" style="width:70%">
-										<div class="fw-bold">${reply.answerWrter}</div>
-										${reply.answerCn}
+								<div class="d-flex" data-index="${reply.answerNo}">
+									<div class="comment-img" style="margin-right : 10px;">
+										<img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="">
+									</div>
+									<div>
+										<h5>
+											<a class="comment-answer" style="color: black;" href="">${reply.answerWrter}</a>
+											<time class="comment-answer comment-answer-font-12" style="margin-left : 20px;" dateTime="${rgsdeFormt}">${rgsdeFormt}</time>
+										</h5>
+										`;
+
+										replyHtml += `
+										<p id="cn${reply.answerNo}" style="white-space: pre-line">${reply.answerCn}</p>
 									</div>
 									`;
-							// 로그인 한 사용자가 댓글 작성자와 같을 경우 수정/삭제 버튼 생성
-							if (loginMember == reply.answerWrter) {
-								replyHtml += `
-										<div class="right-flex">
-											<a class="btn btn-info btn-circle btn-sm right-flex" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
-												<i class="fas fa-info-circle" aria-hidden="true"></i>
-											</a>
+									if (loginMember == reply.answerWrter) {
+										replyHtml += `
+											<div style="margin-left:auto; text-align: center">
+												<a href="javascript:void(0)" class="reply comment-answer comment-answer-font-12" style="color : green;" id="updateAnswer${reply.answerNo}" onclick="updateAnswer(${reply.answerNo})">
+													<i class="bi bi-reply-fill"></i> 수정
+												</a>
+												<a href="javascript:void(0)" class="reply comment-answer comment-answer-font-12" style="color : red;" id="deleteAnswer${reply.answerNo}" onclick="deleteReply(${reply.answerNo})">
+													<i class="bi bi-reply-fill"></i> 삭제
+												</a>
+											</div>
 										`;
-							}
-							replyHtml += `
-										<div class="right-flex" style="align-self: flex-end">${rgsdeFormt}</div>
-									</div>
-								</div>
-								`;
+										}
+									replyHtml += `
+										</div>
+									`;
 						});
 					} else {
 						replyHtml += `
@@ -430,6 +409,7 @@
 		/* 댓글 등록 S */
 		function insertReply() {
 			var answerCn = document.getElementById('answerCn');
+
 			if ( answerCn.value == null || answerCn.value == '') {
 				alert('댓글을 입력해주세요.');
 				answerCn.focus();
@@ -443,7 +423,7 @@
 			};
 			var params = {
 				bbscttNo : board.bbscttNo,
-				answerCn : answerCn.value,
+				answerCn : answerCn,
 				answerWrter : loginMember
 			}
 
@@ -489,22 +469,57 @@
 		}
 		/* 댓글 등록 E */
 
-		/* 댓글 수정/삭제 모달 오픈 S */
-		function openModal(idx, writer, content) {
-			$('#replyModal').modal('show');
-
-			$('#modalAnswerWrter').val(writer);
-			$('#modalAnswerCn').val(content);
-
-			document.getElementById('btnReplyUpdate').setAttribute('onclick', 'updateReply('+ idx + ')');
-			document.getElementById('btnReplyDelete').setAttribute('onclick', 'deleteReply('+ idx + ')');
+		/* 댓글 수정 UI S */
+		function updateAnswer(answerNo) {
+			var $updateAnswer = $('#updateAnswer' + answerNo);
+			var answerCn = $('#cn' + answerNo).text();
+			console.log('answerCn answerNo ===> ', answerNo);
+			console.log('answerCn ===> ', answerCn);
+			console.log('부모의 부모노드 : ', $updateAnswer.parent().parent());
+			$updateAnswer.parent().parent().replaceWith(
+				`
+					<form class="mb-4" id="cancelUpdate${answerNo}">
+						<textarea id="replyCn${answerNo}" name="replyCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력">${answerCn}</textarea>
+							<a href="javascript:void(0)" class="btn btn-light btn-icon-split" onclick="updateReply(${answerNo})" style="float:right">
+								<span class="icon text-gray-600">
+									<i class="fas fa-arrow-right"></i>
+								</span>
+								<span class="text">댓글 수정</span>
+							</a>
+							<a href="javascript:void(0)" class="btn btn-danger btn-icon-split" onclick="cancelUpdate(${answerNo})" style="float: right">
+								<span class="icon text-white-50">
+									<i class="fas fa-trash"></i>
+								</span>
+								<span class="text">취소</span>
+							</a>
+					</form>
+					<br class="br-cancel">
+				`
+			);
+			$domBtn = $updateAnswer.parent();
+			$domBtn.hide();
 		}
-		/* 댓글 수정/삭제 모달 오픈 S */
+
+		// 수정 취소
+		function cancelUpdate(idx) {
+			var $cancelUpdate = $('#cancelUpdate' + idx);
+			$cancelUpdate.replaceWith($dom);
+			$('.br-cancel').remove();
+			$domBtn.show();
+		}
+		/* 댓글 수정 UI E */
 
 		/* 댓글 수정 S */
 		function updateReply(idx) {
-			var writer = $('#modalAnswerWrter').val();
-			var content = $('#modalAnswerCn').val();
+			var writer = loginMember;
+			var content = $('#replyCn'+idx).val();
+
+			if(content == '' || content == null) {
+				alert('수정할 댓글을 입력해주세요');
+			}
+			console.log('idx ===> ', idx);
+			console.log('writer ===> ', writer);
+			console.log('content ===> ', content);
 
 			var uri = '/reply/' + idx;
 			var headers = {
@@ -597,7 +612,7 @@
 					if (data.result === 'success') {
 						alert('팔로잉 성공');
 						const promise = new Promise((resolve) => {
-
+							var date = moment().format('YYYY-MM-DD HH:mm:ss');
 							stompClient.send('/pub/' + id, {}, JSON.stringify({writer: id, alarmType : 'following', member : memberInfo.id, date : date}));
 
 							var alarmData = {
@@ -677,6 +692,12 @@
 			location.href = '/board/search?' + new URLSearchParams(queryParams).toString();
 		}
 		/* 해시태그 검색 E */
+
+		/* 특수문자 제거 S */
+		function regex(value) {
+			return value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+		}
+		/* 특수문자 제거 E */
 		/*]]>*/
 	</script>
 </th:block>
