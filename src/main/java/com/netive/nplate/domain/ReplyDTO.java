@@ -14,4 +14,5 @@ public class ReplyDTO {
     private String answerWrter;                    // 작성자
     private String answerRgsde;                    // 등록일
     private String answerUpdde;                    // 수정일
+    private String answerUpdateAt;                 // 수정 여부
 }

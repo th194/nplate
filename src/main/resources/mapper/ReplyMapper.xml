@@ -7,7 +7,8 @@
         ANSWER_CN,
         ANSWER_WRTER,
         ANSWER_RGSDE,
-        ANSWER_UPDDE
+        ANSWER_UPDDE,
+        ANSWER_UPDATE_AT
     </sql>
 
     <!-- 댓글 등록 -->
@@ -40,7 +41,8 @@
         SET
             ANSWER_UPDDE = NOW(),
             ANSWER_CN = #{answerCn},
-            ANSWER_WRTER = #{answerWrter}
+            ANSWER_WRTER = #{answerWrter},
+            ANSWER_UPDATE_AT = "Y"
         WHERE ANSWER_NO = #{answerNo}
     </update>
 

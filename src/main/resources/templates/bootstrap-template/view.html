@@ -166,11 +166,12 @@
 									<div>
 										<h5>
 											<a class="comment-answer" style="color: black;" href="">${reply.answerWrter}</a>
-											<time class="comment-answer comment-answer-font-12" style="margin-left : 20px;" dateTime="${rgsdeFormt}">${rgsdeFormt}</time>
+											<time class="comment-answer comment-answer-font-12" style="margin-left : 20px;" dateTime="${rgsdeFormt}">${rgsdeFormt}</time>`;
+											if(reply.answerUpdateAt == 'Y') {
+												replyHtml += `<span class="comment-answer comment-answer-font-12"> (수정됨) </span>`;
+											}
+											replyHtml += `
 										</h5>
-										`;
-
-										replyHtml += `
 										<p id="cn${reply.answerNo}" style="white-space: pre-line">${reply.answerCn}</p>
 									</div>
 									`;
@@ -546,7 +547,6 @@
 						return false;
 					}
 					replyList();
-					$('#replyModal').modal('hide');
 
 				},
 				error : function(err) {
@@ -579,15 +579,12 @@
 						alert('댓글 삭제 실패');
 						return false;
 					}
-
 					$.ajax({
 						url : '/alarm/delete',
 						type : 'POST',
 						data : {ntcnTrgtAnswerNo : idx, ntcnKnd : 'reply'}
 					})
-
 					replyList();
-					$('#replyModal').modal('hide');
 				},
 				error : function(err) {
 					console.log('err = ' + JSON.stringify(err));
