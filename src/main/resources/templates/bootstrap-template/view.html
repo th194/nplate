@@ -473,6 +473,7 @@
 		function updateAnswer(answerNo) {
 			var $updateAnswer = $('#updateAnswer' + answerNo);
 			var answerCn = $('#cn' + answerNo).text();
+			$dom = $updateAnswer.parent().parent();
 			console.log('answerCn answerNo ===> ', answerNo);
 			console.log('answerCn ===> ', answerCn);
 			console.log('부모의 부모노드 : ', $updateAnswer.parent().parent());
@@ -502,6 +503,7 @@
 
 		// 수정 취소
 		function cancelUpdate(idx) {
+			console.log('$dom ===> ', $dom);
 			var $cancelUpdate = $('#cancelUpdate' + idx);
 			$cancelUpdate.replaceWith($dom);
 			$('.br-cancel').remove();
