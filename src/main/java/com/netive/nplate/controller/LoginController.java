@@ -129,9 +129,23 @@ public class LoginController {
 
     // 스프링 시큐리티 로그인 실패
     @GetMapping("/login/fail")
-    public String loginFail(Model model) {
+    public String loginFail(Model model, String code) {
         System.out.println("로그인 실패======");
-        model.addAttribute("message", "아이디, 비밀번호를 확인 후 다시 로그인해주세요.");
+
+        String message;
+
+        switch(code) {
+            case "00": // 자격증명 실패(아이디 존재히지 않거나, 비밀번호가 틀림)
+                message = "아이디, 비밀번호를 확인 후 다시 로그인해주세요.";
+                break;
+            case "99": // 만료 계정
+                message = "사용이 정지된 계정입니다. 관리자에게 문의해주세요.";
+                break;
+            default: // 기타 에러
+                message = "잠시 후 다시 시도해주세요.";
+        }
+
+        model.addAttribute("message", message);
         model.addAttribute("url", "/");
 
         return "member/error";

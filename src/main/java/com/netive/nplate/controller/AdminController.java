@@ -292,7 +292,7 @@ public class AdminController {
             String nickName = memberDTO.getNickName();
             String tel = memberDTO.getTel();
 
-            // todo 개인정보 페이지에서 이름, 성별, 생일 수정 안되게 되어있는데 변경 가능하도록 수정
+            // todo 개인정보 페이지에서 이름, 생일 수정 안되게 되어있는데 변경 가능하도록 수정
             for (int i = 0; i < count; i++) {
                 MemberDTO addMember = new MemberDTO();
                 addMember.setId(id + "-" + i);

@@ -1,9 +1,10 @@
 package com.netive.nplate.configuration;
 
+import com.netive.nplate.component.LoginFailHandler;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,7 +27,7 @@ public class SecurityConfig {
                 .passwordParameter("pwd")
                 .loginProcessingUrl("/loginProc")
                 .defaultSuccessUrl("/login/success")
-                .failureUrl("/login/fail")
+                .failureHandler(loginFailHandler())
                 .permitAll();
 
         // 스프링 시큐리티 적용 시 스마트에디터 로드 불가 >> 해결
@@ -37,6 +38,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public LoginFailHandler loginFailHandler() {
+        return new LoginFailHandler();
     }
 
     protected void configure(HttpSecurity http) throws Exception {
