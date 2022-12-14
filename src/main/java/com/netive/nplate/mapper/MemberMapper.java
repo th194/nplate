@@ -34,4 +34,7 @@ public interface MemberMapper {
 
     // 회원 정보 보기(ID, 닉네임만 조회)
     MemberDTO getUserInfo(String id);
+
+    // 회원 전체 목록
+    List<MemberDTO> getAllUser();
 }

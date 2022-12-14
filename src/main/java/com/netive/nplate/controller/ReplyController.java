@@ -58,7 +58,7 @@ public class ReplyController {
                 params.setPagination(pagination);
 
                 List<ReplyDTO> replyList = replyService.getReplyList(params);
-                PagingResponse<ReplyDTO> replyListPage = new PagingResponse<>(pagination);
+                PagingResponse<ReplyDTO> replyListPage = new PagingResponse<>(params);
 
                 if(CollectionUtils.isEmpty(replyList) == false) {
                     JsonArray jsonArr = gson.toJsonTree(replyList).getAsJsonArray();

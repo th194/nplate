@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="bootstrap-template/layout/admin-basic">
+<th:block layout:fragment="title">
+    <title>공지</title>
+</th:block>
+
+<th:block layout:fragment="main-content">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">공지 작성</h5>
+            <form th:action="@{/admin/adminRegister}" th:method="post" id="noticeForm">
+                <!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
+                <input type="hidden" id="mngrBbsNo" name="mngrBbsNo" th:if="${board != null}" th:value="${board.mngrBbsNo}"/>
+
+                <div class="row mb-3">
+                    <label for="mngrBbsSj" class="col-sm-2 col-form-label">제목</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="mngrBbsSj" name="mngrBbsSj">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="mngrBbsCn" class="col-sm-2 col-form-label">내용</label>
+                    <div class="col-sm-10">
+                        <textarea type="email" class="form-control" id="mngrBbsCn" name="mngrBbsCn"></textarea>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-primary" id="sendBtn">작성</button>
+                    <button type="reset" class="btn btn-secondary">취소</button>
+                    <a href="javascript:void(0)" onclick="goListPage()" class="btn btn-secondary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                        <span class="text">뒤로가기</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</th:block>
+
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+        /* 게시글 상세정보 렌더링 S */
+        window.onload = () => {
+            renderBoardInfo();
+        }
+
+        function renderBoardInfo() {
+            var board = [[${board}]];
+            if(!board) {
+                return false;
+            }
+
+            var form = document.getElementById('noticeForm');
+            var fields = ['mngrBbsNo', 'mngrBbsSj', 'mngrBbsCn'];
+            fields.forEach(field => {
+                form[field].value = board[field];
+            });
+        }
+        /* 게시글 상세정보 렌더링 E */
+
+        /* 뒤로가기 */
+        function goListPage() {
+            var queryString = new URLSearchParams(location.search);
+            queryString.delete('idx');
+            location.href = '/admin/adminNoticeList?' + queryString.toString();
+        }
+        /* 뒤로가기 */
+
+        function addEvent() {
+            $('#sendBtn').on('click', function() {
+                $.ajax({
+                    url : '/admin/allMember',
+                    type : 'GET',
+                    async : false,
+                    success : function(result) {
+                        var allMember = result.allMember;
+                        var date = moment().format('YYYY-MM-DD HH:mm:ss'); // moment.js 현재 날짜/시간
+                        console.log('result ===> ', result);
+                        for ( var i = 0; i < allMember.length; i ++ ) {
+                            stompClient.send('/pub/'+allMember[i], {}, JSON.stringify({alarmType : 'notice', date : date}));
+                        }
+                    },
+                    error : function(err) {
+                        console.log('err ===> ', err);
+                        alert('에러 발생');
+                        return;
+                    }
+                })
+                $('#noticeForm').submit();
+            });
+        }
+        /* 이벤트 등록 */
+        addEvent();
+    </script>
+</th:block>
+</html>

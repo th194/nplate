@@ -72,4 +72,9 @@
         select MBER_ID, MBER_NCNM, MBER_PROFL_PHOTO from NETIVE_PROJECT01_MEMBER where MBER_ID = #{id}
     </select>
 
+    <!-- 회원 전체 목록 -->
+    <select id="getAllUser" resultMap="memResult">
+        select MBER_ID from NETIVE_PROJECT01_MEMBER;
+    </select>
+
 </mapper>

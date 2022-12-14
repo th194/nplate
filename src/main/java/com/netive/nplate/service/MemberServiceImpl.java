@@ -48,4 +48,9 @@ public class MemberServiceImpl implements MemberService {
     public MemberDTO getUserInfo(String id) {
         return memberMapper.getUserInfo(id);
     }
+
+    @Override
+    public List<MemberDTO> getAllUser() {
+        return memberMapper.getAllUser();
+    }
 }

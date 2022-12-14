@@ -24,7 +24,7 @@ public interface BoardMapper {
 	// 총 게시글 수 조회
 	public int count(PageDTO params);
 	// 특정 id 게시글 수 조회
-	public int countById(PageDTO params);
+	public int countById(String id);
 	// 게시글 조회수 증가
 	public boolean cntPlus(Long idx);
 	// 특정 ID 게시글 조회

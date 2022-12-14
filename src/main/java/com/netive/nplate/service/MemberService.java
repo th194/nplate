@@ -26,4 +26,7 @@ public interface MemberService {
 
     // 회원 정보 보기(ID, 닉네임, 프로필 이미지 코드만 조회)
     MemberDTO getUserInfo(String id);
+
+    // 회원 전체 목록 (ID만)
+    List<MemberDTO> getAllUser();
 }

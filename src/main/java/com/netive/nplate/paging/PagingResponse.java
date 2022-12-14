@@ -1,5 +1,6 @@
 package com.netive.nplate.paging;
 
+import com.netive.nplate.domain.PageDTO;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -9,13 +10,14 @@ import java.util.List;
 public class PagingResponse<T> {
 
     private List<T> list = new ArrayList<>();
-    private Pagination pagination;
+    private PageDTO page;
 
-    public PagingResponse(List<T> list, Pagination pagination) {
+    public PagingResponse(List<T> list, PageDTO page) {
         this.list = list;
-        this.pagination = pagination;
+        this.page = page;
     }
-    public PagingResponse(Pagination pagination) {
-        this.pagination = pagination;
+
+    public PagingResponse(PageDTO page) {
+        this.page = page;
     }
 }

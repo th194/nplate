@@ -88,15 +88,6 @@
 			BBSCTT_NO = #{bbscttNo}
 	</delete>
 
-	<!-- 관리자용 게시글 삭제 -->
-<!--	<delete id="deleteAdminBoard">-->
-<!--		DELETE-->
-<!--		FROM-->
-<!--			NETIVE_PROJECT01_BOARD-->
-<!--		WHERE-->
-<!--		    BBSCTT_NO = #{bbscttNo}-->
-<!--	</delete>-->
-
 	<!-- 관리자가 게시글 삭제 시 update로 수정 -->
 	<update id="deleteAdminBoard" parameterType="String">
 		UPDATE NETIVE_PROJECT01_BOARD
@@ -126,7 +117,7 @@
 	</select>
 
 	<!-- 특정 사용자 게시글 수 카운트 -->
-	<select id="countById" parameterType="PageDTO" resultType="int">
+	<select id="countById" parameterType="String" resultType="int">
 		SELECT
 		    COUNT(*)
 		FROM

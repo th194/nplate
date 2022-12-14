@@ -26,7 +26,7 @@ public interface BoardService {
 	// 게시글 총 수
 	public int count(PageDTO params);
 	// 특정 사용자 게시글 수
-	public int countById(PageDTO params);
+	public int countById(String id);
 	// 특정 ID 게시글 조회
 	List<BoardDTO> getBordListById(SearchDTO dto);
 	// 아이디 여러개로 조회(팔로잉)

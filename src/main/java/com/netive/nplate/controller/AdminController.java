@@ -1,5 +1,6 @@
 package com.netive.nplate.controller;
 
+import com.netive.nplate.common.MessageDTO;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.paging.Pagination;
 import com.netive.nplate.paging.PagingResponse;
@@ -40,6 +41,12 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private AdminBoardService adminBoardService;
+
+    @Autowired
+    private AlarmService alarmService;
     
 
     // 관리자 첫페이지
@@ -118,7 +125,7 @@ public class AdminController {
         params.setPagination(pagination);
 
         List<BoardDTO> list = boardService.getAllBoardList(params);
-        PagingResponse<BoardDTO> boardList = new PagingResponse<>(list, pagination);
+        PagingResponse<BoardDTO> boardList = new PagingResponse<>(list, params);
         model.addAttribute("boardList", boardList);
         return "bootstrap-template/adminList";
     }
@@ -131,14 +138,141 @@ public class AdminController {
     public String adminListById(@ModelAttribute("params") PageDTO params, @RequestParam(value = "id", required = false) String id, Model model) {
         SearchDTO sDTO = new SearchDTO(id);
         sDTO.setRecordSize(10);
-        params.setMemberId(id);
-        int count = boardService.countById(params);
+        int count = boardService.countById(id);
         Pagination pagination = new Pagination(count, params);
+        params.setPagination(pagination);
         List<BoardDTO> list = boardService.getBordListById(sDTO);
-        PagingResponse<BoardDTO> boardList = new PagingResponse<>(list, pagination);
+        PagingResponse<BoardDTO> boardList = new PagingResponse<>(list, params);
         model.addAttribute("memberId", id);
         model.addAttribute("boardList", boardList);
         return "bootstrap-template/adminList";
+    }
+
+    /**
+     * 공지사항 작성 페이지로 이동
+     * @return
+     */
+    @GetMapping("/admin/adminNotice")
+    public String adminNotice(@RequestParam(value = "idx", required = false) Long idx, Model model) {
+        if(idx != null) {
+            AdminBoardDTO board = adminBoardService.adminBoardView(idx);
+            model.addAttribute("board", board);
+        }
+
+        return "bootstrap-template/adminNotice";
+    }
+
+    /**
+     * 공지사항 등록
+     * @return
+     */
+    @PostMapping("/admin/adminRegister")
+    public String adminRegister(AdminBoardDTO params, HttpServletRequest request, Model model) {
+        boolean result = false;
+        HttpSession session = request.getSession();
+        AlarmDTO alarm = new AlarmDTO();
+        MessageDTO message = new MessageDTO();
+        String adminId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+        params.setMngrBbsWrter(adminId); // admin 로그인 ID
+
+        Long idx = 0L;
+
+        if(adminId.equals("admin")) {
+            result = adminBoardService.registAdminBoard(params);
+            idx = params.getMngrBbsNo();
+        }
+
+        if(result) {
+            List<MemberDTO> allMember = memberService.getAllUser();
+            for(int i = 0; i < allMember.size(); i++) {
+                String receiveId = allMember.get(i).getId();
+                alarm.setNtcnReceiveMber(receiveId);
+                alarm.setNtcnSendMber(adminId);
+                alarm.setNtcnTrgtNo(idx);
+                alarm.setNtcnKnd("notice");
+                alarmService.registerAlarm(alarm);
+            }
+            message = new MessageDTO("공지사항 등록이 완료되었습니다.", "/admin/adminNoticeList", RequestMethod.GET, null);
+        } else {
+            message = new MessageDTO("공지사항 등록에 실패했습니다.", "/admin/adminNotice", RequestMethod.GET, null);
+        }
+        return showMessageAndRedirect(message, model);
+    }
+
+    /**
+     * 공지사항 목록 보기
+     * @param params
+     * @param model
+     * @return
+     */
+    @GetMapping("/admin/adminNoticeList")
+    public String adminNoticeList(@ModelAttribute("params") PageDTO params, Model model) {
+
+        int count = adminBoardService.adminBoardCount(params);
+        Pagination pagination = new Pagination(count, params);
+        params.setPagination(pagination);
+
+        List<AdminBoardDTO> noticeList = adminBoardService.adminBoardList(params);
+        PagingResponse<AdminBoardDTO> adminNoticeList = new PagingResponse<>(noticeList, params);
+        model.addAttribute("adminNoticeList", adminNoticeList);
+        return "bootstrap-template/adminNoticeList";
+    }
+
+    /**
+     * 공지사항 수정
+     * @param params
+     * @param model
+     * @return
+     */
+    @PostMapping("/admin/adminNoticeUpdate")
+    public String adminNoticeUpdate(AdminBoardDTO params, Model model, HttpServletRequest request) {
+        boolean result = false;
+        HttpSession session = request.getSession();
+        String adminId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+        Long idx = params.getMngrBbsNo();
+        if (adminId.equals("admin")) {
+            result = adminBoardService.updateAdminBoard(params);
+        }
+        MessageDTO message = new MessageDTO();
+        if(result) {
+            message = new MessageDTO("공지사항 수정이 완료되었습니다.", "/notice?idx="+idx, RequestMethod.GET, null);
+        } else {
+            message = new MessageDTO("공지사항 수정이 실패했습니다.", "/admin/adminNotice", RequestMethod.GET, null);
+        }
+        return showMessageAndRedirect(message, model);
+    }
+
+    /**
+     * 공지사항 삭제
+     * @param model
+     * @param request
+     * @return
+     */
+    @PostMapping("/admin/adminNoticeDelete")
+    public String adminNoticeDelete(Model model, HttpServletRequest request) {
+        boolean result = false;
+        HttpSession session = request.getSession();
+
+        String adminId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+
+        String[] delMsg = request.getParameterValues("delArr");
+
+        // delMsg 길이와 delWriter 길이는 같다.
+        int size = delMsg.length;
+        // 삭제할 게시글 수만큼 loop
+        if(adminId.equals("admin")) {
+            for ( int i = 0; i < size; i ++) {
+                result = adminBoardService.deleteAdminBoard(delMsg[i]);
+            }
+        }
+
+        MessageDTO message = new MessageDTO();
+        if(result) {
+            message = new MessageDTO("공지사항 삭제가 완료되었습니다.", "/admin/adminNoticeList", RequestMethod.GET, null);
+        } else {
+            message = new MessageDTO("공지사항 삭제가 실패했습니다.", "/admin/adminNoticeList", RequestMethod.GET, null);
+        }
+        return showMessageAndRedirect(message, model);
     }
 
     /**
@@ -197,7 +331,6 @@ public class AdminController {
      */
     @PostMapping("/admin/delete")
     public String adminBoardDelete(HttpServletRequest request) {
-        String fileNmTemp = "";
         String[] delMsg = request.getParameterValues("delArr");
 
         // delMsg 길이와 delWriter 길이는 같다.
@@ -210,6 +343,20 @@ public class AdminController {
         return "redirect:/admin/adminList";
     }
 
+    /**
+     * 회원목록 전체 조회 (ID만)
+     * @return
+     */
+    @GetMapping("/admin/allMember")
+    @ResponseBody
+    public HashMap<String, Object> getAllUser() {
+
+        HashMap<String, Object> resMap = new HashMap<>();
+
+        resMap.put("allMember", memberService.getAllUser());
+
+        return resMap;
+    }
 
     // 관리자 회원 정보 보기
     @GetMapping("/admin/member/info")
@@ -335,6 +482,12 @@ public class AdminController {
             e.printStackTrace();
         }
         return "fail";
+    }
+
+
+    private String showMessageAndRedirect(final MessageDTO params, Model model) {
+        model.addAttribute("params", params);
+        return "common/messageRedirect";
     }
 
 }

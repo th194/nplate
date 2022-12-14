@@ -102,29 +102,7 @@ public class AlarmController {
         HttpSession session = request.getSession();
         String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
         alarmDTO.setNtcnSendMber(memberId);         // 세션 정보로 알람 보내는사람 id 세팅
-        String kind = alarmDTO.getNtcnKnd();            // 알람 종류
-        String getSj = alarmDTO.getNtcnTrgtSj();
-        String subject = "";
-        if( getSj != null ) {
-            if(getSj.length() > 8 ) {
-                subject = getSj.substring(0, 7) + "...";
-            } else {
-                subject = getSj;
-            }
-        }
 
-        if(kind.equals("following")) {
-            alarmDTO.setNtcnCn(" 님이 회원님을 팔로잉 합니다.");
-            alarmDTO.setNtcnCours("/member/userInfo?id=" + alarmDTO.getNtcnSendMber());
-        } else if (kind.equals("like")) {
-            alarmDTO.setNtcnCn(" 님이 " + subject + " 게시물을 좋아합니다.");
-            alarmDTO.setNtcnCours("/board/view.do?idx=" + alarmDTO.getNtcnTrgtNo());
-        } else if (kind.equals("reply")) {
-            alarmDTO.setNtcnCn(" 님이 " + subject + " 게시물에 댓글을 남겼습니다.");
-            alarmDTO.setNtcnCours("/board/view.do?idx=" + alarmDTO.getNtcnTrgtNo());
-        } else if (kind.equals("delete")) {
-            alarmDTO.setNtcnCn("관리자에 의해 " + subject + " 게시물이 삭제되었습니다.");
-        }
         boolean result = alarmService.registerAlarm(alarmDTO);
         resMap.put("result", result);
         return resMap;

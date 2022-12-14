@@ -49,6 +49,9 @@ public class BoardController {
 	@Autowired
 	private MemberUtils memberUtils;
 
+	@Autowired
+	private AdminBoardService adminBoardService;
+
 	@Value("${nplate.upload.path}")
 	private String filePath;
 
@@ -739,5 +742,55 @@ public class BoardController {
 		} else {
 			return "member/index";
 		}
+	}
+
+
+	/**
+	 * 공지 상세보기
+	 * @param idx
+	 * @param model
+	 * @param request
+	 * @return
+	 */
+	@GetMapping("/notice")
+	public String openNotice(@RequestParam final Long idx, Model model, HttpServletRequest request) {
+
+		HttpSession session = request.getSession();
+		MemberDTO memberDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
+		model.addAttribute("memberInfo", memberDTO);
+
+		AdminBoardDTO board = adminBoardService.adminBoardView(idx);
+		model.addAttribute("board", board);
+
+		String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+
+		// 팔로잉 여부 확인
+		List<String> followingIds;
+		if (session.getAttribute(SessionConstants.FOLLOWING_IDS) != null) {
+			followingIds = (List<String>) session.getAttribute(SessionConstants.FOLLOWING_IDS);
+		} else {
+			followingIds = memberUtils.getFollowingMember(memberId);
+			session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+		}
+		boolean isFollowing = followingIds.contains(board.getMngrBbsWrter());
+		System.out.println("팔로잉하고있는지 isFollowing================= " + isFollowing);
+		model.addAttribute("isFollowing", isFollowing);
+
+		// 메뉴 팔로잉 처리
+		List<Map> followingMembers = new ArrayList<>();
+		if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+			followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+		} else {
+			if (followingIds.size() > 0) {
+				followingMembers = memberUtils.getFollowingsInfo(followingIds);
+			}
+			session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
+		}
+
+		model.addAttribute("followingMembers", followingMembers);
+
+		adminBoardService.adminBoardCntPlus(idx);
+
+		return "bootstrap-template/notice";
 	}
 }

@@ -42,9 +42,8 @@
 
 							<h6 class="collapse-header">게시판</h6>
 							<a class="collapse-item" href="/admin/adminList">게시판 목록</a>
-							<a class="collapse-item" href="/member/board/write">게시글 작성</a>
-							<a class="collapse-item" href="#">게시판관리1</a>
-							<a class="collapse-item" href="#">게시판관리2</a>
+							<a class="collapse-item" href="/admin/adminNotice">공지 작성</a>
+							<a class="collapse-item" href="/admin/adminNoticeList">공지 목록</a>
 						</div>
 					</div>
 				</li>
@@ -139,6 +138,14 @@
 				location.href = '/board/search?' + new URLSearchParams(queryParams).toString();
 			}
 			/* 페이지 이동 E */
+
+			/* 웹소켓 전역으로 설정 S */
+			let stompClient = null;
+			let socket = new SockJS('/stomp/chat');
+			stompClient = Stomp.over(socket);
+
+			stompClient.connect({}, function(frame) {});
+			/* 웹소켓 전역으로 설정 E */
 		</script>
 
 		<!-- 리스트에서만 쓰는 스크립트 -->

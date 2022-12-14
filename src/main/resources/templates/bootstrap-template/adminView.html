@@ -89,7 +89,7 @@
         <div class="btn_wrap text-center">
             <a href="javascript:void(0)" onclick="goListPage()" class="btn btn-secondary btn-icon-split">
                     <span class="icon text-white-50">
-                        <i class="fas fa-arrow-right"></i>
+                        <i class="fas fa-arrow-left"></i>
                     </span>
                 <span class="text">뒤로가기</span>
             </a>
@@ -110,32 +110,28 @@
     <!-- /.card-content -->
     <hr>
     <!-- 댓글 -->
-    <section class="mb-5">
-        <div class="card bg-light">
-            <div class="card-body">
-                <!-- 댓글 목록 -->
-                <div class="col-lg-12" id="replyList">
-
-                </div>
-                <!-- 댓글 페이징 -->
-                <ul class="pagination" style="justify-content: center">
-
-                </ul>
-                <!-- 댓글 목록 -->
-                <!-- Comment form-->
-                <form class="mb-4" th:object="${board}">
-                    <textarea id="answerCn" name="answerCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력"></textarea>
-                    <a href="javascript:void(0)" class="btn btn-light btn-icon-split" th:onclick="insertReply()" style="float:right">
-                        <span class="icon text-gray-600">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                        <span class="text">댓글 등록</span>
-                    </a>
-                </form>
-            </div>
-
+    <div class="blog comments" >
+        <!-- 댓글 목록 -->
+        <div id="replyList" class="comment">
         </div>
-    </section>
+
+        <!-- 댓글 페이징 -->
+        <ul class="pagination" style="justify-content: center">
+
+        </ul>
+
+        <!-- 댓글 폼 -->
+        <div class="reply-form">
+            <form action="">
+                <div class="row">
+                    <div class="col form-group">
+                        <textarea id="answerCn" name="answerCn" class="form-control" placeholder="내용을 입력해주세요."></textarea>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" th:onclick="insertReply()" style="float:right">댓글 등록</button>
+            </form>
+        </div>
+    </div>
     <!-- 댓글 -->
 </th:block>
 
@@ -145,6 +141,8 @@
         /*<![CDATA[*/
         console.log('관리자페이지========');
         var board = [[${board}]];
+        var $dom;				// 기존 댓글
+        var $domBtn;			// 기존 댓글 수정/삭제 버튼
         var loginMember;
 
         $(function () {
@@ -154,49 +152,65 @@
 
         /* 댓글 목록 S */
         function replyList(page) {
+            page = page ? page : 1;
             var uri = /*[[@{/reply/} + ${board.bbscttNo}]]*/"";
             var replyHtml = '';
-
             $.get(uri,
                 {page : page, limitStart : page * 10},
                 function (response) {
-                loginMember = response.member;
-                console.log('replyList => ', response.replyList);
-                if (response.replyList !== undefined) {
-                    console.log('로그인 사용자 = ' + loginMember);
-                    $(response.replyList).each(function (idx, reply) {
-                        var rgsde = reply.answerRgsde;
-                        var rgsdeFormt = timeForToday(rgsde);
-                        replyHtml += `
-                        <div class="d-flex mb-2" data-index="${reply.answerNo}">
-                            <div class="flex-shrink-0"><img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="..." /></div>
-                            <div class="ms-3" style="width:70%">
-                                <div class="fw-bold">${reply.answerWrter}</div>
-                                ${reply.answerCn}
+                    loginMember = response.member;
+                    console.log('response ===> ', response);
+                    console.log('replyList => ',response.replyList);
+                    if (response.replyList !== undefined) {
+                        $(response.replyList).each(function (idx, reply) {
+                            var rgsde = reply.answerRgsde;
+                            var rgsdeFormt = timeForToday(rgsde);
+                            replyHtml += `
+                                <div class="d-flex" data-index="${reply.answerNo}">
+                                    <div class="comment-img" style="margin-right : 10px;">
+                                        <img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="">
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            <a class="comment-answer" style="color: black;" href="">${reply.answerWrter}</a>
+                                            <time class="comment-answer comment-answer-font-12" style="margin-left : 20px;" dateTime="${rgsdeFormt}">${rgsdeFormt}</time>`;
+                            if(reply.answerUpdateAt == 'Y') {
+                                replyHtml += `<span class="comment-answer comment-answer-font-12"> (수정됨) </span>`;
+                            }
+                            replyHtml += `
+                                </h5>
+                                <p id="cn${reply.answerNo}" style="white-space: pre-line">${reply.answerCn}</p>
                             </div>
-                            <div class="right-flex">
-                                <a href="#" class="btn btn-info btn-icon-split" onclick="openModal(${reply.answerNo}, '${reply.answerWrter}', '${reply.answerCn}')">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-info-circle"></i>
-                                    </span>
-                                </a>
-                                <div class="right-flex" style="align-self: flex-end">${rgsdeFormt}</div>
-                            </div>
-                        </div>
-                        `;
-                    });
-                } else {
-                    replyHtml += `
-                            <p>아직 댓글이 없습니다.</p>
                             `;
-                }
-                $('#replyList').html(replyHtml);
-                drawPage(response.pagination.pagination, page);
-                page++;
-            }, 'json');
-
-            /* 댓글 목록 S */
+                            if (loginMember == reply.answerWrter) {
+                                replyHtml += `
+                                    <div style="margin-left:auto; text-align: center">
+                                        <a href="javascript:void(0)" class="reply comment-answer comment-answer-font-12" style="color : green;" id="updateAnswer${reply.answerNo}" onclick="updateAnswer(${reply.answerNo})">
+                                            <i class="bi bi-reply-fill"></i> 수정
+                                        </a>
+                                        <a href="javascript:void(0)" class="reply comment-answer comment-answer-font-12" style="color : red;" id="deleteAnswer${reply.answerNo}" onclick="deleteReply(${reply.answerNo})">
+                                            <i class="bi bi-reply-fill"></i> 삭제
+                                        </a>
+                                    </div>
+                                `;
+                            }
+                            replyHtml += `
+                                </div>
+                            `;
+                        });
+                    } else {
+                        replyHtml += `
+                            <p>아직 댓글이 없습니다.</p>
+                        `;
+                    }
+                    $('#replyList').html(replyHtml);
+                    if(response.replyList != null && response.replyList != '') {
+                        drawPage(response.pagination.page.pagination, page);
+                        page++;
+                    }
+                }, 'json');
         }
+        /* 댓글 목록 E */
 
         /* 댓글 페이징 S */
         function drawPage(pagination, page) {
@@ -405,7 +419,7 @@
         /* 댓글 등록 S */
         function insertReply() {
             var answerCn = document.getElementById('answerCn');
-            console.log('answerCn = ' + answerCn);
+            console.log('answerCn = ' + answerCn.value);
             if (answerCn.value == null || answerCn.value == '') {
                 alert('댓글을 입력해주세요.');
                 answerCn.focus();
@@ -434,6 +448,23 @@
                         alert('댓글 등록 실패');
                         return false;
                     }
+                    if ( board.bbscttWrter != loginMember) {
+                        stompClient.send('/pub/' + board.bbscttWrter, {}, JSON.stringify({writer: board.bbscttWrter, alarmType : 'reply', member : loginMember, date : date}));
+
+                        var alarmData = {
+                            ntcnReceiveMber : board.bbscttWrter,			// 알람 받는 사람 id
+                            ntcnKnd			: 'reply',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+                            ntcnTrgtNo		: board.bbscttNo,			// 알람 타겟 게시글 번호
+                            ntcnTrgtSj		: board.bbscttSj,			// 알람 타겟 게시글 제목
+                            ntcnTrgtAnswerNo : result.answerNo
+                        };
+
+                        $.ajax({
+                            url : '/alarm/register',
+                            type : 'POST',
+                            data : alarmData
+                        });
+                    }
                     replyList();
                     answerCn.value = '';
                 },
@@ -442,23 +473,50 @@
                     return false;
                 }
             });
-
         }
-
         /* 댓글 등록 E */
 
-        /* 댓글 수정/삭제 모달 오픈 S */
-        function openModal(idx, writer, content) {
-            $('#replyModal').modal('show');
-
-            $('#modalAnswerWrter').val(writer);
-            $('#modalAnswerCn').val(content);
-
-            document.getElementById('btnReplyUpdate').setAttribute('onclick', 'updateReply(' + idx + ')');
-            document.getElementById('btnReplyDelete').setAttribute('onclick', 'deleteReply(' + idx + ')');
+        /* 댓글 수정 UI S */
+        function updateAnswer(answerNo) {
+            var $updateAnswer = $('#updateAnswer' + answerNo);
+            var answerCn = $('#cn' + answerNo).text();
+            $dom = $updateAnswer.parent().parent();
+            console.log('answerCn answerNo ===> ', answerNo);
+            console.log('answerCn ===> ', answerCn);
+            console.log('부모의 부모노드 : ', $updateAnswer.parent().parent());
+            $updateAnswer.parent().parent().replaceWith(
+                `
+                    <form class="mb-4" id="cancelUpdate${answerNo}">
+                        <textarea id="replyCn${answerNo}" name="replyCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력">${answerCn}</textarea>
+                            <a href="javascript:void(0)" class="btn btn-light btn-icon-split" onclick="updateReply(${answerNo})" style="float:right">
+                                <span class="icon text-gray-600">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                                <span class="text">댓글 수정</span>
+                            </a>
+                            <a href="javascript:void(0)" class="btn btn-danger btn-icon-split" onclick="cancelUpdate(${answerNo})" style="float: right">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                                <span class="text">취소</span>
+                            </a>
+                    </form>
+                    <br class="br-cancel">
+                `
+            );
+            $domBtn = $updateAnswer.parent();
+            $domBtn.hide();
         }
 
-        /* 댓글 수정/삭제 모달 오픈 S */
+        // 수정 취소
+        function cancelUpdate(idx) {
+            console.log('$dom ===> ', $dom);
+            var $cancelUpdate = $('#cancelUpdate' + idx);
+            $cancelUpdate.replaceWith($dom);
+            $('.br-cancel').remove();
+            $domBtn.show();
+        }
+        /* 댓글 수정 UI E */
 
         /* 댓글 수정 S */
         function updateReply(idx) {
@@ -523,6 +581,11 @@
                         alert('댓글 삭제 실패');
                         return false;
                     }
+                    $.ajax({
+                        url : '/alarm/delete',
+                        type : 'POST',
+                        data : {ntcnTrgtAnswerNo : idx, ntcnKnd : 'reply'}
+                    })
                     replyList();
                     $('#replyModal').modal('hide');
                 },

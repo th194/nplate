@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="bootstrap-template/layout/admin-basic">
+<th:block layout:fragment="title">
+    <title>공지글 목록</title>
+</th:block>
+
+<th:block layout:fragment="main-content">
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-gray-700" style="width: 90%">공지 목록</h5>
+                <a href="javascript:void(0)" class="btn btn-warning btn-icon-split" style="float:right;" onclick="deleteAll()">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-trash"></i>
+                    </span>
+                    <span class="text">삭제</span>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <form id="adminNoticeListForm" method="post">
+                        <table class="table table-bordered" id="adminNoticeListTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="allCheck"/>
+                                        <label class="form-check-label" for="allCheck"></label>
+                                    </div>
+                                </th>
+                                <th>번호</th>
+                                <th>제목</th>
+                                <th>작성일</th>
+                                <th>조회수</th>
+                                <th>삭제여부</th>
+                            </tr>
+                            </thead>
+                            <tbody id="adminNoticeList">
+
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+                <ul class="pagination" style="justify-content: center">
+
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container-fluid -->
+</th:block>
+
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+        /* 초기화 S */
+        function init() {
+            var notice = [[${adminNoticeList}]];
+            console.log('noticeList ===> ', notice);
+            noticeList(notice);
+        }
+        /* 초기화 E */
+
+        /* 공지글 목록 리스트 S */
+        function noticeList(notice) {
+            var notiHtml = '';
+            var notiList = notice.list;
+            var pagination = notice.page.pagination;
+            if(notiList.length > 0) {
+                notiList.forEach((val, idx) => {
+                    notiHtml += `
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" data-sj="${val.mngrBbsSj}" data-val="${val.mngrBbsWrter}" value="${val.mngrBbsNo}" name="subCheck" id="${val.mngrBbsNo}"/>
+                                    <label class="form-check-label" for="${val.mngrBbsNo}"></label>
+                                </div>
+                            </td>
+                            <td>${val.mngrBbsNo}</td>
+                            <td><a href="javascript:void(0)" onclick="goViewPage(${val.mngrBbsNo})">${val.mngrBbsSj}</a></td>
+                            <td>${val.mngrBbsRgsde}</td>
+                            <td>${val.mngrBbsRdcnt}</td>
+                            <td>${val.mngrBbsDeleteAt}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                notiHtml += `
+                    <td colspan="5">작성된 공지사항이 없습니다.</td>
+                `;
+            }
+            $('#adminNoticeList').append(notiHtml);
+            noticePage(pagination, notice.page);
+        }
+        /* 공지글 목록 리스트 E */
+
+        /* 공지글 목록 페이징 S */
+        function noticePage(pagination, params) {
+            if (!pagination || !params) {
+                $('.pagination').empty();
+                return false;
+            }
+            console.log('params ===> ', params);
+            var memberId = [[${memberId}]];
+            var member = memberId != undefined ? memberId : memberId != null ? memberId : '';
+            var html = '';
+
+            // 첫 페이지, 이전 페이지
+            if (pagination.existPrevPage) {
+                html += `
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(1, ${member})" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="paginate_button page-item">
+                        <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.startPage - 1}, ${member});" aria-label="Previous">
+                        <span aria-hidden="true">&lsaquo;</span>
+                        </a>
+                    </li>
+                `;
+            }
+
+            // 페이지 번호
+            for (var i = pagination.startPage; i <= pagination.endPage; i++) {
+                var active = (i === params.page) ? 'active' : '';
+                html += `
+                <li  class="${active} paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${i}, ${member});">${i}</a>
+                </li>
+                `;
+            }
+
+            if (pagination.existNextPage) {
+                html += `
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.endPage + 1}, ${member});" aria-label="Next">
+                        <span aria-hidden="true">&rsaquo;</span>
+                    </a>
+                </li>
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0)" aria-controls="dataTable" class="page-link" onclick="movePage(${pagination.totalPageCount}, ${member});" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                `;
+            }
+
+            $('.pagination').append(html);
+        }
+        /* 공지글 목록 페이징 E */
+
+        /* 페이지 이동 S */
+        function movePage(page, member) {
+            // var form = document.getElementById('searchForm');
+            var queryParams = {
+                page      : (page) ? page : 1,
+                recordSize: 10,
+                pageSize  : 10,
+                id : member,
+                limitStart : page * 10
+            }
+            location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+        }
+        /* 페이지 이동 E */
+
+        /* 게시글 상세페이지 이동 S */
+        function goViewPage(idx) {
+            var queryString = (location.search) ? location.search + `&idx=${idx}` : `?idx=${idx}`;
+            location.href = '/notice' + queryString;
+        }
+        /* 게시글 상세페이지 이동 E */
+
+        /* 게시글 삭제 S */
+        function deleteAll() {
+            var delArr = [];
+            var delList = $('input[name=subCheck]');
+            for (var i = 0; i < delList.length; i++) {
+                if(delList[i].checked) {
+                    delArr.push(delList[i].value);
+                }
+            }
+            if(delArr.length == 0) {
+                alert('선택된 게시글이 없습니다.');
+            } else {
+                if(confirm(delArr + '번 게시물을 삭제하시겠습니까?')) {
+                    $.ajax({
+                        url : '/admin/adminNoticeDelete',
+                        type : 'POST',
+                        traditional : true,
+                        data : {delArr : delArr},
+                        success : function(result) {
+                            const promise = new Promise((resolve, reject) => {
+                                setTimeout(() => {
+                                    $.ajax({
+                                        url : '/admin/allMember',
+                                        type : 'GET',
+                                        success : function(result) {
+                                            console.log('공지사항 삭제 allMember result ====> ', result);
+                                            var allMember = result.allMember;
+                                            for ( var i = 0; i < allMember.length; i ++ ) {
+                                                var alarmData = {
+                                                    ntcnReceiveMber : allMember[i].id,			// 알람 받는 사람 id
+                                                    ntcnKnd			: 'notice',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply', 공지사항 : 'notice' )
+                                                    ntcnTrgtNo		: delArr[i]			// 알람 타겟 게시글 번호
+                                                };
+
+                                                $.ajax({
+                                                    url : '/alarm/delete',
+                                                    type : 'POST',
+                                                    data : alarmData
+                                                });
+                                            }
+                                        }
+                                    });
+                                }, 1000, resolve());
+                            });
+                            promise.then(() => {
+                                setTimeout(() => {
+                                    location.replace('/admin/adminNoticeList' + location.search);
+                                }, 1000)
+                            });
+
+                        }
+                    });
+
+                }
+            }
+        }
+        /* 게시글 삭제 E */
+        init();
+    </script>
+</th:block>
+</html>

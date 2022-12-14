@@ -70,17 +70,16 @@
 
         function findAllPost() {
             var boardList = [[${boardList}]];
-            console.log(boardList);
+            console.log('boardList ===> ', boardList);
             if (!boardList.list.length) {
                 $('boardList').append('<div>검색 결과가 없습니다.</div>');
                 drawPage();
                 return false;
             }
 
-            var pagination = [[${boardList.pagination}]];
-            var params = [[${params}]];
+            var pagination = [[${boardList.page.pagination}]];
+            var params = [[${boardList.page}]];
             var num = pagination.totalRecordCount - ((params.page - 1) * params.recordSize);
-
             drawList(boardList.list, num);
             drawPage(pagination, params);
         }
@@ -140,7 +139,6 @@
                 $('.pagination').empty();
                 return false;
             }
-            console.log(params);
             var memberId = [[${memberId}]];
             var member = memberId != undefined ? memberId : memberId != null ? memberId : '';
             var html = '';
@@ -310,20 +308,15 @@
                         traditional : true,
                         data : {delArr : delArr, delWriterArr : delWriterArr},
                         success : function(result) {
-                            var socket = new SockJS('/stomp/chat');
-                            var stompClient = null;
                             var date = moment().format('YYYY-MM-DD HH:mm:ss'); // moment.js 현재 날짜/시간
-                            stompClient = Stomp.over(socket);
-                            stompClient.connect({}, function (frame) {
-                            });
                             const promise = new Promise((resolve, reject) => {
                                 setTimeout(() => {
                                     for (let i in delWriterArr) {
-                                        stompClient.send('/pub/'+delWriterArr[i], {}, JSON.stringify({writer : delWriterArr[i], bbsNo : delArr[i], alarmType : 'delete', date : date}));
+                                        stompClient.send('/pub/'+delWriterArr[i], {}, JSON.stringify({writer : delWriterArr[i], bbsSj : delSjArr[i], bbsNo : delArr[i], alarmType : 'delete', date : date}));
 
                                         var alarmData = {
                                             ntcnReceiveMber : delWriterArr[i],			// 알람 받는 사람 id
-                                            ntcnKnd			: 'delete',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+                                            ntcnKnd			: 'delete',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply', 공지사항 : 'notice' )
                                             ntcnTrgtNo		: delArr[i],			// 알람 타겟 게시글 번호
                                             ntcnTrgtSj      : delSjArr[i]
                                         };

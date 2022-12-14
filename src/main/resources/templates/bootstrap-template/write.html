@@ -44,7 +44,7 @@
             </div>
 
             <div class="form-group">
-                <label for="bbscttGrade" class="col-sm-2 control-label">평점</label>
+                <label for="rate1" class="col-sm-2 control-label">평점</label>
                 <fieldset>
                     <input type="radio" name="bbscttGrade" value="5" id="rate1">
                     <label for="rate1" class="grade">⭐</label>
@@ -184,21 +184,6 @@
             }
             form.submit();
         }
-
-        // 에디터에 있는 textarea 값 체크가 안됨..
-        // function valid(...target) {
-        //     target.forEach((val, index) => {
-        //         if( val.val() == '' || val.val() == null) {
-        //             console.log('index = ' + index);
-        //             console.log(val.val());
-        //             target[index].addClass('is-invalid');
-        //             target[index].focus();
-        //             return false;
-        //         } else {
-        //             return true;
-        //         }
-        //     })
-        // }
 
         /* 해시태그 시작 */
         var tag = {};

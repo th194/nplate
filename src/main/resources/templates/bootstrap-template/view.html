@@ -82,7 +82,7 @@
 		<div class="btn_wrap text-center">
 			<a href="javascript:void(0)" onclick="goListPage()" class="btn btn-secondary btn-icon-split">
 					<span class="icon text-white-50">
-						<i class="fas fa-arrow-right"></i>
+						<i class="fas fa-arrow-left"></i>
 					</span>
 				<span class="text">뒤로가기</span>
 			</a>
@@ -126,8 +126,6 @@
 			</form>
 		</div>
 	</div>
-
-
 	<!-- 댓글 -->
 
 </th:block>
@@ -153,6 +151,7 @@
 					{page : page, limitStart : page * 10},
 				function (response) {
 					loginMember = response.member;
+					console.log('response ===> ', response);
 					console.log('replyList => ',response.replyList);
 					if (response.replyList !== undefined) {
 						$(response.replyList).each(function (idx, reply) {
@@ -198,12 +197,12 @@
 					}
 					$('#replyList').html(replyHtml);
 					if(response.replyList != null && response.replyList != '') {
-						drawPage(response.pagination.pagination, page);
+						drawPage(response.pagination.page.pagination, page);
 						page++;
 					}
 				}, 'json');
-			/* 댓글 목록 E */
 		}
+		/* 댓글 목록 E */
 
 		/* 댓글 페이징 S */
 		function drawPage(pagination, page) {
@@ -262,9 +261,6 @@
 		}
 
 		/* 댓글 페이지 이동 E */
-
-
-
 
 		/* 화면 렌더링 */
 		// 별점
@@ -616,7 +612,7 @@
 
 							var alarmData = {
 								ntcnReceiveMber : id,			            // 알람 받는 사람 id
-								ntcnKnd			: 'following',			    // 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+								ntcnKnd			: 'following',			    // 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply', 공지사항 : 'notice' )
 								ntcnTrgtSj      : memberInfo.id             // 팔로잉때는 게시글 제목이 없으므로 알람 보내는 사람 id 넣어준다.
 							};
 

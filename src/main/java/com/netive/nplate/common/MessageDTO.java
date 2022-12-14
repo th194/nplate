@@ -15,4 +15,6 @@ public class MessageDTO {
     private String redirectUri;         // 리다이렉트 URI
     private RequestMethod method;       // HTTP 요청 메소드
     private Map<String, Object> data;   // 화면(View)로 전달할 데이터(파라미터)
+
+    public MessageDTO() {};
 }

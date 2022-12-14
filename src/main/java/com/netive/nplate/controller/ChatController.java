@@ -103,24 +103,24 @@ public class ChatController {
     @MessageMapping(value = "/{memberId}")
     public void sendMessage(@DestinationVariable("memberId") String memberId, ChatMessageDTO message) {
         System.out.println("알림기능 컨트롤러 호출 sendMessage()");
-        System.out.println(memberId);
-        if(message.getAlarmType().equals("delete")) {
-            message.setMessage("관리자에 의해 " + message.getBbsNo() + "번 게시물이 삭제되었습니다.");
-        } else if (message.getAlarmType().equals("like")) {
-            String subject = "";
-            if(message.getBbsSj().length() > 8) {
-                subject = message.getBbsSj().substring(0, 7) + "...";
-            } else {
-                subject = message.getBbsSj();
-            }
-            message.setMessage(message.getMember() + " 님이 " + subject + " 게시물을 좋아합니다.");
-        } else if (message.getAlarmType().equals("following")) {
-            message.setMessage(message.getMember() + " 님이 회원님을 팔로잉합니다.");
-        } else if (message.getAlarmType().equals("reply")) {
-            message.setMessage(message.getMember() + " 님이 회원님의 게시물에 댓글을 남겼습니다.");
+        String subject = "";
+        String kind = message.getAlarmType();
+        if(message.getBbsSj().length() > 8) {
+            subject = message.getBbsSj().substring(0, 7) + "...";
+        } else {
+            subject = message.getBbsSj();
         }
-
-        System.out.println(message.toString());
+        if(kind.equals("delete")) {
+            message.setMessage("관리자에 의해 " + subject + " 게시물이 삭제되었습니다.");
+        } else if (kind.equals("like")) {
+            message.setMessage(message.getMember() + " 님이 " + subject + " 게시물을 좋아합니다.");
+        } else if (kind.equals("following")) {
+            message.setMessage(message.getMember() + " 님이 회원님을 팔로잉합니다.");
+        } else if (kind.equals("reply")) {
+            message.setMessage(message.getMember() + " 님이 회원님의 게시물에 댓글을 남겼습니다.");
+        } else if (kind.equals("notice")) {
+            message.setMessage("공지사항이 등록되었습니다.");
+        }
         template.convertAndSend("/sub/"+memberId, message);
     }
 }

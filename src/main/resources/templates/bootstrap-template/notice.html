@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="bootstrap-template/layout/basic">
+<th:block layout:fragment="title">
+    <title>공지사항</title>
+</th:block>
+
+<th:block layout:fragment="main-content">
+    <form class="form-horizontal form-view form-grade" th:object="${board}">
+        <!-- Page content-->
+        <div class="container mt-5">
+            <div class="col">
+                <div class="col-lg-12">
+                    <!-- Post content-->
+                    <article>
+                        <!-- Post header-->
+                        <header class="mb-4">
+                            <!-- Post title-->
+                            <h1 class="fw-bolder mb-1" style="border-bottom: 0.05rem solid #858796;" th:text="*{mngrBbsSj}"></h1>
+                            <!-- Post meta content-->
+                            <div class="text-muted fst-italic mb-2">
+                                <span style="float:right;" th:text="*{mngrBbsRgsde}"></span>
+                            </div>
+                            <!-- Post categories-->
+                        </header>
+                        <!-- Post content-->
+                        <section class="mb-5">
+<!--                            <textarea id="bbscttCn" rows="10" colse="100" style="width:100%; height:500px; min-width:600px; display: none;" th:text="*{mngrBbsCn}"></textarea>-->
+                            <div th:text="*{mngrBbsCn}"></div>
+                        </section>
+                    </article>
+                    <!-- Comments section-->
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="card-content">
+        <div class="btn_wrap text-center">
+            <a href="javascript:void(0)" onclick="goListPage()" class="btn btn-secondary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                <span class="text">뒤로가기</span>
+            </a>
+            <a th:if="${'admin' == memberInfo.getId()}" href="javascript:void(0)" onclick="goWritePage()" class="btn btn-warning btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                <span class="text">수정하기</span>
+            </a>
+            <a th:if="${'admin' == memberInfo.getId()}" href="javascript:void(0)" onclick="deleteBoard()" class="btn btn-danger btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-trash"></i>
+                    </span>
+                <span class="text">삭제하기</span>
+            </a>
+        </div>
+    </div>
+</th:block>
+
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /* 수정하기 */
+        function goWritePage() {
+            location.href = '/admin/adminNotice' + location.search;
+        }
+        /* 수정하기 */
+
+        /* 뒤로가기 */
+        function goListPage() {
+            // var queryString = new URLSearchParams(location.search);
+            // queryString.delete('idx');
+            // location.href = '/member/board/list?' + queryString.toString();
+            history.back();
+        }
+        /* 뒤로가기 */
+
+        /*게시글 삭제 함수*/
+        function deleteBoard() {
+            var idx = board.mngrBbsNo;
+            if (!confirm(idx + "번 게시글을 삭제할까요?")) {
+                return false;
+            }
+
+            var inputHtml = "";
+            new URLSearchParams(location.search).forEach((value, key) => {
+                inputHtml += `<input type="hidden" name="${key}" value="${value}" />`;
+            });
+
+            var formHtml = `<form id="deleteForm" action="/admin/adminNoticeDelete" method="post">
+                                ${inputHtml}
+                            </form>`;
+
+            var doc = new DOMParser().parseFromString(formHtml, 'text/html');
+            var form = doc.body.firstChild;
+            document.body.append(form);
+            document.getElementById('deleteForm').submit();
+        }
+        /*게시글 삭제 함수*/
+    </script>
+</th:block>
+</html>
