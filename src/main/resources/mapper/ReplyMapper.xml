@@ -7,7 +7,9 @@
         ANSWER_CN,
         ANSWER_WRTER,
         ANSWER_RGSDE,
-        ANSWER_UPDDE
+        ANSWER_UPDDE,
+        ANSWER_UPDATE_AT,
+        ANSWER_DELETE_AT
     </sql>
 
     <!-- 댓글 등록 -->
@@ -22,7 +24,9 @@
             #{answerCn},
             #{answerWrter},
             NOW(),
-            NULL
+            NULL,
+            IFNULL(#{answerUpdateAt}, "N"),
+            IFNULL(#{answerDeleteAt}, "N")
         )
     </insert>
 
@@ -42,6 +46,14 @@
             ANSWER_CN = #{answerCn},
             ANSWER_WRTER = #{answerWrter},
             ANSWER_UPDATE_AT = "Y"
+        WHERE ANSWER_NO = #{answerNo}
+    </update>
+
+    <!-- 관리자가 댓글 삭제 -->
+    <update id="adminDeleteReply" parameterType="ReplyDTO">
+        UPDATE NETIVE_PROJECT01_REPLY
+        SET
+            ANSWER_DELETE_AT = "Y"
         WHERE ANSWER_NO = #{answerNo}
     </update>
 

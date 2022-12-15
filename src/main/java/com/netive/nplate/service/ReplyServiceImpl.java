@@ -74,4 +74,14 @@ public class ReplyServiceImpl implements ReplyService{
     public int getReplyBoardCount(Long idx) {
         return replyMapper.selectReplyBoardCount(idx);
     }
+
+    // 관리자가 댓글 삭제
+    @Override
+    public boolean adminDeleteReply(ReplyDTO params) {
+        int queryResult = 0;
+
+        queryResult = replyMapper.adminDeleteReply(params);
+
+        return (queryResult == 1) ? true : false;
+    }
 }

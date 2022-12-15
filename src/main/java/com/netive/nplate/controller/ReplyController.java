@@ -7,14 +7,11 @@ import com.google.gson.JsonObject;
 import com.netive.nplate.domain.*;
 import com.netive.nplate.paging.Pagination;
 import com.netive.nplate.paging.PagingResponse;
+import com.netive.nplate.service.AlarmService;
 import com.netive.nplate.service.MemberService;
 import com.netive.nplate.service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +27,9 @@ public class ReplyController {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private AlarmService alarmService;
 
     /**
      * 댓글 목록
@@ -196,6 +196,36 @@ public class ReplyController {
             jsonObj.addProperty("message", "데이터베이스 처리 오류");
         } catch (Exception e) {
             jsonObj.addProperty("message", "시스템 문제 발생");
+        }
+
+        return jsonObj;
+    }
+
+    /**
+     * 관리자가 댓글 삭제
+     * @param params
+     * @return
+     */
+    @PostMapping("/reply/{answerNo}")
+    public JsonObject deleteReplyByAdmin(ReplyDTO params, HttpServletRequest request) {
+        JsonObject jsonObj = new JsonObject();
+        HttpSession session = request.getSession();
+        String adminId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+        AlarmDTO alarm = new AlarmDTO();
+        try {
+            boolean isDelete = replyService.adminDeleteReply(params);
+            jsonObj.addProperty("result", isDelete);
+
+            alarm.setNtcnTrgtAnswerNo(params.getAnswerNo());
+            alarm.setNtcnReceiveMber(params.getAnswerWrter());
+            alarm.setNtcnTrgtNo(params.getBbscttNo()); // 게시글 번호
+            alarm.setNtcnTrgtSj(params.getAnswerCn());
+            alarm.setNtcnSendMber(adminId);
+            alarm.setNtcnKnd("replyDel");
+
+            alarmService.registerAlarm(alarm);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return jsonObj;

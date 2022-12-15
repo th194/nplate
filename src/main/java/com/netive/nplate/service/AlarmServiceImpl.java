@@ -44,6 +44,9 @@ public class AlarmServiceImpl implements AlarmService{
         } else if (kind.equals("notice")) {
             alarmDTO.setNtcnCn("[공지] " + subject + " 가 등록되었습니다.");
             alarmDTO.setNtcnCours("/notice?idx=" + alarmDTO.getNtcnTrgtNo());
+        } else if (kind.equals("replyDel")) {
+            alarmDTO.setNtcnCn("관리자에 의해 " + subject + " 댓글이 삭제되었습니다.");
+            alarmDTO.setNtcnCours("/board/view.do?idx=" + alarmDTO.getNtcnTrgtNo());
         }
 
         queryResult = alarmMapper.registerAlarm(alarmDTO);

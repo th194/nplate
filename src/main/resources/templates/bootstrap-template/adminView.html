@@ -6,37 +6,6 @@
 </th:block>
 
 <th:block layout:fragment="main-content">
-    <div id="replyModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="replyModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="modalAnswerWrter" class="col-form-label">작성자</label>
-                            <input type="text" id="modalAnswerWrter" class="form-control" placeholder="작성자를 입력해주세요." disabled="disabled" />
-                        </div>
-                        <div class="form-group">
-                            <label for="modalAnswerCn" class="col-form-label">내용</label>
-                            <textarea id="modalAnswerCn" class="form-control" placeholder="내용을 입력해 주세요."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="btnModalCancel" class="btn btn-default waves-effect waves-light" data-dismiss="modal">취소하기</button>
-                    <button type="button" id="btnReplyUpdate" class="btn btn-primary waves-effect waves-light">수정하기</button>
-                    <button type="button" id="btnReplyDelete" class="btn btn-danger waves-effect waves-light">삭제하기</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</th:block>
-
-<th:block layout:fragment="main-content">
     <form class="form-horizontal form-view form-grade" th:object="${board}">
         <!-- Page content-->
         <div class="container mt-5">
@@ -141,6 +110,7 @@
         /*<![CDATA[*/
         console.log('관리자페이지========');
         var board = [[${board}]];
+
         var $dom;				// 기존 댓글
         var $domBtn;			// 기존 댓글 수정/삭제 버튼
         var loginMember;
@@ -165,38 +135,49 @@
                         $(response.replyList).each(function (idx, reply) {
                             var rgsde = reply.answerRgsde;
                             var rgsdeFormt = timeForToday(rgsde);
-                            replyHtml += `
-                                <div class="d-flex" data-index="${reply.answerNo}">
-                                    <div class="comment-img" style="margin-right : 10px;">
-                                        <img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="">
-                                    </div>
-                                    <div>
-                                        <h5>
-                                            <a class="comment-answer" style="color: black;" href="">${reply.answerWrter}</a>
-                                            <time class="comment-answer comment-answer-font-12" style="margin-left : 20px;" dateTime="${rgsdeFormt}">${rgsdeFormt}</time>`;
-                            if(reply.answerUpdateAt == 'Y') {
-                                replyHtml += `<span class="comment-answer comment-answer-font-12"> (수정됨) </span>`;
-                            }
-                            replyHtml += `
-                                </h5>
-                                <p id="cn${reply.answerNo}" style="white-space: pre-line">${reply.answerCn}</p>
-                            </div>
-                            `;
-                            if (loginMember == reply.answerWrter) {
+                            if (reply.answerDeleteAt == 'Y') {
                                 replyHtml += `
-                                    <div style="margin-left:auto; text-align: center">
-                                        <a href="javascript:void(0)" class="reply comment-answer comment-answer-font-12" style="color : green;" id="updateAnswer${reply.answerNo}" onclick="updateAnswer(${reply.answerNo})">
-                                            <i class="bi bi-reply-fill"></i> 수정
-                                        </a>
-                                        <a href="javascript:void(0)" class="reply comment-answer comment-answer-font-12" style="color : red;" id="deleteAnswer${reply.answerNo}" onclick="deleteReply(${reply.answerNo})">
-                                            <i class="bi bi-reply-fill"></i> 삭제
-                                        </a>
+                                    <input type="hidden" id="data${reply.answerNo}" data-no="${reply.answerNo}" data-writer="${reply.answerWrter}" data-cn="${reply.answerCn}">
+                                    <div class="d-flex" data-index="${reply.answerNo}">
+                                        <div class="comment-img" style="margin-right : 10px;">
+                                            <img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="">
+                                        </div>
+                                        <div>
+                                            <h5>
+                                                <a class="comment-answer" style="color: black;" href="">${reply.answerWrter}</a>
+                                            </h5>
+                                            <p id="cn${reply.answerNo}" style="white-space: pre-line">관리자에 의해 삭제된 댓글입니다.</p>
+                                        </div>
                                     </div>
+                                    <hr>
+                                `;
+                            } else {
+                                replyHtml += `
+                                    <input type="hidden" id="data${reply.answerNo}" data-no="${reply.answerNo}" data-writer="${reply.answerWrter}" data-cn="${reply.answerCn}">
+                                    <div class="d-flex" data-index="${reply.answerNo}">
+                                        <div class="comment-img" style="margin-right : 10px;">
+                                            <img class="rounded-circle" style="width:30px; height: 30px;" src="/member/info/profile?id=${response.profile[idx]}" alt="">
+                                        </div>
+                                        <div>
+                                            <h5>
+                                                <a class="comment-answer" style="color: black;" href="">${reply.answerWrter}</a>
+                                                <time class="comment-answer comment-answer-font-12" style="margin-left : 20px;" dateTime="${rgsdeFormt}">${rgsdeFormt}</time>`;
+                                if (reply.answerUpdateAt == 'Y') {
+                                    replyHtml += `<span class="comment-answer comment-answer-font-12"> (수정됨) </span>`;
+                                }
+                                replyHtml += `
+                                            </h5>
+                                            <p id="cn${reply.answerNo}" style="white-space: pre-line">${reply.answerCn}</p>
+                                        </div>
+                                        <div style="margin-left:auto; text-align: center">
+                                            <a href="javascript:void(0)" class="reply comment-answer comment-answer-font-12 delete-answer" style="color : red;" id="deleteAnswer${reply.answerNo}" onclick="deleteReply(${reply.answerNo})">
+                                                <i class="bi bi-reply-fill"></i> 삭제
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <hr>
                                 `;
                             }
-                            replyHtml += `
-                                </div>
-                            `;
                         });
                     } else {
                         replyHtml += `
@@ -477,85 +458,90 @@
         /* 댓글 등록 E */
 
         /* 댓글 수정 UI S */
-        function updateAnswer(answerNo) {
-            var $updateAnswer = $('#updateAnswer' + answerNo);
-            var answerCn = $('#cn' + answerNo).text();
-            $dom = $updateAnswer.parent().parent();
-            console.log('answerCn answerNo ===> ', answerNo);
-            console.log('answerCn ===> ', answerCn);
-            console.log('부모의 부모노드 : ', $updateAnswer.parent().parent());
-            $updateAnswer.parent().parent().replaceWith(
-                `
-                    <form class="mb-4" id="cancelUpdate${answerNo}">
-                        <textarea id="replyCn${answerNo}" name="replyCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력">${answerCn}</textarea>
-                            <a href="javascript:void(0)" class="btn btn-light btn-icon-split" onclick="updateReply(${answerNo})" style="float:right">
-                                <span class="icon text-gray-600">
-                                    <i class="fas fa-arrow-right"></i>
-                                </span>
-                                <span class="text">댓글 수정</span>
-                            </a>
-                            <a href="javascript:void(0)" class="btn btn-danger btn-icon-split" onclick="cancelUpdate(${answerNo})" style="float: right">
-                                <span class="icon text-white-50">
-                                    <i class="fas fa-trash"></i>
-                                </span>
-                                <span class="text">취소</span>
-                            </a>
-                    </form>
-                    <br class="br-cancel">
-                `
-            );
-            $domBtn = $updateAnswer.parent();
-            $domBtn.hide();
-        }
+        // 관리자 페이지에서는 댓글 수정이 필요없다.
+        // function updateAnswer(answerNo) {
+        //     var $updateAnswer = $('#updateAnswer' + answerNo);
+        //     var answerCn = $('#cn' + answerNo).text();
+        //     $dom = $updateAnswer.parent().parent();
+        //     $updateAnswer.parent().parent().replaceWith(
+        //         `
+        //             <form class="mb-4" id="cancelUpdate${answerNo}">
+        //                 <textarea id="replyCn${answerNo}" name="replyCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력">${answerCn}</textarea>
+        //                     <a href="javascript:void(0)" class="btn btn-icon-split" onclick="updateReply(${answerNo})" style="float:right">
+        //                         <!--<span class="icon text-gray-600">
+        //                             <i class="fas fa-arrow-right"></i>
+        //                         </span>-->
+        //                         <span class="text">댓글 수정</span>
+        //                     </a>
+        //                     <a href="javascript:void(0)" class="btn btn-icon-split" onclick="cancelUpdate(${answerNo})" style="float: right">
+        //                         <!--<span class="icon text-white-50">
+        //                             <i class="fas fa-trash"></i>
+        //                         </span>-->
+        //                         <span class="text">취소</span>
+        //                     </a>
+        //             </form>
+        //             <br class="br-cancel">
+        //         `
+        //     );
+        //     $domBtn = $updateAnswer.parent();
+        //     $domBtn.hide();
+        //     $('#answerCn').attr('disabled', true);
+        //     $('#btnRegister').attr('disabled', true);
+        //     $('.update-answer').hide();
+        //     $('.delete-answer').hide();
+        // }
 
         // 수정 취소
-        function cancelUpdate(idx) {
-            console.log('$dom ===> ', $dom);
-            var $cancelUpdate = $('#cancelUpdate' + idx);
-            $cancelUpdate.replaceWith($dom);
-            $('.br-cancel').remove();
-            $domBtn.show();
-        }
+        // function cancelUpdate(idx) {
+        //     console.log('$dom ===> ', $dom);
+        //     var $cancelUpdate = $('#cancelUpdate' + idx);
+        //     $cancelUpdate.replaceWith($dom);
+        //     $('.br-cancel').remove();
+        //     $domBtn.show();
+        //     $('#answerCn').attr('disabled', false);
+        //     $('#btnRegister').attr('disabled', false);
+        //     $('.update-answer').show();
+        //     $('.delete-answer').show();
+        // }
         /* 댓글 수정 UI E */
 
         /* 댓글 수정 S */
-        function updateReply(idx) {
-            var writer = $('#modalAnswerWrter').val();
-            var content = $('#modalAnswerCn').val();
-
-            var uri = '/reply/' + idx;
-            console.log('수정 uri = ' + uri);
-            var headers = {
-                'Content-Type'          : 'application/json',
-                'X-HTTP-Method-Override': 'PATCH'
-            };
-            var params = {
-                answerNo   : idx,
-                answerCn   : content,
-                answerWrter: writer
-            }
-
-            $.ajax({
-                url     : uri,
-                type    : 'PATCH',
-                headers : headers,
-                dataType: 'json',
-                data    : JSON.stringify(params),
-                success : function (result) {
-                    if (result.result == false) {
-                        alert('수정 실패');
-                        return false;
-                    }
-                    replyList();
-                    $('#replyModal').modal('hide');
-
-                },
-                error   : function (err) {
-                    console.log('err = ' + JSON.stringify(err));
-                    return;
-                }
-            });
-        }
+        // function updateReply(idx) {
+        //     var writer = loginMember;
+        //     var content = $('#replyCn'+idx).val();
+        //
+        //     var uri = '/reply/' + idx;
+        //     console.log('수정 uri = ' + uri);
+        //     var headers = {
+        //         'Content-Type'          : 'application/json',
+        //         'X-HTTP-Method-Override': 'PATCH'
+        //     };
+        //     var params = {
+        //         answerNo   : idx,
+        //         answerCn   : content,
+        //         answerWrter: writer
+        //     }
+        //
+        //     $.ajax({
+        //         url     : uri,
+        //         type    : 'PATCH',
+        //         headers : headers,
+        //         dataType: 'json',
+        //         data    : JSON.stringify(params),
+        //         success : function (result) {
+        //             if (result.result == false) {
+        //                 alert('수정 실패');
+        //                 return false;
+        //             }
+        //             replyList();
+        //
+        //         },
+        //         error   : function (err) {
+        //             console.log('err = ' + JSON.stringify(err));
+        //             return;
+        //         }
+        //     });
+        // }
 
         /* 댓글 수정 E */
 
@@ -564,30 +550,32 @@
             if (!confirm('댓글을 삭제 하시겠습니까?')) {
                 return false;
             }
+            var answerNo = $('#data'+idx).data('no');                     // 댓글 번호
+            var writer = $('#data'+idx).data('writer');             // 댓글 작성자
+            var cn = $('#data'+idx).data('cn');                     // 댓글 내용
+            var boardNo = board.bbscttNo;                           // 게시글 번호
 
             var uri = '/reply/' + idx;
+            var data = {
+                answerNo : answerNo,
+                answerCn : cn,
+                answerWrter : writer,
+                bbscttNo : boardNo
+            }
             console.log('삭제 uri = ' + uri);
-            var headers = {
-                'Content-Type'          : 'application/json',
-                'X-HTTP-Method-Override': 'DELETE'
-            };
             $.ajax({
                 url     : uri,
-                type    : 'DELETE',
-                headers : headers,
-                dataType: 'json',
+                type    : 'POST',
+                data : data,
                 success : function (result) {
                     if (result.result == false) {
                         alert('댓글 삭제 실패');
                         return false;
                     }
-                    $.ajax({
-                        url : '/alarm/delete',
-                        type : 'POST',
-                        data : {ntcnTrgtAnswerNo : idx, ntcnKnd : 'reply'}
-                    })
+                    var date = moment().format('YYYY-MM-DD HH:mm:ss'); // moment.js 현재 날짜/시간
+                    stompClient.send('/pub/'+writer, {}, JSON.stringify({bbsNo : boardNo, alarmType : 'replyDel', bbsSj : cn, date : date}));
+
                     replyList();
-                    $('#replyModal').modal('hide');
                 },
                 error   : function (err) {
                     console.log('err = ' + JSON.stringify(err));

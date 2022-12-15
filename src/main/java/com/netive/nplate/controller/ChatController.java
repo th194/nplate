@@ -122,6 +122,8 @@ public class ChatController {
             message.setMessage(message.getMember() + " 님이 회원님의 게시물에 댓글을 남겼습니다.");
         } else if (kind.equals("notice")) {
             message.setMessage("[공지] " + subject + " 가 등록되었습니다.");
+        } else if (kind.equals("replyDel")) {
+            message.setMessage("관리자에 의해 " + subject + " 댓글이 삭제되었습니다.");
         }
         template.convertAndSend("/sub/"+memberId, message);
     }

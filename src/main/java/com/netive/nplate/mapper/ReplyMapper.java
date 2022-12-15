@@ -16,4 +16,5 @@ public interface ReplyMapper {
     public List<ReplyDTO> selectReplyList(PageDTO page);
     public int selectReplyTotalCount(PageDTO params);
     public int selectReplyBoardCount(Long idx);
+    public int adminDeleteReply(ReplyDTO params);
 }

@@ -31,7 +31,7 @@
                     </span>
                         <span class="text">뒤로가기</span>
                     </a>
-                    <button type="button" class="btn btn-primary" id="sendBtn">작성</button>
+                    <button type="button" class="btn btn-primary" id="sendBtn">등록</button>
                 </div>
             </form>
         </div>
@@ -70,6 +70,8 @@
         /* 뒤로가기 */
 
         function addEvent() {
+
+            // 확인버튼 클릭
             $('#sendBtn').on('click', function() {
                 var mngrBbsSj = $('#mngrBbsSj').val();
                 var mngrBbsCn = $('#mngrBbsCn').val();
@@ -106,12 +108,26 @@
                         location.href = '/admin/adminNoticeList';
                     }
                 });
+            });
 
+            // 체크박스 전체체크 클릭
+            $('#allCheck').click(function () {
+                if ($('#allCheck').is(':checked')) {
+                    $('input[name=subCheck]').prop('checked', true);
+                } else {
+                    $('input[name=subCheck]').prop('checked', false);
+                }
+            });
 
-
-
-
-
+            // 체크박스 개별체크
+            $('input[name=subCheck]').click(function () {
+                var total = $('input[name=subCheck]').length;
+                var checked = $('input[name=subCheck]:checked').length;
+                if (total != checked) {
+                    $('#allCheck').prop('checked', false);
+                } else {
+                    $('#allCheck').prop('checked', true);
+                }
             });
         }
         /* 이벤트 등록 */

@@ -136,6 +136,25 @@
                                     </a>
                                     <br>
                                     `;
+                                } else if (val.ntcnKnd == 'replyDel') {
+                                    alarmHtml = `
+                                        <a href="${val.ntcnCours}" data-val="${val.ntcnNo}" class="updateAlarm" style="text-decoration: none;">
+                                            <div class="card mb-4 py-3 border-left-dark">
+                                                <div class="card-body">
+                                                    <div class="row no-gutters align-items-center">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">${date}</div>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${val.ntcnCn}</div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <i class="bi bi-eraser-fill fa-2x text-gray-300"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <br>
+                                    `;
                                 }
                             }
                         });

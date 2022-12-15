@@ -21,4 +21,7 @@ public interface ReplyService {
 
     // 게시글 별 댓글 갯수
     public int getReplyBoardCount(Long idx);
+
+    // 관리자가 댓글 삭제
+    public boolean adminDeleteReply(ReplyDTO params);
 }
