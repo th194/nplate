@@ -102,14 +102,16 @@ public class ChatController {
 
     @MessageMapping(value = "/{memberId}")
     public void sendMessage(@DestinationVariable("memberId") String memberId, ChatMessageDTO message) {
-        System.out.println("알림기능 컨트롤러 호출 sendMessage()");
         String subject = "";
         String kind = message.getAlarmType();
-        if(message.getBbsSj().length() > 8) {
-            subject = message.getBbsSj().substring(0, 7) + "...";
-        } else {
-            subject = message.getBbsSj();
+        if(message.getBbsSj() != null) {
+            if(message.getBbsSj().length() > 8) {
+                subject = message.getBbsSj().substring(0, 7) + "...";
+            } else {
+                subject = message.getBbsSj();
+            }
         }
+
         if(kind.equals("delete")) {
             message.setMessage("관리자에 의해 " + subject + " 게시물이 삭제되었습니다.");
         } else if (kind.equals("like")) {
@@ -119,7 +121,7 @@ public class ChatController {
         } else if (kind.equals("reply")) {
             message.setMessage(message.getMember() + " 님이 회원님의 게시물에 댓글을 남겼습니다.");
         } else if (kind.equals("notice")) {
-            message.setMessage("공지사항이 등록되었습니다.");
+            message.setMessage("[공지] " + subject + " 가 등록되었습니다.");
         }
         template.convertAndSend("/sub/"+memberId, message);
     }

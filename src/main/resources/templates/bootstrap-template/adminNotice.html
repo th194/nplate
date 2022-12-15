@@ -8,7 +8,7 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">공지 작성</h5>
-            <form th:action="@{/admin/adminRegister}" th:method="post" id="noticeForm">
+            <form>
                 <!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
                 <input type="hidden" id="mngrBbsNo" name="mngrBbsNo" th:if="${board != null}" th:value="${board.mngrBbsNo}"/>
 
@@ -25,14 +25,13 @@
                     </div>
                 </div>
                 <div class="text-center">
-                    <button type="button" class="btn btn-primary" id="sendBtn">작성</button>
-                    <button type="reset" class="btn btn-secondary">취소</button>
                     <a href="javascript:void(0)" onclick="goListPage()" class="btn btn-secondary btn-icon-split">
                     <span class="icon text-white-50">
                         <i class="fas fa-arrow-left"></i>
                     </span>
                         <span class="text">뒤로가기</span>
                     </a>
+                    <button type="button" class="btn btn-primary" id="sendBtn">작성</button>
                 </div>
             </form>
         </div>
@@ -72,25 +71,47 @@
 
         function addEvent() {
             $('#sendBtn').on('click', function() {
+                var mngrBbsSj = $('#mngrBbsSj').val();
+                var mngrBbsCn = $('#mngrBbsCn').val();
+                var data = {
+                    mngrBbsSj : mngrBbsSj,
+                    mngrBbsCn : mngrBbsCn
+                }
+
                 $.ajax({
-                    url : '/admin/allMember',
-                    type : 'GET',
+                    url : '/admin/adminRegister',
+                    type : 'POST',
+                    data : data,
                     async : false,
-                    success : function(result) {
-                        var allMember = result.allMember;
-                        var date = moment().format('YYYY-MM-DD HH:mm:ss'); // moment.js 현재 날짜/시간
-                        console.log('result ===> ', result);
-                        for ( var i = 0; i < allMember.length; i ++ ) {
-                            stompClient.send('/pub/'+allMember[i], {}, JSON.stringify({alarmType : 'notice', date : date}));
-                        }
-                    },
-                    error : function(err) {
-                        console.log('err ===> ', err);
-                        alert('에러 발생');
-                        return;
+                    success : function(success) {
+                        console.log('success ===> ', success);
+                        $.ajax({
+                            url : '/admin/allMember',
+                            type : 'GET',
+                            async : false,
+                            success : function(result) {
+                                var allMember = result.allMember;
+                                var date = moment().format('YYYY-MM-DD HH:mm:ss'); // moment.js 현재 날짜/시간
+                                console.log('result ===> ', result);
+                                for ( var i = 0; i < allMember.length; i ++ ) {
+                                    stompClient.send('/pub/'+allMember[i].id, {}, JSON.stringify({bbsNo : success.idx, bbsSj : mngrBbsSj, alarmType : 'notice', date : date}));
+                                }
+                            },
+                            error : function(err) {
+                                console.log('err ===> ', err);
+                                alert('에러 발생');
+                                return;
+                            }
+                        });
+                        location.href = '/admin/adminNoticeList';
                     }
-                })
-                $('#noticeForm').submit();
+                });
+
+
+
+
+
+
             });
         }
         /* 이벤트 등록 */

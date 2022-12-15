@@ -167,19 +167,21 @@ public class AdminController {
      * @return
      */
     @PostMapping("/admin/adminRegister")
-    public String adminRegister(AdminBoardDTO params, HttpServletRequest request, Model model) {
+    @ResponseBody
+    public HashMap<String, Object> adminRegister(AdminBoardDTO params, HttpServletRequest request, Model model) {
         boolean result = false;
+        HashMap<String, Object> resMap = new HashMap<>();
         HttpSession session = request.getSession();
         AlarmDTO alarm = new AlarmDTO();
-        MessageDTO message = new MessageDTO();
         String adminId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
         params.setMngrBbsWrter(adminId); // admin 로그인 ID
 
         Long idx = 0L;
-
+        String subject = "";
         if(adminId.equals("admin")) {
             result = adminBoardService.registAdminBoard(params);
             idx = params.getMngrBbsNo();
+            subject = params.getMngrBbsSj();
         }
 
         if(result) {
@@ -190,13 +192,14 @@ public class AdminController {
                 alarm.setNtcnSendMber(adminId);
                 alarm.setNtcnTrgtNo(idx);
                 alarm.setNtcnKnd("notice");
+                alarm.setNtcnTrgtSj(subject);
                 alarmService.registerAlarm(alarm);
             }
-            message = new MessageDTO("공지사항 등록이 완료되었습니다.", "/admin/adminNoticeList", RequestMethod.GET, null);
+            resMap.put("idx", idx);
         } else {
-            message = new MessageDTO("공지사항 등록에 실패했습니다.", "/admin/adminNotice", RequestMethod.GET, null);
+            resMap.put("error", "error");
         }
-        return showMessageAndRedirect(message, model);
+        return resMap;
     }
 
     /**
