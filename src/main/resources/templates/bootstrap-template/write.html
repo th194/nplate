@@ -88,30 +88,7 @@
 <th:block layout:fragment="script">
     <script th:inline="javascript">
         /*<![CDATA[*/
-
-        /* 게시글 상세정보 렌더링 S */
-        window.onload = () => {
-            renderBoardInfo();
-        }
-
-        function renderBoardInfo() {
-            var board = [[${board}]];
-            if(!board) {
-                return false;
-            }
-
-            var form = document.getElementById('saveForm');
-            var fields = ['bbscttNo', 'bbscttSj', 'bbscttCn', 'bbscttHashtag', 'bbscttCchLa', 'bbscttCchLo', 'bbscttStore'];
-            fields.forEach(field => {
-                form[field].value = board[field];
-            });
-        }
-        /* 게시글 상세정보 렌더링 E */
-
         var board = [[${board}]];
-
-
-
         /* smartEditor */
         var oEditors = [];
 
@@ -249,7 +226,6 @@
 
         function updateBoard() {
             var board = [[${board}]];
-            console.log('board = ' + JSON.stringify(board));
             if (!board) {
                 return false;
             }

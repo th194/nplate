@@ -8,7 +8,7 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">공지 작성</h5>
-            <form>
+            <form id="noticeForm">
                 <!--/* update의 경우 서버로 전달할 게시글 번호 (PK) */-->
                 <input type="hidden" id="mngrBbsNo" name="mngrBbsNo" th:if="${board != null}" th:value="${board.mngrBbsNo}"/>
 
