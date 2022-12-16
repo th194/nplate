@@ -195,36 +195,27 @@
 
 						# 모달 사용 Example (모달을 띄우고싶은 페이지 script 부분에서)
 
-						data => 객체
-						title : 제목, content : 내용
+						// 콜백함수 있을 때
+						openModal.alert("Alert Message!", function() {MsgBox.Alert("OK");});
 
-						ex)
-						var data = {
-							title : '타이틀입니다',
-							content : '컨텐트입니다'
-						}
-						openModal(data);
+						// 콜백함수 없을 때
+						openModal.alert("Alert Message!");
 
 					-->
 					<!-- 모달 영역 -->
 					<th:block layout:fragment="modal">
-						<div class="modal" tabindex="-1" id="modal" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-							<div class="modal-dialog modal-dialog-scrollable" role="document">
+						<div class="modal" id="msg_popup" tabindex="-1" role="dialog">
+							<div class="modal-dialog modal-dialog-centered" role="document">
 								<div class="modal-content">
-									<div class="modal-header">
-										<!-- 모달 제목 -->
-										<h5 class="modal-title" id="modal-title">알림</h5>
-										<button type="button" class="btn-close modalClose" data-bs-dismiss="modal" aria-label="Close">
-											<span aria-hidden="true">x</span>
-										</button>
+									<div class="modal-body">
+										<!-- MSG Space-->
 									</div>
-									<div class="modal-body" id="modal-body">
-										<!-- 모달 내용 -->
-										<p></p>
+									<div class="modal-footer" id="btn_confirm">
+										<button type="button" id="confirm_yes" class="btn btn-primary" data-dismiss="modal" >YES</button>
+										<button type="button" id="confirm_no"class="btn btn-secondary" data-dismiss="modal">NO</button>
 									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-primary" id="confirmBtn">확인</button>
-										<button type="button" class="btn btn-secondary modalClose" data-bs-dismiss="modal">취소</button>
+									<div class="modal-footer" id="btn_alert">
+										<button type="button" id="alert_ok"class="btn btn-primary" data-dismiss="modal" >OK</button>
 									</div>
 								</div>
 							</div>
@@ -436,36 +427,72 @@
 				})
 			}
 
-			/* 모달 오픈 공통함수 */
-			// 파라미터 : data(객체), confirm(확인 버튼 누를 시 동작할 형태), callback(콜백함수)
-			function openModal(data, confirm, callback) {
-				var confirmBtn;
-				console.log('data ===> ', data);
-				console.log(data.data);
-				if(data.title != null && data.title != undefined) {
-					$('#modal-title').html(data.title);
-				}
+			/* 모달 오픈 공통함수 S */
+			var openModal = {
+				/* Alert */
+				alert: function(msg, okhandler) {
+					new Promise((resolve, reject) => {
+						$("#msg_popup #btn_confirm").hide();
+						$("#msg_popup #btn_alert").show();
 
-				if(data.content != null && data.content != undefined) {
-					$('#modal-body').html(data.content);
-				}
+						$("#msg_popup #alert_ok").unbind();
+						$("#msg_popup .modal-body").html(msg);
+						$('#msg_popup').modal('show');
 
-				// 확인 버튼 클릭 시 이벤트인데.. 고민좀..
-				if(confirm != null && confirm != undefined) {
-					confirmBtn = confirm;
-				} else {
-					confirmBtn = 'hide';
-				}
+						$("#msg_popup #alert_ok").click(function() {
+							$('#msg_popup').modal('hide');
+						});
 
-				$('#confirmBtn').on('click', function() {
-					$('#modal').modal(confirmBtn);
-				});
+						$("#msg_popup").on("hidden.bs.modal", function(e) {
+							e.stopPropagation();
+							if(okhandler != null) resolve();
+							else reject();
+						});
+					}).then(okhandler).catch(function() {});
+				},
 
-				// TODO 모달에서 데이터를 사용해야 될 경우... callback에 데이터 담아서 다시 돌려줄까...
-				$('#modal').modal('show');
+				/* Confirm */
+				confirm: function(msg, yeshandler, nohandler) {
+					new Promise((resolve, reject) => {
+						var flag = false;
+						$("#msg_popup #btn_alert").hide();
+						$("#msg_popup #btn_confirm").show();
+
+						$("#msg_popup #confirm_yes").unbind();
+						$("#msg_popup #confirm_no").unbind();
+						$("#msg_popup .modal-body").html(msg);
+						$('#msg_popup').modal('show');
+
+						$('#msg_popup').on('keypress', function (e) {
+							var keycode = (e.keyCode ? e.keyCode : e.which);
+							if(keycode == '13') {
+								flag = true;
+								$('#msg_popup').modal('hide');
+							}
+						});
+
+						$("#msg_popup #confirm_yes").click(function() {
+							flag = true;
+						});
+						$("#msg_popup #confirm_no").click(function() {
+							flag = false;
+						});
+
+						$("#msg_popup").on("hidden.bs.modal", function(e) {
+							e.stopPropagation();
+							if(yeshandler != null && flag == true) resolve(1);
+							else if(nohandler != null && flag == false) resolve(2);
+							else reject();
+						});
+
+					}).then(function(value) {
+						if(value == 1)      yeshandler();
+						else if(value == 2) nohandler();
+					}).catch(function() {});
+				},
 			}
 
-
+			/* 모달 오픈 공통함수 E */
 			addEvent();
 		</script>
 
