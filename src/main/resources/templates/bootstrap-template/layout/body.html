@@ -191,7 +191,51 @@
 							</ul>
 						</nav>
 
-					<th:block layout:fragment="modal"></th:block>
+					<!--
+
+						# 모달 사용 Example (모달을 띄우고싶은 페이지 script 부분에서)
+
+						- 모달 제목부분 (id : 'modal-title')
+						- 모달 내용부분 (id : 'modal-body')
+
+						1. 제목과 내용 설정 (ex)
+						- $('#modal-title').html('모달 제목');
+						- $('#modal-body).html('모달 내용');
+
+						2. 모달 확인 버튼에 이벤트 걸기
+						 - $('#confirmBtn).on('click', function() {
+							$('#modal').modal('hide');
+						 }
+
+						3. 모달 오픈하기
+						- $('#modal).modal('show');  ==> 모달 지우고싶을땐 hide
+
+					-->
+					<!-- 모달 영역 -->
+					<th:block layout:fragment="modal">
+						<div class="modal" tabindex="-1" id="modal" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-scrollable" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<!-- 모달 제목 -->
+										<h5 class="modal-title" id="modal-title"></h5>
+										<button type="button" class="btn-close modalClose" data-bs-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">x</span>
+										</button>
+									</div>
+									<div class="modal-body" id="modal-body">
+										<!-- 모달 내용 -->
+										<p></p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-primary" id="confirmBtn">확인</button>
+										<button type="button" class="btn btn-secondary modalClose" data-bs-dismiss="modal">취소</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</th:block>
+
 					<!-- 메인 콘텐츠 -->
 					<div class="container-fluid">
 						<section>
@@ -384,9 +428,22 @@
 			}
 			/* 날짜 계산 E */
 
-			$('#alarmCenter').click(function() {
-				location.href = '/alarm';
-			});
+			function addEvent() {
+
+				// 알람 view 페이지로 이동
+				$('#alarmCenter').click(function() {
+					location.href = '/alarm';
+				});
+
+				// 모달 창 닫기
+				$('.modalClose').click(function(e){
+					$('#modal').modal('hide');
+				})
+			}
+
+
+
+			addEvent();
 		</script>
 
 		<!-- 리스트에서만 쓰는 스크립트 -->

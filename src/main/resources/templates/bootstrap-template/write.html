@@ -114,6 +114,8 @@
 
             var form = document.getElementById('saveForm');
             var subject = $('#bbscttSj');
+            var mapLa = $('#bbscttCchLa'); // 위도
+            var mapLo = $('#bbscttCchLo'); // 경도
 
             // textarea 값 가져오기
             var content = $('#bbscttCn');
@@ -124,6 +126,21 @@
             if(subject.val() == '' || subject.val() == null) {
                 alert('제목을 입력해주세요.');
                 subject.focus();
+                return;
+            }
+            if(mapLa.val() == '' || mapLa.val() == null) {
+                $('#modal-title').html('알림');
+                $('#modal-body').html('장소를 등록해주세요.');
+                $('#modal').modal('show');
+                $('#btnMap').focus();
+                return;
+            }
+
+            if(mapLo.val() == '' || mapLo.val() == null) {
+                $('#modal-title').html('알림');
+                $('#modal-body').html('장소를 등록해주세요.');
+                $('#modal').modal('show');
+                $('#btnMap').focus();
                 return;
             }
 
