@@ -124,22 +124,31 @@
             // <p>태그 <br>로 바꾸기
             // var contentVal = content.val().replace(/<\/p><p>/gi, "<br>");
             if(subject.val() == '' || subject.val() == null) {
-                alert('제목을 입력해주세요.');
+                var data = {
+                    title : '알림',
+                    content : '제목을 입력해주세요.'
+                }
+                openModal(data);
                 subject.focus();
                 return;
             }
+
             if(mapLa.val() == '' || mapLa.val() == null) {
-                $('#modal-title').html('알림');
-                $('#modal-body').html('장소를 등록해주세요.');
-                $('#modal').modal('show');
+                var data = {
+                    title : '알림',
+                    content : '장소를 등록해주세요.'
+                }
+                openModal(data);
                 $('#btnMap').focus();
                 return;
             }
 
             if(mapLo.val() == '' || mapLo.val() == null) {
-                $('#modal-title').html('알림');
-                $('#modal-body').html('장소를 등록해주세요.');
-                $('#modal').modal('show');
+                var data = {
+                    title : '알림',
+                    content : '장소를 등록해주세요.'
+                }
+                openModal(data);
                 $('#btnMap').focus();
                 return;
             }
@@ -154,7 +163,12 @@
                     srcArr.push(img[i].src);
                 }
             } else {
-                alert('이미지를 반드시 등록해주세요.');
+
+                var data = {
+                    title : '알림',
+                    content : '이미지를 반드시 등록해주세요.'
+                }
+                openModal(data);
                 return;
             }
 

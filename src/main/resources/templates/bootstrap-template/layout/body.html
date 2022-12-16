@@ -195,20 +195,15 @@
 
 						# 모달 사용 Example (모달을 띄우고싶은 페이지 script 부분에서)
 
-						- 모달 제목부분 (id : 'modal-title')
-						- 모달 내용부분 (id : 'modal-body')
+						data => 객체
 
-						1. 제목과 내용 설정 (ex)
-						- $('#modal-title').html('모달 제목');
-						- $('#modal-body).html('모달 내용');
+						ex)
+						var data = {
+							title : '타이틀입니다',
+							content : '컨텐트입니다'
+						}
 
-						2. 모달 확인 버튼에 이벤트 걸기
-						 - $('#confirmBtn).on('click', function() {
-							$('#modal').modal('hide');
-						 }
-
-						3. 모달 오픈하기
-						- $('#modal).modal('show');  ==> 모달 지우고싶을땐 hide
+						openModal(data);
 
 					-->
 					<!-- 모달 영역 -->
@@ -441,6 +436,15 @@
 				})
 			}
 
+			/* 모달 오픈 공통함수 */
+			function openModal(data) {
+				// var data = JSON.stringify(data);
+				console.log('data ===> ', data);
+				console.log('data.length ===> ', data.length);
+				$('#modal-title').html(data.title);
+				$('#modal-body').html(data.content);
+				$('#modal').modal('show');
+			}
 
 
 			addEvent();
