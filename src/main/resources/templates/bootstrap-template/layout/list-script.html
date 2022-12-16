@@ -5,7 +5,6 @@
 		/* 무한 스크롤 위한 페이지 작업 S */
 		var page = 0;
 		var isFlag = true;
-		var scrollY = localStorage.getItem('scrolly');
 		$(function() {
 			drawList();
 		});
@@ -168,7 +167,6 @@
 					}
 				});
 			}
-			localStorage.removeItem('scrolly');
 		}
 		/* 게시글 리스트 조회 E */
 
@@ -180,8 +178,6 @@
 			var $heart = $(this).find('i'); // 하트 아이콘
 			var writer = $(this).data('val');
 			var subject = $(this).data('subject');
-			scrollY = this.scrollY || document.documentElement.scrollTop;
-			localStorage.setItem('scrolly', scrollY);
 
 			if ( $heart.hasClass('bi-heart-fill') ) { // 이걸로 해도 되고.... 글번호 포함하고 있는지 여부로 해도되고...
 				// 좋아요 취소 ajax
@@ -193,23 +189,21 @@
 					data: { id: testId, idx: index },
 					success: function (data) {
 						if (data === 'success') {
-							alert('좋아요 취소 성공');
-
+							// alert('좋아요 취소 성공');
 							$.ajax({
 								url : '/alarm/delete',
 								type : 'POST',
 								data : {ntcnTrgtNo : index, ntcnKnd : 'like'}, //  게시글 번호
 								success : function(result) {
-									console.log('result ====> ', result);
-									alert('알람 삭제 성공');
-									location.replace(location.pathname + location.search);
+									// location.replace(location.pathname + location.search);
 									// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
 								},
 								error : function(err) {
 									console.log('err ====> ', err);
-									alert('알람 삭제 실패');
 								}
 							});
+							$heart.removeClass('bi-heart-fill');
+							$heart.addClass('bi-heart');
 
 						} else {
 							alert('좋아요 취소 실패');
@@ -232,7 +226,7 @@
 						if (data.result === 'success') {
 							var likeInfo = data.likeInfo;
 							var date = moment(likeInfo[0].likeRgsde).format('YYYY-MM-DD HH:mm:ss');
-							alert('좋아요 추가 성공');
+							// alert('좋아요 추가 성공');
 							// 알람 전송
 							if (writer != testId) {
 								stompClient.send('/pub/'+writer, {}, JSON.stringify({
@@ -246,7 +240,7 @@
 
 								var alarmData = {
 									ntcnReceiveMber : writer,			// 알람 받는 사람 id
-									ntcnKnd			: 'like',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply' )
+									ntcnKnd			: 'like',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply', 공지사항 : 'notice', 댓글삭제 : 'replyDel' )
 									ntcnTrgtNo		: index,			// 알람 타겟 게시글 번호
 									ntcnTrgtSj		: subject			// 알람 타겟 게시글 제목
 								};
@@ -258,7 +252,9 @@
 									data : alarmData
 								});
 							}
-							location.replace(location.pathname + location.search);
+							$heart.removeClass('bi-heart');
+							$heart.addClass('bi-heart-fill');
+							// location.replace(location.pathname + location.search);
 							// location.reload(); 시 post로 전송되어 오류 발생하므로 replace 사용
 						} else {
 							alert('좋아요 추가 실패');
