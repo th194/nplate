@@ -196,13 +196,13 @@
 						# 모달 사용 Example (모달을 띄우고싶은 페이지 script 부분에서)
 
 						data => 객체
+						title : 제목, content : 내용
 
 						ex)
 						var data = {
 							title : '타이틀입니다',
 							content : '컨텐트입니다'
 						}
-
 						openModal(data);
 
 					-->
@@ -213,7 +213,7 @@
 								<div class="modal-content">
 									<div class="modal-header">
 										<!-- 모달 제목 -->
-										<h5 class="modal-title" id="modal-title"></h5>
+										<h5 class="modal-title" id="modal-title">알림</h5>
 										<button type="button" class="btn-close modalClose" data-bs-dismiss="modal" aria-label="Close">
 											<span aria-hidden="true">x</span>
 										</button>
@@ -437,12 +437,26 @@
 			}
 
 			/* 모달 오픈 공통함수 */
-			function openModal(data) {
-				// var data = JSON.stringify(data);
+			// 파라미터 : data(객체), confirm(확인 버튼 누를 시 동작할 형태), callback(콜백함수)
+			function openModal(data, confirm, callback) {
 				console.log('data ===> ', data);
-				console.log('data.length ===> ', data.length);
-				$('#modal-title').html(data.title);
-				$('#modal-body').html(data.content);
+				console.log(data.data);
+				if(data.title != null && data.title != undefined) {
+					$('#modal-title').html(data.title);
+				}
+
+				if(data.content != null && data.content != undefined) {
+					$('#modal-body').html(data.content);
+				}
+
+				// 확인 버튼 클릭 시 이벤트인데.. 고민좀..
+				if(confirm != null && confirm != undefined) {
+					$('#confirmBtn').on('click', function() {
+						$('#modal').modal(confirm);
+					});
+				}
+
+				// TODO 모달에서 데이터를 사용해야 될 경우... callback에 데이터 담아서 다시 돌려줄까...
 				$('#modal').modal('show');
 			}
 
