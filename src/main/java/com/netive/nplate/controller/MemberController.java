@@ -79,9 +79,7 @@ public class MemberController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("message", "catch msg=======");
-            model.addAttribute("url", "/member/error");
-            return "member/error";
+            throw e;
         }
     }
 
@@ -182,12 +180,15 @@ public class MemberController {
                 model.addAttribute("followingMembers", followingMembers);
 
                 return "bootstrap-template/userInfo";
+            } else {
+                session.invalidate();
+                return "redirect:/";
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
-        return "member/error";
     }
 
 
@@ -295,13 +296,13 @@ public class MemberController {
 
                 return "bootstrap-template/myInfo";
             } else {
-                return "member/error";
+                session.invalidate();
+                return "redirect:/";
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            session.invalidate();
-            return "redirect:/";
+            throw e;
         }
     }
 
@@ -347,12 +348,13 @@ public class MemberController {
 
                 return "bootstrap-template/updateForm";
             } else {
-                return "member/error";
+                session.invalidate();
+                return "redirect:/";
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "member/error";
+            throw e;
         }
     }
 
@@ -416,7 +418,6 @@ public class MemberController {
 
         int result = memberService.updateInfo(memberDTO);
         if (result > 0) {
-
             session.setAttribute(SessionConstants.MEMBER_DTO, null);
         }
         return "redirect:/member/myInfo"; // 처리 수정해야함

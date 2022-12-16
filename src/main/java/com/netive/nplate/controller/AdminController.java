@@ -453,16 +453,11 @@ public class AdminController {
                 userService.addMembers(addMember);
             }
 
-            /*model.addAttribute("message", "가입이 완료되었습니다.");
-            model.addAttribute("url", "/");*/
-
             return "redirect:/admin/member/list";
 
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("message", "catch msg=======");
-            model.addAttribute("url", "/member/error");
-            return "member/error";
+            throw e;
         }
     }
 
