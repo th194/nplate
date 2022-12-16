@@ -409,7 +409,11 @@ public class MemberController {
             }
         }
 
-        // 그 외 정보 수정
+        // 생일 문자열 형식 변경
+        String formatDate = memberDTO.getBirthday().replaceAll("-", "");
+        memberDTO.setBirthday(formatDate);
+
+        // 성별 변경(기본값일경우에만)
         HttpSession session = request.getSession();
         MemberDTO sessionDTO = (MemberDTO) session.getAttribute(SessionConstants.MEMBER_DTO);
         if (!sessionDTO.getSexCd().equals("D")) {

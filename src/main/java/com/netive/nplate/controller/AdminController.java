@@ -435,20 +435,19 @@ public class AdminController {
         try {
             System.out.println("회원 여러명 추가===========");
 
-            // todo id, pwd 제외 다른 것들 기본 설정 어떻게 할지
+            // id 제외 모두 같은 값
             String id = memberDTO.getId();
             String pwd = memberDTO.getPwd();
             String name = memberDTO.getName();
             String nickName = memberDTO.getNickName();
             String tel = memberDTO.getTel();
 
-            // todo 개인정보 페이지에서 이름, 생일 수정 안되게 되어있는데 변경 가능하도록 수정
             for (int i = 0; i < count; i++) {
                 MemberDTO addMember = new MemberDTO();
                 addMember.setId(id + "-" + i);
                 addMember.setPwd(pwd);
-                addMember.setName(name + "-" + i);
-                addMember.setNickName(nickName + "-" + i);
+                addMember.setName(name);
+                addMember.setNickName(nickName);
                 addMember.setTel(tel);
                 userService.addMembers(addMember);
             }

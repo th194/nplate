@@ -41,7 +41,7 @@
     <update id="updateInfo" parameterType="MemberDTO">
         <![CDATA[
         update NETIVE_PROJECT01_MEMBER
-        set MBER_CTTPC = #{tel},  MBER_EMAIL = #{email}, MBER_AREA = #{area}, MBER_NCNM = #{nickName}, MBER_SEXDSTN = #{sexCd}
+        set MBER_CTTPC = #{tel}, MBER_NM = #{name}, MBER_BRTHDY = #{birthday}, MBER_SEXDSTN = #{sexCd}, MBER_EMAIL = #{email}, MBER_AREA = #{area}, MBER_NCNM = #{nickName}
         where MBER_ID = #{id}
         ]]>
     </update>
