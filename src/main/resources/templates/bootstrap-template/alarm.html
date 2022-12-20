@@ -136,8 +136,9 @@
                                     </a>
                                     <br>
                                     `;
+                                // 관리자가 댓글 삭제
                                 } else if (val.ntcnKnd == 'replyDel') {
-                                    alarmHtml = `
+                                    alarmHtml += `
                                         <a href="${val.ntcnCours}" data-val="${val.ntcnNo}" class="updateAlarm" style="text-decoration: none;">
                                             <div class="card mb-4 py-3 border-left-dark">
                                                 <div class="card-body">
