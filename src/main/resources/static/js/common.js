@@ -74,6 +74,50 @@ var commonJS = {
         }else{
             return false;
         }
+    },
+
+    // 태그 문자 있는지 체크
+    isRegExp : function(value) {
+        console.log('value ===> ', value);
+        if(!this.isEmpty(value)) {
+            var regexp = /(<([^>]+)>)/ig;
+            if(value.match(regexp)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    },
+
+    // 태그 제거
+    regExp : function(value) {
+        var regexp = /(<([^>]+)>)/ig;
+        var returnVal = '';
+        returnVal = value.replace(regexp, '');
+        return returnVal;
+    },
+
+    // 태그 변환
+    convertTag : function(str) {
+        str = str.replace(/</g, '&lt;');
+        str = str.replace(/>/g, '&gt;');
+        str = str.replace(/\"/g, '&quot;');
+        str = str.replace(/\'/g, '&#39;');
+        str = str.replace(/\n/g, '<br />');
+        return str;
+    },
+
+    // 태그 변환
+    convertTagRevert : function(str) {
+        str = str.replace('&lt;', '<');
+        str = str.replace('&gt;', '>');
+        str = str.replace('&quot;', '"');
+        str = str.replace('&#39;', "'");
+        str = str.replace('<br />', '\n');
+        return str;
     }
+
 }
 /* 공통 함수 E */

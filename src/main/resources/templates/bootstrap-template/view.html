@@ -16,7 +16,7 @@
 						<!-- Post header-->
 						<header class="mb-4">
 							<!-- Post title-->
-							<h1 class="fw-bolder mb-1" style="border-bottom: 0.05rem solid #858796;" th:text="*{bbscttSj}"></h1>
+							<h1 class="fw-bolder mb-1" style="border-bottom: 0.05rem solid #858796;" id="subject"></h1>
 							<!-- Post meta content-->
 							<div class="text-muted fst-italic mb-2">
 								<!-- 작성자 아이디 드랍다운 -->
@@ -137,6 +137,7 @@
 		var $domBtn;			// 기존 댓글 수정/삭제 버튼
 		var loginMember;
 		var board = [[${board}]];
+		$('#subject').text(commonJS.convertTagRevert(board.bbscttSj));
 		$(function(){
 			var page = 1;
 			replyList(page);
@@ -425,8 +426,8 @@
 		function insertReply() {
 			var answerCn = document.getElementById('answerCn');
 
-			if ( answerCn.value == null || answerCn.value == '') {
-				alert('댓글을 입력해주세요.');
+			if ( commonJS.isEmpty(answerCn.value)) {
+				openModal.alert('댓글을 입력해주세요.');
 				answerCn.focus();
 				return false;
 			}
@@ -536,8 +537,8 @@
 			var writer = loginMember;
 			var content = $('#replyCn'+idx).val();
 
-			if(content == '' || content == null) {
-				alert('수정할 댓글을 입력해주세요');
+			if(commonJS.isEmpty(content)) {
+				openModal.alert('수정할 댓글을 입력해주세요');
 			}
 			console.log('idx ===> ', idx);
 			console.log('writer ===> ', writer);

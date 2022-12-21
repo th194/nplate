@@ -113,7 +113,7 @@
             oEditors.getById['bbscttCn'].exec('UPDATE_CONTENTS_FIELD', []);
 
             var form = document.getElementById('saveForm');
-            var subject = $('#bbscttSj');
+            var subject = $('#bbscttSj').val();
             var mapLa = $('#bbscttCchLa'); // 위도
             var mapLo = $('#bbscttCchLo'); // 경도
 
@@ -123,19 +123,20 @@
             console.log('content.val = ' + content.val());
             // <p>태그 <br>로 바꾸기
             // var contentVal = content.val().replace(/<\/p><p>/gi, "<br>");
-            if(subject.val() == '' || subject.val() == null) {
+
+            if(commonJS.isEmpty(subject)) {
                 openModal.alert('제목을 입력해주세요.');
                 subject.focus();
                 return;
             }
 
-            if(mapLa.val() == '' || mapLa.val() == null) {
-                openModal.alert('장소를 등록해주세요.');
-                $('#btnMap').focus();
+            if(!commonJS.isEmpty(subject) && commonJS.isRegExp(subject)) {
+                openModal.alert('태그문자는 입력 불가능합니다.');
+                console.log('태그 감지');
                 return;
             }
 
-            if(mapLo.val() == '' || mapLo.val() == null) {
+            if(commonJS.isEmpty(mapLa.val()) || commonJS.isEmpty(mapLo.val())) {
                 openModal.alert('장소를 등록해주세요.');
                 $('#btnMap').focus();
                 return;
@@ -158,8 +159,6 @@
             var src = img.attr('src');
 
             $('#bbscttImage').val(src);
-            console.log('srcReplace = ' + src);
-
 
             var bbscttHashTag = marginTag();
             $('#bbscttHashtag').val(bbscttHashTag);
@@ -173,6 +172,7 @@
             } else {
                 form.action = '/board/update.do';   // 수정
             }
+            $('#bbscttSj').val(commonJS.convertTag(subject));
             form.submit();
         }
 
@@ -200,6 +200,12 @@
             if (e.key === "Enter" || e.keyCode == 32) {
 
                 var tagValue = self.val(); // 값 가져오기
+
+                if(commonJS.isRegExp(tagValue)) {
+                    openModal.alert('태그문자는 입력 불가능합니다.');
+                    self.focus();
+                    return;
+                }
 
                 // 해시태그 값 없으면 실행X
                 if (tagValue !== "") {
