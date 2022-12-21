@@ -15,13 +15,13 @@
                 <div class="row mb-3">
                     <label for="mngrBbsSj" class="col-sm-2 col-form-label">제목</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="mngrBbsSj" name="mngrBbsSj">
+                        <input type="text" class="form-control" id="mngrBbsSj" name="mngrBbsSj" placeholder="제목을 입력하세요."/>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <label for="mngrBbsCn" class="col-sm-2 col-form-label">내용</label>
                     <div class="col-sm-10">
-                        <textarea type="email" class="form-control" id="mngrBbsCn" name="mngrBbsCn"></textarea>
+                        <textarea type="text" class="form-control" id="mngrBbsCn" name="mngrBbsCn" placeholder="내용을 입력하세요"></textarea>
                     </div>
                 </div>
                 <div class="text-center">
@@ -70,16 +70,25 @@
         /* 뒤로가기 */
 
         function addEvent() {
-
             // 확인버튼 클릭
             $('#sendBtn').on('click', function() {
                 var mngrBbsSj = $('#mngrBbsSj').val();
                 var mngrBbsCn = $('#mngrBbsCn').val();
+
+                if(commonJS.isEmpty(mngrBbsSj)) {
+                    openModal.alert('제목을 입력해주세요.');
+                    return;
+                }
+
+                if(commonJS.isEmpty(mngrBbsCn)) {
+                    openModal.alert('내용을 입력해주세요.');
+                    return;
+                }
+
                 var data = {
                     mngrBbsSj : mngrBbsSj,
                     mngrBbsCn : mngrBbsCn
                 }
-
                 $.ajax({
                     url : '/admin/adminRegister',
                     type : 'POST',
@@ -109,29 +118,9 @@
                     }
                 });
             });
-
-            // 체크박스 전체체크 클릭
-            $('#allCheck').click(function () {
-                if ($('#allCheck').is(':checked')) {
-                    $('input[name=subCheck]').prop('checked', true);
-                } else {
-                    $('input[name=subCheck]').prop('checked', false);
-                }
-            });
-
-            // 체크박스 개별체크
-            $('input[name=subCheck]').click(function () {
-                var total = $('input[name=subCheck]').length;
-                var checked = $('input[name=subCheck]:checked').length;
-                if (total != checked) {
-                    $('#allCheck').prop('checked', false);
-                } else {
-                    $('#allCheck').prop('checked', true);
-                }
-            });
         }
         /* 이벤트 등록 */
-        addEvent();
+        addEvent(); // 이벤트 등록
     </script>
 </th:block>
 </html>

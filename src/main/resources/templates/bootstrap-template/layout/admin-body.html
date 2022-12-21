@@ -80,7 +80,33 @@
 							</ul>
 						</nav>
 
-					<th:block layout:fragment="modal"></th:block>
+					<!-- 모달 영역 -->
+					<th:block layout:fragment="modal">
+						<div class="modal" id="msg_popup" tabindex="-1" role="dialog">
+							<div class="modal-dialog modal-dialog-centered" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title">
+											<i class="bi bi-exclamation-circle"></i>
+										</h5>
+										<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">x</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<!-- MSG Space-->
+									</div>
+									<div class="modal-footer" id="btn_confirm">
+										<button type="button" id="confirm_yes" class="btn btn-primary" data-dismiss="modal" >YES</button>
+										<button type="button" id="confirm_no" class="btn btn-secondary" data-dismiss="modal">NO</button>
+									</div>
+									<div class="modal-footer" id="btn_alert">
+										<button type="button" id="alert_ok" class="btn btn-primary" data-dismiss="modal" >OK</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</th:block>
 					<!-- 메인 콘텐츠 -->
 					<div class="container-fluid">
 						<section>
@@ -128,6 +154,7 @@
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/jquery.dataTables.min.js}"></script>
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/vendor/datatables/dataTables.bootstrap4.min.js}"></script>
 		<script th:src="@{/startbootstrap-sb-admin-2-gh-pages/js/demo/datatables-demo.js}"></script>
+		<script th:src="@{/js/common.js}"></script>
 
 
 		<script th:inline="javascript">

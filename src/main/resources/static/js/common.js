@@ -62,5 +62,18 @@ var openModal = {
         }).catch(function() {});
     },
 }
-
 /* 모달 오픈 공통함수 E */
+
+/* 공통 함수 S */
+var commonJS = {
+
+    // 빈 값 체크
+    isEmpty : function(value){
+        if( value == '' || value == null || value == undefined || ( value != null && typeof value == 'object' && !Object.keys(value).length ) ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
+/* 공통 함수 E */

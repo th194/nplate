@@ -211,7 +211,7 @@
 										<h5 class="modal-title">
 											<i class="bi bi-exclamation-circle"></i>
 										</h5>
-										<button type="button" class="btn-close" data-dismiss="modal">
+										<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
 											<span aria-hidden="true">x</span>
 										</button>
 									</div>
@@ -426,16 +426,10 @@
 			/* 날짜 계산 E */
 
 			function addEvent() {
-
 				// 알람 view 페이지로 이동
 				$('#alarmCenter').click(function() {
 					location.href = '/alarm';
 				});
-
-				// 모달 창 닫기
-				// $('.modalClose').click(function(e){
-				// 	$('#modal').modal('hide');
-				// })
 			}
 			addEvent();
 		</script>
