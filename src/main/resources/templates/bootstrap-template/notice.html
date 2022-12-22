@@ -78,9 +78,6 @@
 
         /* 뒤로가기 */
         function goListPage() {
-            // var queryString = new URLSearchParams(location.search);
-            // queryString.delete('idx');
-            // location.href = '/member/board/list?' + queryString.toString();
             history.back();
         }
         /* 뒤로가기 */
@@ -93,21 +90,33 @@
                 return false;
             }
 
-            var inputHtml = "";
-            new URLSearchParams(location.search).forEach((value, key) => {
-                inputHtml += `<input type="hidden" name="${key}" value="${value}" />
-                                <input type="hidden" name="one" value="one" />
-                `;
-            });
+            var data = {
+                delArr : idx
+            }
 
-            var formHtml = `<form id="deleteForm" action="/admin/adminNoticeDelete" method="post">
-                                ${inputHtml}
-                            </form>`;
+            $.ajax({
+                url : '/admin/adminNoticeDelete',
+                type : 'POST',
+                data : data,
+                success : function(result) {
+                    console.log('성공');
 
-            var doc = new DOMParser().parseFromString(formHtml, 'text/html');
-            var form = doc.body.firstChild;
-            document.body.append(form);
-            document.getElementById('deleteForm').submit();
+                    var alarmData = {
+                        ntcnKnd			: 'notice',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply', 공지사항 : 'notice' )
+                        ntcnTrgtNo		: idx			// 알람 타겟 게시글 번호
+                    };
+
+                    $.ajax({
+                        url : '/alarm/delete',
+                        type : 'POST',
+                        data : alarmData
+                    });
+
+                    var queryString = new URLSearchParams(location.search);
+                    queryString.delete('idx');
+                    location.href = '/admin/adminNoticeList?' + queryString.toString();
+                }
+            })
         }
         /*게시글 삭제 함수*/
 

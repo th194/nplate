@@ -183,7 +183,7 @@
                 }
             }
             if(delArr.length == 0) {
-                alert('선택된 게시글이 없습니다.');
+                openModal.alert('선택된 게시글이 없습니다.');
             } else {
                 if(confirm(delArr + '번 게시물을 삭제하시겠습니까?')) {
                     $.ajax({

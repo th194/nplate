@@ -255,12 +255,8 @@ public class AdminController {
     public String adminNoticeDelete(Model model, HttpServletRequest request) {
         boolean result = false;
         HttpSession session = request.getSession();
-        String value = request.getParameter("idx");
-        String type = request.getParameter("one");
-
         String adminId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
 
-        if(!type.equals("one")) {
             String[] delMsg = request.getParameterValues("delArr");
 
             // delMsg 길이와 delWriter 길이는 같다.
@@ -271,10 +267,6 @@ public class AdminController {
                     result = adminBoardService.deleteAdminBoard(delMsg[i]);
                 }
             }
-        } else {
-            // 공지 상세보기에서 삭제 시
-            result = adminBoardService.deleteAdminBoard(value);
-        }
 
 
         MessageDTO message = new MessageDTO();
