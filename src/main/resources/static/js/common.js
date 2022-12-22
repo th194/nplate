@@ -101,6 +101,9 @@ var commonJS = {
 
     // 태그 변환
     convertTag : function(str) {
+        if(typeof str !== 'string') {
+            return;
+        }
         str = str.replace(/</g, '&lt;');
         str = str.replace(/>/g, '&gt;');
         str = str.replace(/\"/g, '&quot;');
@@ -111,6 +114,9 @@ var commonJS = {
 
     // 태그 변환
     convertTagRevert : function(str) {
+        if(typeof str !== 'string') {
+            return;
+        }
         str = str.replace('&lt;', '<');
         str = str.replace('&gt;', '>');
         str = str.replace('&quot;', '"');

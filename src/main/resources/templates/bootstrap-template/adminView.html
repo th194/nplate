@@ -424,8 +424,8 @@
         function insertReply() {
             var answerCn = document.getElementById('answerCn');
             console.log('answerCn = ' + answerCn.value);
-            if (answerCn.value == null || answerCn.value == '') {
-                alert('댓글을 입력해주세요.');
+            if (commonJS.isEmpty(answerCn.value)) {
+                openModal.alert('댓글을 입력해주세요.');
                 answerCn.focus();
                 return false;
             }
@@ -448,6 +448,7 @@
                 dataType: 'json',
                 data    : JSON.stringify(params),
                 success : function (result) {
+                    var date = moment().format('YYYY-MM-DD HH:mm:ss'); // moment.js 현재 날짜/시간
                     if (result.result == false) {
                         alert('댓글 등록 실패');
                         return false;
@@ -479,94 +480,6 @@
             });
         }
         /* 댓글 등록 E */
-
-        /* 댓글 수정 UI S */
-        // 관리자 페이지에서는 댓글 수정이 필요없다.
-        // function updateAnswer(answerNo) {
-        //     var $updateAnswer = $('#updateAnswer' + answerNo);
-        //     var answerCn = $('#cn' + answerNo).text();
-        //     $dom = $updateAnswer.parent().parent();
-        //     $updateAnswer.parent().parent().replaceWith(
-        //         `
-        //             <form class="mb-4" id="cancelUpdate${answerNo}">
-        //                 <textarea id="replyCn${answerNo}" name="replyCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력">${answerCn}</textarea>
-        //                     <a href="javascript:void(0)" class="btn btn-icon-split" onclick="updateReply(${answerNo})" style="float:right">
-        //                         <!--<span class="icon text-gray-600">
-        //                             <i class="fas fa-arrow-right"></i>
-        //                         </span>-->
-        //                         <span class="text">댓글 수정</span>
-        //                     </a>
-        //                     <a href="javascript:void(0)" class="btn btn-icon-split" onclick="cancelUpdate(${answerNo})" style="float: right">
-        //                         <!--<span class="icon text-white-50">
-        //                             <i class="fas fa-trash"></i>
-        //                         </span>-->
-        //                         <span class="text">취소</span>
-        //                     </a>
-        //             </form>
-        //             <br class="br-cancel">
-        //         `
-        //     );
-        //     $domBtn = $updateAnswer.parent();
-        //     $domBtn.hide();
-        //     $('#answerCn').attr('disabled', true);
-        //     $('#btnRegister').attr('disabled', true);
-        //     $('.update-answer').hide();
-        //     $('.delete-answer').hide();
-        // }
-
-        // 수정 취소
-        // function cancelUpdate(idx) {
-        //     console.log('$dom ===> ', $dom);
-        //     var $cancelUpdate = $('#cancelUpdate' + idx);
-        //     $cancelUpdate.replaceWith($dom);
-        //     $('.br-cancel').remove();
-        //     $domBtn.show();
-        //     $('#answerCn').attr('disabled', false);
-        //     $('#btnRegister').attr('disabled', false);
-        //     $('.update-answer').show();
-        //     $('.delete-answer').show();
-        // }
-        /* 댓글 수정 UI E */
-
-        /* 댓글 수정 S */
-        // function updateReply(idx) {
-        //     var writer = loginMember;
-        //     var content = $('#replyCn'+idx).val();
-        //
-        //     var uri = '/reply/' + idx;
-        //     console.log('수정 uri = ' + uri);
-        //     var headers = {
-        //         'Content-Type'          : 'application/json',
-        //         'X-HTTP-Method-Override': 'PATCH'
-        //     };
-        //     var params = {
-        //         answerNo   : idx,
-        //         answerCn   : content,
-        //         answerWrter: writer
-        //     }
-        //
-        //     $.ajax({
-        //         url     : uri,
-        //         type    : 'PATCH',
-        //         headers : headers,
-        //         dataType: 'json',
-        //         data    : JSON.stringify(params),
-        //         success : function (result) {
-        //             if (result.result == false) {
-        //                 alert('수정 실패');
-        //                 return false;
-        //             }
-        //             replyList();
-        //
-        //         },
-        //         error   : function (err) {
-        //             console.log('err = ' + JSON.stringify(err));
-        //             return;
-        //         }
-        //     });
-        // }
-
-        /* 댓글 수정 E */
 
         /* 댓글 삭제 S */
         function deleteReply(idx) {

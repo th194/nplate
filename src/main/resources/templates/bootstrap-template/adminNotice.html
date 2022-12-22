@@ -56,7 +56,7 @@
             var form = document.getElementById('noticeForm');
             var fields = ['mngrBbsNo', 'mngrBbsSj', 'mngrBbsCn'];
             fields.forEach(field => {
-                form[field].value = board[field];
+                form[field].value = commonJS.convertTagRevert(board[field]);
             });
         }
         /* 게시글 상세정보 렌더링 E */
@@ -86,8 +86,8 @@
                 }
 
                 var data = {
-                    mngrBbsSj : mngrBbsSj,
-                    mngrBbsCn : mngrBbsCn
+                    mngrBbsSj : commonJS.convertTag(mngrBbsSj),
+                    mngrBbsCn : commonJS.convertTag(mngrBbsCn)
                 }
                 $.ajax({
                     url : '/admin/adminRegister',

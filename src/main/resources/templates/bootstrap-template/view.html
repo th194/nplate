@@ -439,7 +439,7 @@
 			};
 			var params = {
 				bbscttNo : board.bbscttNo,
-				answerCn : answerCn.value,
+				answerCn : commonJS.convertTag(answerCn.value),
 				answerWrter : loginMember
 			}
 
@@ -477,7 +477,7 @@
 					answerCn.value = '';
 				},
 				error : function(err) {
-					console.log(JSON.stringify(err));
+					console.log('err ===> ', err);
 					return false;
 				}
 			});
@@ -495,15 +495,9 @@
 					<form class="mb-4" id="cancelUpdate${answerNo}">
 						<textarea id="replyCn${answerNo}" name="replyCn" class="form-control" rows="3" style="resize: none;" placeholder="댓글 입력">${answerCn}</textarea>
 							<a href="javascript:void(0)" class="btn btn-icon-split" onclick="updateReply(${answerNo})" style="float:right">
-<!--								<span class="icon text-gray-600">-->
-<!--									<i class="fas fa-arrow-right"></i>-->
-<!--								</span>-->
 								<span class="text">댓글 수정</span>
 							</a>
 							<a href="javascript:void(0)" class="btn btn-icon-split" onclick="cancelUpdate(${answerNo})" style="float: right">
-<!--								<span class="icon text-white-50">-->
-<!--									<i class="fas fa-trash"></i>-->
-<!--								</span>-->
 								<span class="text">취소</span>
 							</a>
 					</form>

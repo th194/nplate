@@ -255,25 +255,33 @@ public class AdminController {
     public String adminNoticeDelete(Model model, HttpServletRequest request) {
         boolean result = false;
         HttpSession session = request.getSession();
+        String value = request.getParameter("idx");
+        String type = request.getParameter("one");
 
         String adminId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
 
-        String[] delMsg = request.getParameterValues("delArr");
+        if(!type.equals("one")) {
+            String[] delMsg = request.getParameterValues("delArr");
 
-        // delMsg 길이와 delWriter 길이는 같다.
-        int size = delMsg.length;
-        // 삭제할 게시글 수만큼 loop
-        if(adminId.equals("admin")) {
-            for ( int i = 0; i < size; i ++) {
-                result = adminBoardService.deleteAdminBoard(delMsg[i]);
+            // delMsg 길이와 delWriter 길이는 같다.
+            int size = delMsg.length;
+            // 삭제할 게시글 수만큼 loop
+            if(adminId.equals("admin")) {
+                for ( int i = 0; i < size; i ++) {
+                    result = adminBoardService.deleteAdminBoard(delMsg[i]);
+                }
             }
+        } else {
+            // 공지 상세보기에서 삭제 시
+            result = adminBoardService.deleteAdminBoard(value);
         }
+
 
         MessageDTO message = new MessageDTO();
         if(result) {
             message = new MessageDTO("공지사항 삭제가 완료되었습니다.", "/admin/adminNoticeList", RequestMethod.GET, null);
         } else {
-            message = new MessageDTO("공지사항 삭제가 실패했습니다.", "/admin/adminNoticeList", RequestMethod.GET, null);
+            message = new MessageDTO("공지사항 삭제를 실패했습니다.", "/admin/adminNoticeList", RequestMethod.GET, null);
         }
         return showMessageAndRedirect(message, model);
     }
