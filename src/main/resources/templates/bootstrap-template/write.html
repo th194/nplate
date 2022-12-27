@@ -128,12 +128,6 @@
                 return;
             }
 
-            if(!commonJS.isEmpty(subject) && commonJS.isRegExp(subject)) {
-                openModal.alert('태그문자는 입력 불가능합니다.');
-                console.log('태그 감지');
-                return;
-            }
-
             if(commonJS.isEmpty(mapLa.val()) || commonJS.isEmpty(mapLo.val())) {
                 openModal.alert('장소를 등록해주세요.');
                 $('#btnMap').focus();
@@ -166,9 +160,9 @@
             var memberInfo = [[${memberInfo}]]
             $('#bbscttWrter').val(memberInfo.id);
             if(board == null) {
-                form.action = '/board/register.do'; // 등록
+                form.action = '/board/register'; // 등록
             } else {
-                form.action = '/board/update.do';   // 수정
+                form.action = '/board/update';   // 수정
             }
             $('#bbscttSj').val(commonJS.convertTag(subject));
             form.submit();
@@ -198,12 +192,6 @@
             if (e.key === "Enter" || e.keyCode == 32) {
 
                 var tagValue = self.val(); // 값 가져오기
-
-                if(commonJS.isRegExp(tagValue)) {
-                    openModal.alert('태그문자는 입력 불가능합니다.');
-                    self.focus();
-                    return;
-                }
 
                 // 해시태그 값 없으면 실행X
                 if (tagValue !== "") {

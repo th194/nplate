@@ -6,12 +6,11 @@ import com.netive.nplate.domain.SessionConstants;
 import com.netive.nplate.service.AlarmService;
 import com.netive.nplate.util.BoardUtils;
 import com.netive.nplate.util.MemberUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,7 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
+@RequiredArgsConstructor
 public class AlarmController {
 
     @Autowired
@@ -33,12 +33,67 @@ public class AlarmController {
     private MemberUtils memberUtils;
 
     /**
+     * 알람 뷰 페이지
+     * @param request
+     * @param model
+     * @return
+     */
+    @GetMapping("/alarm")
+    public String getAlarm(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession();
+
+        try {
+            if ((boolean) session.getAttribute(SessionConstants.IS_LOGIN) && session.getAttribute(SessionConstants.MEMBER_DTO) != null) {
+                System.out.println(session.getAttribute(SessionConstants.MEMBER_DTO));
+                model.addAttribute("memberInfo", session.getAttribute(SessionConstants.MEMBER_DTO));
+                String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+
+                // 리스트 타입(피드: 팔로잉)
+                SearchDTO searchDTO = new SearchDTO(memberId);
+                searchDTO.setSearchType("following");
+                model.addAttribute("search", searchDTO);
+
+                // 좋아요
+                List<Long> likeNumbers;
+                if (session.getAttribute(SessionConstants.LIKE_NUMBERS) != null) {
+                    likeNumbers = (List<Long>) session.getAttribute(SessionConstants.LIKE_NUMBERS);
+                } else {
+                    likeNumbers = boardUtils.getLikeNumbers(memberId);
+                }
+                model.addAttribute("likeNumbers", likeNumbers);
+
+                // 팔로잉 처리
+                List<Map> followingMembers = new ArrayList<>();
+                if (session.getAttribute(SessionConstants.FOLLOWING_MEMBERS) != null) {
+                    followingMembers = (List<Map>) session.getAttribute(SessionConstants.FOLLOWING_MEMBERS);
+                } else {
+                    List<String> followingIds = memberUtils.getFollowingMember(memberId);
+                    if (followingIds.size() > 0) {
+                        followingMembers = memberUtils.getFollowingsInfo(followingIds);
+                    }
+
+                    session.setAttribute(SessionConstants.FOLLOWING_IDS, followingIds);
+                    session.setAttribute(SessionConstants.FOLLOWING_MEMBERS, followingMembers);
+                }
+
+                model.addAttribute("followingMembers", followingMembers);
+//                return "bootstrap-template/alarm";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "bootstrap-template/alarm";
+    }
+
+    /**
      * 알람 목록
      * @param request
      * @param model
      * @return
      */
     @GetMapping("/alarm/info")
+    @ResponseBody
     public HashMap<String, Object> selectAlarmList(HttpServletRequest request, Model model) {
 
         HashMap<String, Object> resMap = new HashMap<>();
@@ -97,6 +152,7 @@ public class AlarmController {
      * @return
      */
     @PostMapping("/alarm/register")
+    @ResponseBody
     public HashMap<String, Object> registerAlarm(HttpServletRequest request, AlarmDTO alarmDTO) {
         HashMap<String, Object> resMap = new HashMap<>();
         HttpSession session = request.getSession();
@@ -114,6 +170,7 @@ public class AlarmController {
      * @return
      */
     @PostMapping("/alarm/update")
+    @ResponseBody
     public HashMap<String, Object> updateAlarm(AlarmDTO alarmDTO) {
         HashMap<String, Object> resMap = new HashMap<>();
         boolean result = alarmService.updateAlarm(alarmDTO);
@@ -128,6 +185,7 @@ public class AlarmController {
      * @return
      */
     @PostMapping("/alarm/delete")
+    @ResponseBody
     public HashMap<String, Object> deleteAlarm(HttpServletRequest request, AlarmDTO alarmDTO) {
         HashMap<String, Object> resMap = new HashMap<>();
         HttpSession session = request.getSession();

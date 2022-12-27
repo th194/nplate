@@ -170,9 +170,6 @@
                         displayInfowindow(marker, title);
                     };
 
-                    itemEl.onmouseout =  function () {
-                        infowindow.close();
-                    };
                 })(marker, places[i].place_name);
 
                 fragment.appendChild(itemEl);

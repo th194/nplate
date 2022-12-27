@@ -41,7 +41,7 @@
 					type    : 'POST',
 					dataType: 'json',
 					data    : post,
-					url     : '/board/scrollList.do',
+					url     : '/board/scrollList',
 					success : function (result) {
 						var list = result.response;                // 목록
 						var html = '';
@@ -239,7 +239,7 @@
 									ntcnReceiveMber : writer,			// 알람 받는 사람 id
 									ntcnKnd			: 'like',			// 알람 타입 ( 삭제 : 'delete', 팔로잉 : 'following', 좋아요 : 'like', 댓글 : 'reply', 공지사항 : 'notice', 댓글삭제 : 'replyDel' )
 									ntcnTrgtNo		: index,			// 알람 타겟 게시글 번호
-									ntcnTrgtSj		: subject			// 알람 타겟 게시글 제목
+									ntcnTrgtSj		: commonJS.convertTag(subject)			// 알람 타겟 게시글 제목
 								};
 
 								// 알람정보 DB에 저장
@@ -270,7 +270,7 @@
 		/* 게시글 상세페이지 이동 */
 		function goViewPage(idx) {
 			var queryString = (location.search) ? location.search + `&idx=${idx}` : `?idx=${idx}`;
-			location.href = '/board/view.do' + queryString;
+			location.href = '/board/view' + queryString;
 		}
 		/* 게시글 상세페이지 이동 */
 

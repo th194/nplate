@@ -39,7 +39,7 @@
     </div>
 
     <div class="btn_wrap text-right">
-        <a th:href="@{/board/write.do}" class="btn btn-primary waves-effect waves-light">글 등록</a>
+        <a th:href="@{/board/write}" class="btn btn-primary waves-effect waves-light">글 등록</a>
     </div>
 </th:block>
 
@@ -190,7 +190,7 @@
         /* 게시글 상세페이지 이동 */
         function goViewPage(idx) {
             var queryString = (location.search) ? location.search + `&idx=${idx}` : `?idx=${idx}`;
-            location.href = '/board/view.do' + queryString;
+            location.href = '/board/view' + queryString;
         }
         /* 게시글 상세페이지 이동 */
 

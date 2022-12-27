@@ -122,7 +122,7 @@
 					inputHtml += `<input type="hidden" name="${key}" value="${value}" />`;
 				});
 
-				var formHtml = `<form id="deleteForm" action="/board/delete.do" method="post">
+				var formHtml = `<form id="deleteForm" action="/board/delete" method="post">
 									${inputHtml}
 								</form>`;
 
@@ -184,7 +184,7 @@
 
 			/* 수정하기 */
 			function goWritePage() {
-				location.href = '/board/write.do' + location.search;
+				location.href = '/board/write' + location.search;
 			}
 			/* 수정하기 */
 
@@ -192,7 +192,7 @@
 			function goListPage() {
 				var queryString = new URLSearchParams(location.search);
 				queryString.delete('idx');
-				location.href = '/board/list.do?' + queryString.toString();
+				location.href = '/board/list?' + queryString.toString();
 			}
 			/* 뒤로가기 */
 

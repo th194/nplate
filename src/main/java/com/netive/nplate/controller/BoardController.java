@@ -152,7 +152,7 @@ public class BoardController {
 	 * @param board
 	 * @return
 	 */
-	@PostMapping("/board/register.do")
+	@PostMapping("/board/register")
 	public String openBoardRegister(final BoardDTO board, Model model, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 
@@ -193,7 +193,7 @@ public class BoardController {
 	 * @param params
 	 * @return
 	 */
-	@PostMapping("/board/scrollList.do")
+	@PostMapping("/board/scrollList")
 	@ResponseBody
 	public Map<String, Object> openBoardScrollList(@ModelAttribute("params") final SearchDTO params, HttpServletRequest request) {
 		System.out.println("스크롤 페이징====================================");
@@ -281,7 +281,7 @@ public class BoardController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping("/board/view.do")
+	@GetMapping("/board/view")
 	public String openBoardDetail(@RequestParam final Long idx, Model model, HttpServletRequest request) {
 
 		HttpSession session = request.getSession();
@@ -329,7 +329,7 @@ public class BoardController {
 	 * @param board
 	 * @return
 	 */
-	@PostMapping("/board/update.do")
+	@PostMapping("/board/update")
 	public String updateBoard(final BoardDTO board, Model model) {
 
 		Long idx = board.getBbscttNo();
@@ -373,7 +373,7 @@ public class BoardController {
 				fileNmTemp = _jsonData.get("FILE_NM_TEMP").getAsString();		// 임시 파일명
 				fileCours = _jsonData.get("FILE_COURS").getAsString();			// 경로
 
-				// 등록(register.do)과 동일
+				// 등록(/board/register)과 동일
 				if(content.contains(fileNmTemp)) {
 					fileService.saveBoardFile(fileNm, fileNmTemp, fileCours, idx);
 				} else {
@@ -399,7 +399,7 @@ public class BoardController {
 	 * @param idx
 	 * @return
 	 */
-	@PostMapping("/board/delete.do")
+	@PostMapping("/board/delete")
 	public String deleteBoard(@RequestParam final Long idx, @RequestParam final Map<String, Object> queryParams, Model model) {
 
 		List<BoardFileDTO> boardFileList = fileService.selectBoardFile(idx);	// 현재 게시글 번호로 저장돼 있는 파일 정보 가져오기
@@ -499,7 +499,6 @@ public class BoardController {
 					sFileInfo += "&bNewLine=true";
 					// img 태그의 title 속성을 원본파일명으로 적용시켜주기 위함
 					sFileInfo += "&sFileName=" + sFileName;
-	//				sFileInfo += "&sFileURL=/nplateImage/" + sRealFileName;
 					sFileInfo += "&sFileURL=/nplateImage/" + sRealFileName;
 
 					PrintWriter printWriter = response.getWriter();
