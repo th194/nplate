@@ -58,7 +58,6 @@
         /* 초기화 S */
         function init() {
             var notice = [[${adminNoticeList}]];
-            console.log('noticeList ===> ', notice);
             noticeList(notice);
         }
         /* 초기화 E */
@@ -154,7 +153,6 @@
 
         /* 페이지 이동 S */
         function movePage(page, member) {
-            // var form = document.getElementById('searchForm');
             var queryParams = {
                 page      : (page) ? page : 1,
                 recordSize: 10,

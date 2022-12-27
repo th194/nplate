@@ -131,11 +131,7 @@
 <th:block layout:fragment="script">
     <script th:inline="javascript">
         /*<![CDATA[*/
-        console.log('관리자페이지========');
         var board = [[${board}]];
-
-        var $dom;				// 기존 댓글
-        var $domBtn;			// 기존 댓글 수정/삭제 버튼
         var loginMember;
 
         $(function () {
@@ -278,8 +274,6 @@
         // 별점
         $('input[name=bbscttGrade]').attr('disabled', true);
 
-        console.log('별점 점수 ============================== ' + board.bbscttGrade);
-
         switch (board.bbscttGrade) {
             case 1 :
                 $('#rate5').attr('checked', true);
@@ -376,9 +370,6 @@
         // 마커 위에 인포윈도우를 표시합니다. 두번째 파라미터인 marker를 넣어주지 않으면 지도 위에 표시됩니다
         infowindow.open(map, marker);
 
-        // $map.append(map);
-
-
         /* smartEditor */
         var oEditors = [];
 
@@ -395,7 +386,6 @@
                 },
                 fOnAppLoad   : function () {
                     var editor = oEditors.getById['bbscttCn'];
-                    // editor.exec('PASTE_HTML', [board.bbscttCn]);
                     editor.exec('DISABLE_WYSIWYG');
                     editor.exec('DISABLE_ALL_UI');
                 }
@@ -450,7 +440,7 @@
                 success : function (result) {
                     var date = moment().format('YYYY-MM-DD HH:mm:ss'); // moment.js 현재 날짜/시간
                     if (result.result == false) {
-                        alert('댓글 등록 실패');
+                        openModal.alert('댓글 등록 실패');
                         return false;
                     }
                     if ( board.bbscttWrter != loginMember) {
@@ -505,7 +495,7 @@
                 data : data,
                 success : function (result) {
                     if (result.result == false) {
-                        alert('댓글 삭제 실패');
+                        openModal.alert('댓글 삭제 실패');
                         return false;
                     }
                     var date = moment().format('YYYY-MM-DD HH:mm:ss'); // moment.js 현재 날짜/시간

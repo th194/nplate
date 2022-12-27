@@ -70,11 +70,10 @@
 
         function findAllPost() {
             var boardList = [[${boardList}]];
-            console.log('boardList ===> ', boardList);
             if (!boardList.list.length) {
                 $('boardList').append('<div>검색 결과가 없습니다.</div>');
                 drawPage();
-                return false;
+                return;
             }
 
             var pagination = [[${boardList.page.pagination}]];
@@ -187,38 +186,14 @@
             $('.pagination').append(html);
         }
 
-        // 쿼리스트링 파라미터 세팅
-        // function setQueryStringParams() {
-        //     // location 객체의 search를 이용해서 쿼리 스트링 파라미터를 조회할 수 있다.
-        //     if (!location.search) {
-        //         return false;
-        //     }
-        //
-        //     var form = document.getElementById('searchForm');
-        //
-        //     new URLSearchParams(location.search).forEach((value, key) => {
-        //         if (form[key]) {
-        //             form[key].value = value;
-        //         }
-        //     });
-        //
-        //     document.getElementById('keyword').value = form.keyword.value;
-        // }
-        /* 게시글 리스트 조회 E */
-
-
         /* 페이지 이동 */
         function movePage(page, member) {
-            // var form = document.getElementById('searchForm');
             var queryParams = {
                 page      : (page) ? page : 1,
                 recordSize: 10,
                 pageSize  : 10,
                 id : member,
                 limitStart : page * 10
-                // ,
-                // keyword : form.keyword.value
-                // searchType : form.searchType.value
             }
             location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
         }
@@ -341,7 +316,6 @@
                 }
             }
         }
-
         /* 게시글 삭제 E */
     </script>
 </th:block>
