@@ -16,8 +16,7 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        var memberInfo = [[${memberInfo}]];
-        console.log('memberInfo = ', memberInfo);
+        var loginMember = [[${loginMember}]];
         var alarmHtml = '';
         var noticeHtml = '';
                 $.ajax({

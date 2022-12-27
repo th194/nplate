@@ -47,6 +47,7 @@ public class AlarmController {
                 System.out.println(session.getAttribute(SessionConstants.MEMBER_DTO));
                 model.addAttribute("memberInfo", session.getAttribute(SessionConstants.MEMBER_DTO));
                 String memberId = (String) session.getAttribute(SessionConstants.MEMBER_ID);
+                model.addAttribute("loginMember", memberId);
 
                 // 리스트 타입(피드: 팔로잉)
                 SearchDTO searchDTO = new SearchDTO(memberId);
